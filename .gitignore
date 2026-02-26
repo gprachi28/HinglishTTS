@@ -1,0 +1,22 @@
+# Data — never commit audio files or large datasets
+data/raw/
+data/processed/
+*.wav
+*.mp3
+*.pt
+*.pth
+*.ckpt
+
+# Python
+__pycache__/
+*.pyc
+.env
+venv/
+*.egg-info/
+
+# Notebooks
+.ipynb_checkpoints/
+
+# IDE
+.vscode/
+.idea/
