@@ -1,180 +1,182 @@
-# 🗣️ Hinglish TTS — Code-Switched Hindi-English Speech Synthesis
+# HinglishTTS-Bench
 
 [![Python 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/)
 
-> ⚠️ **Work in Progress** — This project is actively under development. APIs, data formats, and model interfaces may change without notice.
+> **Work in Progress** — This project is actively under development.
 
-```
-Neural Text-to-Speech synthesis for Hinglish — the natural code-switched variety of Hindi and English spoken by 350M+ people.
-```
-
-
-## 🎧 Demo
-[**Try it live on Hugging Face Spaces →**](https://huggingface.co/spaces/YOUR_USERNAME/hinglish-tts)
-
-Sample outputs:
-
-| Input | Audio |
-|---|---|
-| "Aaj ka meeting bahut boring tha" | [▶ Play] |
-| "Please send me the report kal tak" | [▶ Play] |
-| "Main yeh project finish kar dunga" | [▶ Play] |
+The first systematic evaluation benchmark for Hindi-English code-switched speech synthesis. We evaluate state-of-the-art TTS systems on linguistically controlled Hinglish sentences spanning 7 switching patterns, measuring prosodic continuity at language boundaries, Hindi phoneme fidelity under transliteration, and naturalness via human evaluation with native speakers.
 
 ---
 
-## 🔍 Motivation
+## Background: Why a Benchmark, Not a Model
 
-Hinglish is spoken by an estimated 350 million people across India and the diaspora, yet almost no TTS research addresses it. Most systems either:
-- Fail on Hindi words when using English TTS
-- Fail on English words when using Hindi TTS
-- Produce unnatural prosody at language switch points
+This project began as a VITS fine-tuning pipeline for Hinglish TTS — training on LJSpeech (English) + IndicVoices-R (Hindi) with synthetic code-switched sentences generated via Equivalence Constraint theory.
 
-This project addresses that gap by fine-tuning a neural TTS system on code-switched data with linguistically motivated switching patterns.
+Three things became clear:
 
----
+1. **E2E models already handle codeswitching.** Models like Qwen3-TTS (built on Qwen-Omni) produce reasonable Hinglish output zero-shot. Training a VITS pipeline on 2021-era architecture no longer addresses a real gap.
 
-## 🏗️ Architecture
-```
-Raw Text (Hinglish)
-        │
-        ▼
-┌─────────────────┐
-│ Language Tagger │  ← word-level HI/EN detection
-└────────┬────────┘
-         │
-         ▼
-┌─────────────────┐
-│  Text Normalizer│  ← numbers, dates, abbreviations
-└────────┬────────┘
-         │
-         ▼
-┌─────────────────┐
-│   G2P Pipeline  │  ← eSpeak-NG (EN) + transliteration + eSpeak-NG (HI)
-└────────┬────────┘
-         │
-         ▼
-┌─────────────────┐
-│   VITS Model    │  ← fine-tuned on LJSpeech + IndicVoices-R
-└────────┬────────┘
-         │
-         ▼
-    Audio Output
-```
+2. **The real problem is nobody has measured _how well_ they handle it.** There are no benchmarks that evaluate TTS specifically on linguistically diverse code-switching patterns in Hindi-English, with controlled variables for script, switch type, and mixing intensity.
 
----
+3. **Existing Hinglish text corpora are unsuitable for TTS.** GLUECoS depends on a deprecated Twitter API. L3Cube-HingLID is noisy Twitter data — informal and unnatural for speech synthesis. Synthetic generation with linguistic constraints is the only viable path for a clean, controlled test set.
 
-## 📦 Datasets
+The sentence generation infrastructure built in phase one (`data/codeswitching.py`) now serves as the **controlled test set generator** — the hard part of any evaluation framework.
 
-| Dataset | Language | Size | Quality | Source |
+### Positioning Against Existing Work
+
+| Benchmark | Year | Languages | Focus | Gap |
 |---|---|---|---|---|
-| LJSpeech | English | ~24h | Studio, 22kHz | [keithito.com](https://keithito.com/LJ-Speech-Dataset/) |
-| IndicVoices-R | Hindi | ~46h (filtered) | LJSpeech-quality | [HuggingFace](https://huggingface.co/datasets/SPRINGLab/IndicVoices-R_Hindi) |
-
-IndicVoices-R was accepted at **NeurIPS 2024** and matches LJSpeech recording quality.
-
-### Data filtering criteria
-- SNR ≥ 20dB
-- Duration: 1–15 seconds
-- Speaking rate: 2–8 syllables/second
-
-### Why not existing Hinglish corpora?
-
-Two natural candidates were evaluated and ruled out:
-
-- **GLUECoS** — integration was explored but abandoned due to deprecated Twitter API dependencies, a known issue affecting the broader research community.
-- **L3Cube-HingLID** — scraped from Twitter, making it inherently noisy, informal, and unsuitable for TTS where naturalness is critical.
-
-Due to the absence of clean, naturally occurring Hinglish speech corpora suitable for TTS, this project adopts a **linguistically motivated synthetic sentence generation** approach based on Equivalence Constraint theory, validated by native Hinglish speakers.
+| MANGO (AI4Bharat) | 2025 | Hindi, Tamil | General naturalness (246k ratings) | No code-switching analysis |
+| CS3-Bench | 2025 | Mandarin-English | Code-switched TTS | No Indic languages |
+| DISPLACE-M | 2026 | Hindi-English | Medical domain conversations | Domain-specific, not general |
+| **HinglishTTS-Bench** | **2026** | **Hindi-English** | **Code-switching + script-agnosticism** | **This work** |
 
 ---
 
-## 🔄 Code-Switching Approach
+## The Three-Tier Framework
 
-Sentences are generated using 5 linguistically motivated switching patterns
-based on the **Equivalence Constraint** theory:
+### Tier 1: Input Diversity
 
-| Pattern | Example |
+The same sentences are fed in three script variants, isolating the impact of transliteration:
+
+| Set | Script | Purpose |
+|---|---|---|
+| **Set A** (Baseline) | Pure Devanagari (human-verified) | Model's maximum potential |
+| **Set B** (Experimental) | Romanized Hinglish | Real-world user input |
+| **Set C** (Mixed) | Devanagari for Hindi, Roman for English | Script-normalized middle ground |
+
+### Tier 2: Models Under Evaluation
+
+| Model | Architecture | Params | Multilingual |
+|---|---|---|---|
+| Qwen3-TTS | Qwen-Omni E2E | 1.7B | Yes (incl. Hindi) |
+| CosyVoice 2 | E2E | 0.5B | Yes |
+| XTTS v2 | Autoregressive | — | Yes |
+| Fish-Speech 1.5 | Autoregressive | — | Yes |
+
+### Tier 3: Evaluation Metrics
+
+#### A. Objective Acoustic Metrics
+
+| Metric | What it measures |
 |---|---|
-| Hindi matrix + English NP | "Aaj ka **meeting** bahut lamba tha" |
-| Hindi matrix + English verb | "Please yeh **cancel** kar do" |
-| English matrix + Hindi NP | "I will send it **kal**" |
-| Inter-sentential | "Yeh important hai. **Please review it today**" |
-| Tag switching | "**Yaar**, the deadline is tomorrow" |
+| **PIER** (Point-of-Interest Error Rate) | WER calculated _only_ at switch-point words, not the full sentence |
+| **Boundary F0 RMSE** | Pitch continuity at the exact HI↔EN junction — spikes or breaks indicate poor prosody |
+| **MCD** (Mel-Cepstral Distortion) | Overall spectral quality |
 
-Quality filtered by **Code Mixing Index (CMI)**: 0.1 ≤ CMI ≤ 0.7
+#### B. Linguistic & Transliteration Metrics
+
+| Metric | What it measures |
+|---|---|
+| **Phonetic Fidelity (H-Index)** | Do Hindi words in Roman script get Hindi phonemes? ("Samajh" → /sʌmʌdʒʰ/ not /smæʃt/) |
+| **LID Confidence at Boundary** | Audio-based language ID at switch points — low confidence = natural blending |
+| **TPI** (Transliteration Penalty Index) | `(MOS_Devanagari - MOS_Roman) / MOS_Devanagari * 100` — measures script-agnosticism |
+
+TPI interpretation:
+- **0–5%** — Script Agnostic (model doesn't care about input script)
+- **20–40%** — Script Biased (understands the language, loses prosody in transliteration)
+- **>50%** — Transliteration Blind (fails to trigger correct phonetic engine)
+
+#### C. Human Evaluation
+
+| Metric | What it measures |
+|---|---|
+| **MOS** | Overall naturalness (native Hinglish speakers, Prolific/MTurk) |
+| **Switch-Point Naturalness (SPN)** | Listeners rate _only_ the transition on a 1–5 scale |
+| **Transliteration Robustness Score** | MOS_Roman / MOS_Devanagari for the same sentence |
 
 ---
 
-## 🚀 Quickstart
-```bash
-# Clone repo
-git clone https://github.com/YOUR_USERNAME/hinglish-tts.git
-cd hinglish-tts
+## Test Set: 7 Code-Switching Patterns
 
-# Install dependencies
+5,000 sentences stratified by pattern, CMI range, and register:
+
+| ID | Pattern | Example |
+|---|---|---|
+| CS-01 | Noun Insertion | "Main **office** ja raha hoon" |
+| CS-02 | Verb Grafting | "File **download** kar lo" |
+| CS-03 | Tag Switching | "Baarish ho rahi hai, **isn't it?**" |
+| CS-04 | Clause Boundary | "I was worried ki **train miss ho jayegi**" |
+| CS-05 | Technical / Slang | "Ye content kaafi **cringe** hai" |
+| CS-06 | Numerical / Entity | "Meeting **Thursday** ko **3 PM** par hai" |
+| CS-07 | Intraword | "Usne mujhe **unfriend** kar-diya" |
+
+Quality controlled by **Code Mixing Index (CMI)**: 0.1 ≤ CMI ≤ 0.7
+
+---
+
+## Project Structure
+
+```
+HinglishTTS/
+├── data/
+│   ├── codeswitching.py            # Controlled test set generator (7 patterns)
+│   ├── preprocess_streaming.py     # Audio preprocessing
+│   ├── codeswitched/               # Generated benchmark sentences (CSV)
+│   └── golden/                     # Human-verified Devanagari + recordings
+├── normalization/
+│   └── g2p.py                      # G2P pipeline for reference transcriptions
+├── evaluation/
+│   ├── synthesize.py               # Run models on benchmark set
+│   ├── acoustic_metrics.py         # PIER, F0 RMSE, MCD
+│   ├── tpi.py                      # Transliteration Penalty Index
+│   └── human_eval/                 # MOS + SPN collection setup
+├── tests/
+└── results/                        # Per-model outputs and analysis
+```
+
+---
+
+## Quickstart
+
+```bash
+git clone https://github.com/gprachi28/HinglishTTS.git
+cd HinglishTTS
+python3 -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
 
-# Generate code-switched sentences
+# Generate benchmark test set
 python data/codeswitching.py --num_sentences 5000
 
-# Test G2P pipeline
-python normalization/g2p.py
-
-# Run preprocessing (streaming — no full download needed)
-python data/preprocess_streaming.py \
-    --output_dir data/processed \
-    --max_samples 1000
-```
-
----
-
-## 📊 Results
-
-| System | MOS ↑ | MCD ↓ | RTF (GPU) ↑ |
-|---|---|---|---|
-| English-only baseline | - | - | - |
-| Hindi-only baseline | - | - | - |
-| **Hinglish-TTS (ours)** | **TBD** | **TBD** | **TBD** |
-
-*Results will be updated upon completion of evaluation.*
-
----
-
-## 🗂️ Project Structure
-```
-hinglish-tts/
-├── data/               # Download and preprocessing scripts
-├── normalization/      # Text normalization and G2P pipeline
-├── training/           # Model training configuration
-├── evaluation/         # Objective and subjective evaluation
-├── serving/            # Gradio demo and Docker deployment
-└── tests/              # Unit tests
-
----
-
-## 🔧 Development
-```bash
-# Install pre-commit hooks
-pip install pre-commit
-pre-commit install
-
 # Run tests
-pytest tests/ -v --cov=. --cov-report=term-missing
-
-# Format code
-black . && isort .
+make test
 ```
 
 ---
 
-## 📝 Citation
+## Results
 
-If you use this work, please cite:
+*Evaluation in progress.*
+
+| Model | MOS ↑ | SPN ↑ | PIER ↓ | TPI ↓ | H-Index ↑ |
+|---|---|---|---|---|---|
+| Qwen3-TTS | — | — | — | — | — |
+| CosyVoice 2 | — | — | — | — | — |
+| XTTS v2 | — | — | — | — | — |
+| Fish-Speech 1.5 | — | — | — | — | — |
+
+---
+
+## Development
+
+```bash
+make install    # create venv + install dependencies
+make test       # run test suite with coverage
+make lint       # flake8
+make format     # black + isort
+make data       # generate 5000 benchmark sentences
+```
+
+---
+
+## Citation
+
 ```bibtex
-@misc{govalkar2025hinglish,
+@misc{govalkar2026hinglishbench,
   author = {Govalkar, Prachi},
-  title  = {Hinglish TTS: Code-Switched Hindi-English Speech Synthesis},
-  year   = {2025},
-  url    = {https://github.com/gprachi28/hinglishtts}
+  title  = {HinglishTTS-Bench: Evaluating Code-Switched Speech Synthesis Across Scripts and Switch Patterns},
+  year   = {2026},
+  url    = {https://github.com/gprachi28/HinglishTTS}
 }
 ```
+
