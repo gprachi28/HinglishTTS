@@ -111,6 +111,8 @@ CS-07 (Intraword) sentences are structurally short (~5 tokens) by nature — e.g
 
 #### Length as a Metric Confounder
 
+A **confounder** is a variable that affects your results but isn't what you're trying to study — it gets in the way of the measurement you actually care about. Here, sentence length is a confounder: if CS-07 sentences are always short and CS-04 sentences are always long, a difference in scores could be caused by length, not by the switching pattern.
+
 Sentence length affects some metrics and must be controlled:
 
 | Metric | Length effect | How to handle |
