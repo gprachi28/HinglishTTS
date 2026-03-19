@@ -12,10 +12,17 @@ __pycache__/
 *.pyc
 .env
 venv/
+.venv/
 *.egg-info/
 
 # Notebooks
 .ipynb_checkpoints/
+
+# macOS
+.DS_Store
+
+# Personal
+READMEpersonal.md
 
 # IDE
 .vscode/
