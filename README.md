@@ -103,6 +103,25 @@ TPI interpretation:
 
 Quality controlled by **Code Mixing Index (CMI)**: 0.1 ≤ CMI ≤ 0.7
 
+### Sentence Length Design
+
+The full 5,000-sentence corpus is unconstrained in length (minimum 4 tokens). The **golden set** (300 sentences used for human evaluation) is filtered to **6–12 tokens** to keep evaluation consistent and reduce cognitive load for raters.
+
+CS-07 (Intraword) sentences are structurally short (~5 tokens) by nature — e.g. "Usne mujhe unfriend kar diya" — and are allowed a relaxed lower bound of 5 tokens in the golden set.
+
+#### Length as a Metric Confounder
+
+Sentence length affects some metrics and must be controlled:
+
+| Metric | Length effect | How to handle |
+|---|---|---|
+| **PIER** | Multi-switch sentences have more evaluation points | Normalize to *per switch point*, not per sentence |
+| **MCD** | Longer audio → higher absolute distortion | Always compute *per frame* (standard practice) |
+| **H-Index** | Short CS-07 sentences (~1 Hindi token) give unstable estimates | Weight by Hindi token count; report confidence intervals |
+| **MOS / TPI** | Long sentences introduce variation unrelated to switch quality | Constrain golden set to 6–12 tokens |
+| **Boundary F0 RMSE** | Local ±100ms window, unaffected by total length | No adjustment needed |
+| **SPN** | 2-second clip centered on boundary, unaffected by total length | No adjustment needed |
+
 ---
 
 ## Project Structure
