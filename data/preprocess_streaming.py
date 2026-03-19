@@ -121,10 +121,9 @@ def process_ljspeech_streaming(output_dir: Path, max_samples: int) -> None:
 
     logger.info("Loading LJSpeech in streaming mode...")
     dataset = load_dataset(
-        "keithito/lj_speech",
-        split="train",
-        streaming=True,
-        trust_remote_code=True,
+    "lj_speech",
+    split="train",
+    streaming=True,
     )
 
     processed, skipped = 0, 0
