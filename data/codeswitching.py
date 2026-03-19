@@ -221,7 +221,42 @@ EN_NP_TECH = [
     en("API"), en("deployment"), en("script"),
 ]
 
-EN_NP_ALL = EN_NP_WORK + EN_NP_EVERYDAY + EN_NP_TECH
+EN_NP_EDUCATION = [
+    en("class"), en("assignment"), en("exam"),
+    en("semester"), en("lecture"), en("internship"),
+    en("project"), en("presentation"), en("campus"),
+    en("college"), en("course"), en("degree"),
+    en("scholarship"), en("tuition"), en("syllabus"),
+]
+
+EN_NP_ENTERTAINMENT = [
+    en("movie"), en("series"), en("episode"),
+    en("Netflix"), en("concert"), en("show"),
+    en("reel"), en("podcast"), en("playlist"),
+    en("trailer"), en("review"), en("ticket"),
+    en("stream"), en("channel"), en("vlog"),
+]
+
+EN_NP_SOCIAL = [
+    en("post"), en("story"), en("comment"),
+    en("like"), en("follow"), en("vibe"),
+    en("selfie"), en("reel"), en("caption"),
+    en("group"), en("chat"), en("status"),
+    en("meme"), en("feed"), en("profile"),
+]
+
+EN_NP_FOOD_LIFESTYLE = [
+    en("burger"), en("pizza"), en("cafe"),
+    en("brunch"), en("smoothie"), en("salad"),
+    en("cheat day"), en("meal prep"), en("recipe"),
+    en("diet"), en("detox"), en("snack"),
+    en("dessert"), en("menu"), en("takeaway"),
+]
+
+EN_NP_ALL = EN_NP_WORK + EN_NP_EVERYDAY + EN_NP_TECH + EN_NP_EDUCATION + EN_NP_ENTERTAINMENT + EN_NP_SOCIAL + EN_NP_FOOD_LIFESTYLE
+
+# General pool — excludes professional/work nouns
+EN_NP_GENERAL = EN_NP_EVERYDAY + EN_NP_TECH + EN_NP_EDUCATION + EN_NP_ENTERTAINMENT + EN_NP_SOCIAL + EN_NP_FOOD_LIFESTYLE
 
 # Countable only — for "I have a ..." templates
 EN_NP_COUNTABLE = [
@@ -230,6 +265,8 @@ EN_NP_COUNTABLE = [
     en("client call"), en("team standup"), en("proposal"),
     en("idea"), en("plan"), en("problem"),
     en("solution"), en("trip"), en("delivery"),
+    en("exam"), en("assignment"), en("class"),
+    en("concert"), en("show"), en("ticket"),
 ]
 
 # ── English verbs ─────────────────────────────────────────────
@@ -249,7 +286,14 @@ EN_VERBS_EVERYDAY = [
     en("charge"), en("connect"), en("upload"),
 ]
 
-EN_VERBS_ALL = EN_VERBS_WORK + EN_VERBS_EVERYDAY
+EN_VERBS_SOCIAL = [
+    en("post"), en("share"), en("like"),
+    en("follow"), en("unfollow"), en("comment"),
+    en("stream"), en("watch"), en("subscribe"),
+    en("google"), en("search"), en("save"),
+]
+
+EN_VERBS_ALL = EN_VERBS_WORK + EN_VERBS_EVERYDAY + EN_VERBS_SOCIAL
 
 # Quick physical/task verbs that work with "karke aata hoon"
 # (implies "I'll go do X and come back" — excludes abstract delegation verbs)
@@ -282,25 +326,36 @@ def build_hindi_matrix_english_np() -> List[TaggedToken]:
         lambda: hi("Aaj ka") + r(EN_NP_WORK) + hi("bahut lamba tha"),
         lambda: hi("Kal ka") + r(EN_NP_WORK) + r(HI_TIME_SHORT) + hi("hai"),
         lambda: hi("main") + r(EN_NP_WORK) + hi("pe kaam kar raha hoon"),
-        lambda: hi("Yeh") + r(EN_NP_WORK) + hi("bahut") + r(EN_ADJECTIVES) + hi("lag raha hai"),
         lambda: hi("main") + r(EN_NP_WORK) + r(HI_TIME_SHORT) + hi("tak bhej dunga"),
-        lambda: hi("Is") + r(EN_NP_WORK) + hi("ki wajah se late ho gaya"),
-        lambda: hi("Tumhara") + r(EN_NP_WORK) + hi("mujhe mil gaya"),
         lambda: hi("Aaj ka") + r(EN_NP_WORK) + hi("cancel ho gaya"),
         lambda: hi("Mera") + r(EN_NP_WORK) + hi("abhi bhi pending hai"),
 
-        # Everyday context
-        lambda: r(HI_SUBJECTS_SOCIAL) + r(EN_NP_EVERYDAY) + hi("order kar diya"),
-        lambda: hi("Tera") + r(EN_NP_EVERYDAY) + hi("kahan hai"),
-        lambda: hi("Yeh") + r(EN_NP_EVERYDAY) + hi("ka kya plan hai"),
-        lambda: hi("Mera") + r(EN_NP_EVERYDAY) + hi("khatam ho gaya"),
-        lambda: hi("Aaj raat") + r(EN_NP_EVERYDAY) + hi("ka plan kya hai"),
-        lambda: r(HI_SUBJECTS_SOCIAL) + r(EN_NP_EVERYDAY) + hi("lena bhool gaya"),
+        # General context — uses broader pool
+        lambda: hi("Yeh") + r(EN_NP_GENERAL) + hi("bahut") + r(EN_ADJECTIVES) + hi("lag raha hai"),
+        lambda: hi("Is") + r(EN_NP_GENERAL) + hi("ki wajah se late ho gaya"),
+        lambda: hi("Tumhara") + r(EN_NP_GENERAL) + hi("mujhe mil gaya"),
+        lambda: hi("Mera") + r(EN_NP_GENERAL) + hi("khatam ho gaya"),
+        lambda: hi("Yeh") + r(EN_NP_GENERAL) + hi("ka kya plan hai"),
+        lambda: r(HI_SUBJECTS_SOCIAL) + r(EN_NP_GENERAL) + hi("lena bhool gaya"),
+        lambda: hi("Aaj raat") + r(EN_NP_GENERAL) + hi("ka plan kya hai"),
+
+        # Education context
+        lambda: hi("Mera") + r(EN_NP_EDUCATION) + r(HI_TIME_SHORT) + hi("hai"),
+        lambda: hi("Is") + r(EN_NP_EDUCATION) + hi("ke liye bilkul taiyar nahi hoon"),
+        lambda: r(HI_SUBJECTS_SOCIAL) + r(EN_NP_EDUCATION) + hi("mein bahut achha hai"),
+
+        # Entertainment context
+        lambda: hi("Yeh") + r(EN_NP_ENTERTAINMENT) + r(HI_INTENSIFIERS) + en("good") + hi("tha"),
+        lambda: r(HI_SUBJECTS_SOCIAL) + r(EN_NP_ENTERTAINMENT) + hi("dekha kya"),
+        lambda: hi("Naya") + r(EN_NP_ENTERTAINMENT) + hi("aa gaya hai"),
+
+        # Social media context
+        lambda: hi("Tera") + r(EN_NP_SOCIAL) + r(HI_INTENSIFIERS) + en("viral") + hi("ho gaya"),
+        lambda: r(HI_SUBJECTS_SOCIAL) + r(EN_NP_SOCIAL) + hi("dekh ke") + r(HI_INTENSIFIERS) + hi("khush ho gaya"),
 
         # Tech context
         lambda: hi("Mera") + r(EN_NP_TECH) + hi("kaam nahi kar raha"),
         lambda: hi("Is") + r(EN_NP_TECH) + hi("mein problem aa rahi hai"),
-        lambda: hi("main") + r(EN_NP_TECH) + hi("update karna chahta hoon"),
         lambda: hi("Naya") + r(EN_NP_TECH) + hi("aa gaya hai"),
     ]
     return r(patterns)()
@@ -310,15 +365,16 @@ def build_hindi_matrix_english_verb() -> List[TaggedToken]:
     patterns = [
         lambda: hi("Pehle") + r(EN_VERBS_ALL) + hi("karo, phir baat karte hain"),
         lambda: hi("Please yeh") + r(EN_VERBS_ALL) + hi("mat karo") + r(HI_TIME_SHORT),
-        lambda: hi("main") + hi("yeh") + r(EN_VERBS_WORK) + hi("karna chahta hoon"),
+        lambda: hi("main") + hi("yeh") + r(EN_VERBS_ALL) + hi("karna chahta hoon"),
         lambda: hi("Isko") + r(EN_VERBS_ALL) + hi("karna hai") + r(HI_TIME),
         lambda: hi("Jaldi se") + r(EN_VERBS_ALL) + hi("kar do"),
-        lambda: hi("main") + hi("khud") + r(EN_VERBS_WORK) + hi("kar lunga"),
+        lambda: hi("main") + hi("khud") + r(EN_VERBS_ALL) + hi("kar lunga"),
         lambda: hi("Yeh") + r(EN_VERBS_ALL) + hi("karna zaroori hai"),
         lambda: hi("main") + hi("pehle") + r(EN_VERBS_QUICK_TASK) + hi("karke aata hoon"),
-        lambda: hi("Unhe bolo ki") + r(EN_VERBS_WORK) + hi("kar dein"),
         lambda: hi("Kya tum") + r(EN_VERBS_ALL) + hi("kar sakte ho"),
-        lambda: hi("Yeh") + r(EN_VERBS_EVERYDAY) + hi("karna itna mushkil nahi hai"),
+        lambda: hi("Yeh") + r(EN_VERBS_EVERYDAY + EN_VERBS_SOCIAL) + hi("karna itna mushkil nahi hai"),
+        lambda: hi("Usne") + r(EN_VERBS_SOCIAL) + hi("kar diya, ab kya karein"),
+        lambda: hi("main") + r(EN_VERBS_SOCIAL) + hi("karta hoon, tum dekho"),
     ]
     return r(patterns)()
 
@@ -342,8 +398,8 @@ def build_english_matrix_hindi_np() -> List[TaggedToken]:
 def build_inter_sentential() -> List[TaggedToken]:
     patterns = [
         lambda: r(HI_SUBJECTS_FIRST_PERSON) + hi("soch raha tha.") + en("The") + r(EN_NP_ALL) + en("is really") + r(EN_ADJECTIVES),
-        lambda: hi("Kal meeting hai.") + en("Make sure you") + r(EN_VERBS_ALL) + en("the") + r(EN_NP_WORK),
-        lambda: hi("Yeh kaam ho gaya.") + en("Now let's focus on the") + r(EN_NP_WORK),
+        lambda: hi("Kal meeting hai.") + en("Make sure you") + r(EN_VERBS_ALL) + en("the") + r(EN_NP_ALL),
+        lambda: hi("Yeh kaam ho gaya.") + en("Now let's focus on the") + r(EN_NP_ALL),
         # FIX: r(HI_EMOTIONS) already contains correctly tagged tokens
         lambda: r(HI_EMOTIONS) + en(". The") + r(EN_NP_EVERYDAY) + en("was really") + r(EN_ADJECTIVES),
         lambda: hi("Bahut thak gaya hoon.") + en("This") + r(EN_NP_EVERYDAY) + en("is not helping"),
