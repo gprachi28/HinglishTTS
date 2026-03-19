@@ -10,9 +10,12 @@ split: en("word") + hi("rest"). Never put English words inside hi().
 
 import argparse
 import csv
+import json
 import logging
 import random
+from collections import Counter
 from dataclasses import dataclass
+from datetime import datetime, timezone
 from enum import Enum
 from pathlib import Path
 from typing import List
@@ -315,6 +318,41 @@ EN_ADJECTIVES = [
     en("valid"), en("optional"),
 ]
 
+# ── Numerical / Entity tokens (CS-06) ─────────────────────────
+EN_DAYS = [
+    en("Monday"), en("Tuesday"), en("Wednesday"), en("Thursday"),
+    en("Friday"), en("Saturday"), en("Sunday"),
+    en("Monday morning"), en("Friday evening"),
+    en("this Sunday"), en("next Monday"), en("next Friday"),
+]
+
+EN_TIMES = [
+    en("9 AM"), en("10 AM"), en("11 AM"), en("12 PM"),
+    en("1 PM"), en("2 PM"), en("3 PM"), en("4 PM"), en("5 PM"), en("6 PM"),
+    en("9:30 AM"), en("10:30 AM"), en("2:30 PM"), en("4:30 PM"),
+]
+
+EN_DATES = [
+    en("1st"), en("5th"), en("10th"), en("15th"), en("20th"), en("25th"), en("30th"),
+    en("March 15"), en("April 1"), en("end of month"), en("end of week"),
+]
+
+EN_ENTITIES = [
+    en("Google Meet"), en("Zoom"), en("WhatsApp"), en("Teams"),
+    en("Gmail"), en("Slack"), en("Instagram"), en("LinkedIn"),
+    en("Google Drive"), en("Notion"), en("Jira"),
+]
+
+# ── Intraword verb stems (CS-07) ──────────────────────────────
+# English verb stems that take Hindi grammatical suffixes
+EN_INTRAWORD_VERBS = [
+    en("unfriend"), en("unfollow"), en("block"), en("mute"),
+    en("screenshot"), en("forward"), en("react"), en("tag"),
+    en("edit"), en("crop"), en("zoom"), en("scroll"),
+    en("record"), en("upload"), en("download"), en("share"),
+    en("save"), en("like"), en("repost"), en("reply"),
+]
+
 
 # ─────────────────────────────────────────────────────────────
 # SENTENCE BUILDERS
@@ -491,14 +529,85 @@ def build_emotional_expression() -> List[TaggedToken]:
     return r(patterns)()
 
 
+def build_numerical_entity() -> List[TaggedToken]:
+    """CS-06: Numerical/Entity — dates, times, named entities mixed into Hindi."""
+    patterns = [
+        lambda: r(EN_NP_WORK) + r(EN_DAYS) + hi("ko") + r(EN_TIMES) + hi("par hai"),
+        lambda: r(EN_DAYS) + hi("ko") + r(EN_TIMES) + hi("tak submit karna hai"),
+        lambda: hi("Kal") + r(EN_TIMES) + hi("baje") + en("call") + hi("hai"),
+        lambda: hi("Is") + r(EN_DAYS) + hi("ko chhutti hai kya"),
+        lambda: r(EN_DATES) + hi("tak payment kar dena"),
+        lambda: hi("Aaj") + r(EN_DATES) + hi("tarikh hai, kal deadline hai"),
+        lambda: r(EN_ENTITIES) + hi("pe") + r(EN_TIMES) + hi("par milte hain"),
+        lambda: hi("main") + r(EN_ENTITIES) + hi("pe") + r(EN_TIMES) + hi("available hoon"),
+        lambda: en("Next") + r(EN_DAYS) + hi("ko") + en("interview") + hi("hai"),
+        lambda: hi("yeh") + r(EN_ENTITIES) + hi("wala") + r(EN_NP_WORK) + r(HI_TIME_SHORT) + hi("tha"),
+        lambda: r(EN_DAYS) + hi("ko") + r(EN_TIMES) + hi("se") + r(EN_TIMES) + hi("wala slot available hai"),
+        lambda: r(EN_DATES) + hi("din bacha hai deadline tak"),
+        lambda: hi("Aaj ka") + r(EN_ENTITIES) + hi("wala") + r(EN_NP_WORK) + r(HI_TIME_SHORT) + hi("shift ho gaya"),
+        lambda: r(EN_NP_WORK) + r(EN_DAYS) + hi("ko") + r(EN_DATES) + hi("ko reschedule ho gaya"),
+    ]
+    return r(patterns)()
+
+
+def build_intraword() -> List[TaggedToken]:
+    """CS-07: Intraword — English verb stems + Hindi morphological suffixes."""
+    patterns = [
+        lambda: hi("Usne mujhe") + r(EN_INTRAWORD_VERBS) + hi("kar diya"),
+        lambda: hi("Maine use") + r(EN_INTRAWORD_VERBS) + hi("kar diya"),
+        lambda: hi("main use") + r(EN_INTRAWORD_VERBS) + hi("kar dunga"),
+        lambda: hi("Tune use") + r(EN_INTRAWORD_VERBS) + hi("kiya kya"),
+        lambda: hi("Yaar, use") + r(EN_INTRAWORD_VERBS) + hi("kar de na"),
+        lambda: hi("Ab main use") + r(EN_INTRAWORD_VERBS) + hi("kar lunga"),
+        lambda: hi("Unhone sab ko") + r(EN_INTRAWORD_VERBS) + hi("kar liya"),
+        lambda: hi("Pehle") + r(EN_INTRAWORD_VERBS) + hi("karo, phir baat karna"),
+        lambda: hi("Kya tune use") + r(EN_INTRAWORD_VERBS) + hi("kar diya"),
+        lambda: r(EN_INTRAWORD_VERBS) + hi("karna padega usse"),
+        lambda: hi("Uski post") + r(EN_INTRAWORD_VERBS) + hi("kar liya"),
+        lambda: hi("Tune mujhe") + r(EN_INTRAWORD_VERBS) + hi("kiya kya"),
+    ]
+    return r(patterns)()
+
+
 BUILDERS = {
-    "hindi_matrix_english_np":   build_hindi_matrix_english_np,
-    "hindi_matrix_english_verb": build_hindi_matrix_english_verb,
-    "english_matrix_hindi_np":   build_english_matrix_hindi_np,
-    "inter_sentential":          build_inter_sentential,
-    "tag_switching":             build_tag_switching,
-    "everyday_conversation":     build_everyday_conversation,
-    "emotional_expression":      build_emotional_expression,
+    "hindi_matrix_english_np":   build_hindi_matrix_english_np,   # CS-01
+    "hindi_matrix_english_verb": build_hindi_matrix_english_verb,  # CS-02
+    "tag_switching":             build_tag_switching,               # CS-03
+    "inter_sentential":          build_inter_sentential,            # CS-04
+    "english_matrix_hindi_np":   build_english_matrix_hindi_np,    # CS-04
+    "everyday_conversation":     build_everyday_conversation,       # CS-05
+    "emotional_expression":      build_emotional_expression,        # CS-05
+    "numerical_entity":          build_numerical_entity,            # CS-06
+    "intraword":                 build_intraword,                   # CS-07
+}
+
+# Benchmark taxonomy alignment
+BUILDER_CS_PATTERN = {
+    "hindi_matrix_english_np":   "CS-01",
+    "hindi_matrix_english_verb": "CS-02",
+    "tag_switching":             "CS-03",
+    "inter_sentential":          "CS-04",
+    "english_matrix_hindi_np":   "CS-04",
+    "everyday_conversation":     "CS-05",
+    "emotional_expression":      "CS-05",
+    "numerical_entity":          "CS-06",
+    "intraword":                 "CS-07",
+}
+
+# Target sentence counts per builder for stratified generation (sums to 5000)
+# Balanced by CS benchmark pattern (~800 per CS-01..06, 200 for CS-07).
+# CS-04 and CS-05 each have 2 builders — split their 800 target equally.
+# CS-07 (intraword) is linguistically rare — smaller target is defensible.
+DEFAULT_BUILDER_TARGETS = {
+    "hindi_matrix_english_np":   800,  # CS-01
+    "hindi_matrix_english_verb": 800,  # CS-02
+    "tag_switching":             800,  # CS-03
+    "inter_sentential":          400,  # CS-04 (shared)
+    "english_matrix_hindi_np":   400,  # CS-04 (shared)
+    "everyday_conversation":     400,  # CS-05 (shared)
+    "emotional_expression":      400,  # CS-05 (shared)
+    "numerical_entity":          800,  # CS-06
+    "intraword":                 200,  # CS-07
 }
 
 
@@ -507,29 +616,68 @@ def generate_sentences(
     min_cmi: float = 0.1,
     max_cmi: float = 0.7,
     seed: int = 42,
+    stratify: bool = True,
 ) -> List[SwitchPoint]:
     random.seed(seed)
     results = []
     attempts = 0
-    max_attempts = num_sentences * 10
+    max_attempts = num_sentences * 20
 
-    while len(results) < num_sentences and attempts < max_attempts:
-        attempts += 1
-        pattern_name = r(list(BUILDERS.keys()))
-        try:
-            tokens = BUILDERS[pattern_name]()
-        except Exception as e:
-            logger.warning(f"Builder failed: {e}")
-            continue
+    if stratify:
+        # Scale DEFAULT_BUILDER_TARGETS proportionally to num_sentences
+        total_default = sum(DEFAULT_BUILDER_TARGETS.values())
+        scale = num_sentences / total_default
+        builder_targets = {
+            name: max(1, round(count * scale))
+            for name, count in DEFAULT_BUILDER_TARGETS.items()
+        }
+        # Correct rounding drift
+        diff = num_sentences - sum(builder_targets.values())
+        if diff != 0:
+            adjust_key = max(
+                (k for k in builder_targets if k != "intraword"),
+                key=lambda k: builder_targets[k],
+            )
+            builder_targets[adjust_key] += diff
 
-        if len(tokens) < 4:
-            continue
+        builder_counts: dict = {name: 0 for name in BUILDERS}
 
-        sp = SwitchPoint(pattern=pattern_name, tokens=tokens)
-        if not (min_cmi <= sp.cmi <= max_cmi):
-            continue
-
-        results.append(sp)
+        while len(results) < num_sentences and attempts < max_attempts:
+            attempts += 1
+            eligible = [
+                name for name in BUILDERS
+                if builder_counts[name] < builder_targets[name]
+            ]
+            if not eligible:
+                break
+            pattern_name = r(eligible)
+            try:
+                tokens = BUILDERS[pattern_name]()
+            except Exception as e:
+                logger.warning(f"Builder failed: {e}")
+                continue
+            if len(tokens) < 4:
+                continue
+            sp = SwitchPoint(pattern=pattern_name, tokens=tokens)
+            if not (min_cmi <= sp.cmi <= max_cmi):
+                continue
+            results.append(sp)
+            builder_counts[pattern_name] += 1
+    else:
+        while len(results) < num_sentences and attempts < max_attempts:
+            attempts += 1
+            pattern_name = r(list(BUILDERS.keys()))
+            try:
+                tokens = BUILDERS[pattern_name]()
+            except Exception as e:
+                logger.warning(f"Builder failed: {e}")
+                continue
+            if len(tokens) < 4:
+                continue
+            sp = SwitchPoint(pattern=pattern_name, tokens=tokens)
+            if not (min_cmi <= sp.cmi <= max_cmi):
+                continue
+            results.append(sp)
 
     logger.info(f"Generated {len(results)} sentences in {attempts} attempts")
     return results
@@ -551,6 +699,48 @@ def save_sentences(sentences: List[SwitchPoint], output_path: Path) -> None:
     logger.info(f"Saved {len(sentences)} sentences to {output_path}")
 
 
+def save_metadata(sentences: List[SwitchPoint], output_path: Path) -> None:
+    """Write a metadata JSON alongside the sentences CSV."""
+    cmis = [sp.cmi for sp in sentences]
+    switches = [sp.num_switches for sp in sentences]
+    pattern_counts = Counter(sp.pattern for sp in sentences)
+    cs_pattern_counts = Counter(
+        BUILDER_CS_PATTERN.get(sp.pattern, "unknown") for sp in sentences
+    )
+
+    cmi_buckets = {"low (0.1-0.3)": 0, "mid (0.3-0.5)": 0, "high (0.5-0.7)": 0}
+    for c in cmis:
+        if c < 0.3:
+            cmi_buckets["low (0.1-0.3)"] += 1
+        elif c < 0.5:
+            cmi_buckets["mid (0.3-0.5)"] += 1
+        else:
+            cmi_buckets["high (0.5-0.7)"] += 1
+
+    metadata = {
+        "generated_at": datetime.now(timezone.utc).isoformat(),
+        "total_sentences": len(sentences),
+        "pattern_counts": dict(sorted(pattern_counts.items(), key=lambda x: -x[1])),
+        "cs_pattern_counts": dict(sorted(cs_pattern_counts.items())),
+        "cmi_buckets": cmi_buckets,
+        "cmi_stats": {
+            "mean": round(sum(cmis) / len(cmis), 3),
+            "min": round(min(cmis), 3),
+            "max": round(max(cmis), 3),
+        },
+        "switch_stats": {
+            "mean": round(sum(switches) / len(switches), 2),
+            "min": min(switches),
+            "max": max(switches),
+        },
+    }
+
+    meta_path = output_path.parent / "metadata.json"
+    with open(meta_path, "w", encoding="utf-8") as f:
+        json.dump(metadata, f, indent=2)
+    logger.info(f"Saved metadata to {meta_path}")
+
+
 def print_samples(sentences: List[SwitchPoint], n: int = 15) -> None:
     print("\n" + "="*60)
     print("SAMPLE HINGLISH SENTENCES")
@@ -562,10 +752,11 @@ def print_samples(sentences: List[SwitchPoint], n: int = 15) -> None:
     print("="*60)
 
 
-def main(output_path: str, num_sentences: int, seed: int) -> None:
-    sentences = generate_sentences(num_sentences, seed=seed)
+def main(output_path: str, num_sentences: int, seed: int, stratify: bool) -> None:
+    sentences = generate_sentences(num_sentences, seed=seed, stratify=stratify)
     print_samples(sentences)
     save_sentences(sentences, Path(output_path))
+    save_metadata(sentences, Path(output_path))
 
 
 if __name__ == "__main__":
@@ -573,5 +764,7 @@ if __name__ == "__main__":
     parser.add_argument("--output_path",   type=str, default="data/codeswitched/sentences.csv")
     parser.add_argument("--num_sentences", type=int, default=5000)
     parser.add_argument("--seed",          type=int, default=42)
+    parser.add_argument("--no-stratify",   action="store_true",
+                        help="Disable stratified sampling (default: stratified)")
     args = parser.parse_args()
-    main(args.output_path, args.num_sentences, args.seed)
+    main(args.output_path, args.num_sentences, args.seed, stratify=not args.no_stratify)

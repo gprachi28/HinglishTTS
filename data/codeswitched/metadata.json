@@ -1,0 +1,39 @@
+{
+  "generated_at": "2026-03-19T21:08:57.304916+00:00",
+  "total_sentences": 5000,
+  "pattern_counts": {
+    "hindi_matrix_english_verb": 800,
+    "hindi_matrix_english_np": 800,
+    "tag_switching": 800,
+    "numerical_entity": 800,
+    "inter_sentential": 400,
+    "emotional_expression": 400,
+    "everyday_conversation": 400,
+    "english_matrix_hindi_np": 400,
+    "intraword": 200
+  },
+  "cs_pattern_counts": {
+    "CS-01": 800,
+    "CS-02": 800,
+    "CS-03": 800,
+    "CS-04": 800,
+    "CS-05": 800,
+    "CS-06": 800,
+    "CS-07": 200
+  },
+  "cmi_buckets": {
+    "low (0.1-0.3)": 3296,
+    "mid (0.3-0.5)": 1460,
+    "high (0.5-0.7)": 244
+  },
+  "cmi_stats": {
+    "mean": 0.259,
+    "min": 0.111,
+    "max": 0.5
+  },
+  "switch_stats": {
+    "mean": 2.19,
+    "min": 1,
+    "max": 5
+  }
+}
