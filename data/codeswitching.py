@@ -1,12 +1,11 @@
 # data/codeswitching.py
 """
-Generate Hinglish sentences with word-level language tags assigned
-AT GENERATION TIME — not detected after the fact since post-hoc
-language detection is fundamentally unreliable for ambiguous words
+Generate Hinglish (Hindi-English) code-switched sentences for TTS.
+Linguistically motivated using Equivalence Constraint theory.
+All tags assigned at generation time — no post-hoc detection.
 
-This avoids ambiguity with words like:
-- 'is'       → Hindi (इस) or English verb?
-- 'dunga'    → Hindi future tense, not in lookup
+TAGGING RULE: Any English loanword inside a Hindi phrase must be
+split: en("word") + hi("rest"). Never put English words inside hi().
 """
 
 import argparse
@@ -29,8 +28,6 @@ class Lang(str, Enum):
 
 @dataclass
 class TaggedToken:
-    """A word with its language tag assigned at generation time."""
-
     word: str
     lang: Lang
 
@@ -54,25 +51,18 @@ class SwitchPoint:
             return 0.0
         en = sum(1 for t in self.tokens if t.lang == Lang.EN)
         hi = sum(1 for t in self.tokens if t.lang == Lang.HI)
-        matrix = max(en, hi)
-        return 1.0 - (matrix / len(self.tokens))
+        return 1.0 - (max(en, hi) / len(self.tokens))
 
     @property
     def num_switches(self) -> int:
         switches = 0
         for i in range(1, len(self.tokens)):
-            if self.tokens[i].lang != self.tokens[i - 1].lang:
+            if self.tokens[i].lang != self.tokens[i-1].lang:
                 switches += 1
         return switches
 
 
-# ─────────────────────────────────────────────────────────────
-# VOCABULARY BANKS — each word pre-tagged with its language
-# ─────────────────────────────────────────────────────────────
-
-
 def hi(*words) -> List[TaggedToken]:
-    """Create Hindi tagged tokens."""
     result = []
     for word in words:
         result.extend(TaggedToken(w, Lang.HI) for w in word.split())
@@ -80,319 +70,379 @@ def hi(*words) -> List[TaggedToken]:
 
 
 def en(*words) -> List[TaggedToken]:
-    """Create English tagged tokens."""
     result = []
     for word in words:
         result.extend(TaggedToken(w, Lang.EN) for w in word.split())
     return result
 
 
-# Hindi vocabulary banks — pre-tagged as HI
+def r(bank): return random.choice(bank)
+
+
+# ─────────────────────────────────────────────────────────────
+# VOCABULARY BANKS
+# All English loanwords split out into en() — never inside hi()
+# ─────────────────────────────────────────────────────────────
+
+# ── Hindi subjects ───────────────────────────────────────────
 HI_SUBJECTS = [
-    hi("main"),
-    hi("hum"),
-    hi("tum"),
-    hi("aap"),
-    hi("woh"),
-    hi("mujhe"),
-    hi("unhe"),
-    hi("inhe"),
-    hi("tumhara"),
+    hi("main"), hi("hum"), hi("tum"), hi("aap"),
+    hi("woh"), hi("mujhe"), hi("unhe"), hi("inhe"),
     hi("humein"),
 ]
 
-HI_VERBS = [
-    hi("karna hai"),
-    hi("karo"),
-    hi("kar diya"),
-    hi("ho gaya"),
-    hi("dekh lena"),
-    hi("bata do"),
-    hi("samajh gaya"),
-    hi("bol diya"),
-    hi("sun lo"),
-    hi("de do"),
-    hi("le lena"),
-    hi("aa jao"),
-    hi("kar dunga"),
-    hi("kar dungi"),
-    hi("kar lena"),
-    hi("bhool gaya"),
-    hi("finish kar dunga"),
-    hi("koshish kar raha hoon"),
+HI_SUBJECTS_SOCIAL = [
+    hi("main"), hi("hum"), hi("tum"), hi("aap"),
+    hi("meri behen"), hi("mera bhai"),
+    hi("mera dost"), hi("meri friend"),
 ]
 
-HI_ADJECTIVES = [
-    hi("bahut"),
-    hi("thoda"),
-    hi("zyada"),
-    hi("bilkul"),
-    hi("ekdum"),
-    hi("achha"),
-    hi("mushkil"),
-    hi("aasaan"),
+HI_SUBJECTS_FIRST_PERSON = [
+    hi("main"), hi("hum"),
 ]
 
-HI_TIME = [
-    hi("kal"),
-    hi("aaj"),
-    hi("parso"),
-    hi("abhi"),
-    hi("baad mein"),
-    hi("pehle"),
-    hi("is hafte"),
-    hi("agli baar"),
-    hi("subah"),
-    hi("shaam ko"),
-    hi("raat ko"),
-    hi("kal tak"),
+# ── Hindi verbs ───────────────────────────────────────────────
+HI_VERBS_GENERAL = [
+    hi("kar diya"), hi("kar dunga"), hi("kar lena"),
+    hi("ho gaya"), hi("ho jaega"), hi("ho sakta hai"),
+    hi("dekh lena"), hi("dekh liya"),
+    hi("bata do"), hi("bata diya"),
+    hi("samajh gaya"), hi("samajh lo"),
+    hi("sun lo"), hi("sun liya"),
+    hi("de do"), hi("de diya"),
+    hi("le lena"), hi("le liya"),
+    hi("bhool gaya"), hi("yaad hai"),
+    hi("pata hai"), hi("pata nahi"),
+    hi("lag raha hai"), hi("lagta hai"),
+    hi("koshish karunga"),
+    # FIX: "try" is English
+    en("try") + hi("karta hoon"),
 ]
 
+HI_VERBS_FUTURE = [
+    hi("kar dunga"), hi("kar lenge"),
+    hi("ho jaega"), hi("mil jaega"),
+    hi("bata dunga"), hi("dekh lunga"),
+]
+
+# ── Hindi intensifiers ────────────────────────────────────────
+HI_INTENSIFIERS = [
+    hi("bahut"), hi("thoda"), hi("zyada"),
+    hi("bilkul"), hi("ekdum"), hi("kaafi"),
+    hi("itna"), hi("thodi si"), hi("bahut zyada"),
+]
+
+# ── Hindi adjectives — pure Hindi only ───────────────────────
+# FIX: "important", "interesting", "boring", "complicated" are English
+# Moved to EN_ADJECTIVES — do not put them in HI_ADJECTIVES
+HI_ADJECTIVES_PURE = [
+    hi("achha"), hi("bura"), hi("mushkil"),
+    hi("aasaan"), hi("ajeeb"), hi("sahi"),
+    hi("galat"), hi("seedha"),
+]
+
+# ── Hindi time expressions ────────────────────────────────────
+HI_TIME_SHORT = [
+    hi("kal"), hi("aaj"), hi("abhi"),
+    hi("parso"), hi("pehle"), hi("baad mein"),
+]
+
+HI_TIME_LONG = [
+    hi("is hafte"), hi("agli baar"), hi("pichhli baar"),
+    hi("aaj shaam ko"), hi("kal subah"),
+    hi("do din mein"), hi("thodi der mein"),
+    hi("raat ko"), hi("subah subah"),
+    hi("jaldi se"),
+]
+
+HI_TIME = HI_TIME_SHORT + HI_TIME_LONG
+
+# ── Hindi discourse markers ───────────────────────────────────
 HI_DISCOURSE = [
-    hi("yaar"),
-    hi("arre"),
-    hi("dekho"),
-    hi("suno"),
-    hi("acha"),
-    hi("theek hai"),
-    hi("matlab"),
-    hi("waise"),
-    hi("toh"),
+    hi("yaar"), hi("arre"), hi("dekho"),
+    hi("suno"), hi("acha"), hi("theek hai"),
+    hi("matlab"), hi("waise"), hi("toh"),
+    hi("haan"), hi("sach mein"),
+    hi("ek kaam karo"), hi("sun na"),
+    hi("bata na"),
 ]
 
-# Hindi sentence fragments — all pre-tagged
-HI_MATRIX_FRAGMENTS = [
-    hi("Yeh idea"),
-    hi("Yeh project"),
-    hi("Aaj ka"),
-    hi("Kal ka"),
-    hi("Is hafte ka"),
-    hi("Yeh kaam"),
-]
-
+# ── Hindi connectors ─────────────────────────────────────────
 HI_CONNECTORS = [
-    hi("ke baare mein baat karna chahta hoon"),
+    hi("ke baare mein baat karni hai"),
+    hi("ke liye kaam kar raha hoon"),
+    hi("pe dhyan dena"),
     hi("tak complete karna hai"),
-    hi("dekh raha tha"),
-    hi("bahut important hai"),
-    hi("pe kaam kar raha hoon"),
-    hi("submit karna bhool gaya"),
-    hi("bahut helpful tha"),
-    hi("bahut lamba tha"),
-    hi("bahut lamba hoga"),
+    hi("mein problem aa rahi hai"),
+    hi("ke baad free hoon"),
+    hi("ki wajah se late ho gaya"),
+    hi("ke saath koi issue hai"),
 ]
 
-# English vocabulary banks — pre-tagged as EN
-EN_NP = [
-    en("meeting"),
-    en("deadline"),
-    en("project"),
-    en("presentation"),
-    en("report"),
-    en("email"),
-    en("feedback"),
-    en("update"),
-    en("call"),
-    en("review"),
-    en("proposal"),
-    en("budget"),
-    en("timeline"),
-    en("team"),
-    en("phone"),
-    en("coffee"),
-    en("lunch"),
-    en("break"),
-    en("plan"),
-    en("idea"),
-    en("problem"),
-    en("solution"),
-    en("decision"),
+# ── Hindi emotional expressions ───────────────────────────────
+# FIX: "tension" and "stress" are English loanwords — split out
+HI_EMOTIONS = [
+    hi("mujhe bohot achha laga"),
+    hi("yeh sunke bura laga"),
+    hi("main khush hoon"),
+    hi("thak gaya hoon"),
+    # FIX: en("tension") + hi(...)
+    en("tension") + hi("ho rahi hai"),
+    hi("maza aa gaya"),
+    hi("pagal ho jaaunga"),
 ]
 
-EN_VERBS = [
-    en("cancel"),
-    en("postpone"),
-    en("reschedule"),
-    en("confirm"),
-    en("share"),
-    en("send"),
-    en("check"),
-    en("fix"),
-    en("manage"),
-    en("handle"),
-    en("discuss"),
-    en("finalize"),
-    en("approve"),
-    en("submit"),
-    en("review"),
+# ── English nouns — professional ──────────────────────────────
+EN_NP_WORK = [
+    en("meeting"), en("deadline"), en("project"),
+    en("presentation"), en("report"), en("email"),
+    en("feedback"), en("update"), en("follow-up"),
+    en("review"), en("proposal"), en("budget"),
+    en("timeline"), en("sprint"), en("roadmap"),
+    en("client call"), en("status update"),
+    en("pull request"), en("code review"),
+    en("team standup"), en("one-on-one"),
 ]
 
+EN_NP_EVERYDAY = [
+    en("phone"), en("coffee"), en("lunch"),
+    en("break"), en("weekend"), en("plan"),
+    en("idea"), en("problem"), en("solution"),
+    en("decision"), en("movie"), en("song"),
+    en("gym"), en("diet"), en("routine"),
+    en("party"), en("trip"), en("order"),
+    en("delivery"), en("subscription"), en("password"),
+]
+
+EN_NP_TECH = [
+    en("laptop"), en("charger"), en("wifi"),
+    en("app"), en("update"), en("bug"),
+    en("feature"), en("server"), en("database"),
+    en("API"), en("deployment"), en("script"),
+]
+
+EN_NP_ALL = EN_NP_WORK + EN_NP_EVERYDAY + EN_NP_TECH
+
+# Countable only — for "I have a ..." templates
+EN_NP_COUNTABLE = [
+    en("meeting"), en("call"), en("deadline"),
+    en("presentation"), en("review"), en("one-on-one"),
+    en("client call"), en("team standup"), en("proposal"),
+    en("idea"), en("plan"), en("problem"),
+    en("solution"), en("trip"), en("delivery"),
+]
+
+# ── English verbs ─────────────────────────────────────────────
+EN_VERBS_WORK = [
+    en("cancel"), en("postpone"), en("reschedule"),
+    en("confirm"), en("share"), en("send"),
+    en("check"), en("fix"), en("manage"),
+    en("handle"), en("discuss"), en("finalize"),
+    en("approve"), en("submit"), en("review"),
+    en("escalate"), en("prioritize"), en("delegate"),
+]
+
+EN_VERBS_EVERYDAY = [
+    en("book"), en("order"), en("call"),
+    en("message"), en("download"),
+    en("install"), en("update"), en("reset"),
+    en("charge"), en("connect"), en("upload"),
+]
+
+EN_VERBS_ALL = EN_VERBS_WORK + EN_VERBS_EVERYDAY
+
+# Quick physical/task verbs that work with "karke aata hoon"
+# (implies "I'll go do X and come back" — excludes abstract delegation verbs)
+EN_VERBS_QUICK_TASK = [
+    en("check"), en("fix"), en("reset"), en("update"),
+    en("send"), en("share"), en("call"), en("message"),
+    en("download"), en("install"), en("book"), en("order"),
+    en("charge"), en("connect"),
+]
+
+# ── English adjectives ────────────────────────────────────────
 EN_ADJECTIVES = [
-    en("boring"),
-    en("interesting"),
-    en("difficult"),
-    en("easy"),
-    en("important"),
-    en("urgent"),
-    en("serious"),
-    en("amazing"),
-    en("terrible"),
-    en("perfect"),
-    en("helpful"),
-    en("long"),
+    en("boring"), en("interesting"), en("difficult"),
+    en("easy"), en("important"), en("urgent"),
+    en("serious"), en("amazing"), en("terrible"),
+    en("perfect"), en("helpful"), en("long"),
+    en("short"), en("quick"), en("slow"),
+    en("complicated"), en("simple"), en("random"),
+    en("valid"), en("optional"),
 ]
-
-EN_MATRIX_FRAGMENTS = [
-    en("Please send me the"),
-    en("I will"),
-    en("Can you"),
-    en("The"),
-    en("Let's discuss this"),
-    en("We need to"),
-    en("Make sure you"),
-    en("I finished the"),
-    en("I think"),
-]
-
-EN_CONNECTORS = [
-    en("don't worry"),
-    en("please check"),
-    en("after the"),
-    en("is really"),
-    en("looks"),
-    en("is due"),
-    en("was"),
-]
-
-
-def r(bank: list):
-    """Random choice from a bank."""
-    return random.choice(bank)
 
 
 # ─────────────────────────────────────────────────────────────
 # SENTENCE BUILDERS
-# Each builder returns List[TaggedToken] with correct tags
 # ─────────────────────────────────────────────────────────────
 
-
 def build_hindi_matrix_english_np() -> List[TaggedToken]:
-    """Hindi sentence with English noun phrase."""
     patterns = [
-        lambda: r(HI_MATRIX_FRAGMENTS) + r(EN_NP) + r(HI_CONNECTORS),
-        lambda: r(HI_SUBJECTS) + r(EN_NP) + hi("ke baare mein") + r(HI_VERBS),
-        lambda: hi("Yeh") + r(EN_NP) + r(HI_ADJECTIVES) + hi("important hai"),
-        lambda: r(HI_SUBJECTS) + r(EN_NP) + r(HI_TIME) + en("send") + hi("kar dunga"),
-        lambda: hi("Tumhara") + r(EN_NP) + r(HI_ADJECTIVES) + en("helpful") + hi("tha"),
+        # Work context
+        lambda: hi("Aaj ka") + r(EN_NP_WORK) + hi("bahut lamba tha"),
+        lambda: hi("Kal ka") + r(EN_NP_WORK) + r(HI_TIME_SHORT) + hi("hai"),
+        lambda: hi("main") + r(EN_NP_WORK) + hi("pe kaam kar raha hoon"),
+        lambda: hi("Yeh") + r(EN_NP_WORK) + hi("bahut") + r(EN_ADJECTIVES) + hi("lag raha hai"),
+        lambda: hi("main") + r(EN_NP_WORK) + r(HI_TIME_SHORT) + hi("tak bhej dunga"),
+        lambda: hi("Is") + r(EN_NP_WORK) + hi("ki wajah se late ho gaya"),
+        lambda: hi("Tumhara") + r(EN_NP_WORK) + hi("mujhe mil gaya"),
+        lambda: hi("Aaj ka") + r(EN_NP_WORK) + hi("cancel ho gaya"),
+        lambda: hi("Mera") + r(EN_NP_WORK) + hi("abhi bhi pending hai"),
+
+        # Everyday context
+        lambda: r(HI_SUBJECTS_SOCIAL) + r(EN_NP_EVERYDAY) + hi("order kar diya"),
+        lambda: hi("Tera") + r(EN_NP_EVERYDAY) + hi("kahan hai"),
+        lambda: hi("Yeh") + r(EN_NP_EVERYDAY) + hi("ka kya plan hai"),
+        lambda: hi("Mera") + r(EN_NP_EVERYDAY) + hi("khatam ho gaya"),
+        lambda: hi("Aaj raat") + r(EN_NP_EVERYDAY) + hi("ka plan kya hai"),
+        lambda: r(HI_SUBJECTS_SOCIAL) + r(EN_NP_EVERYDAY) + hi("lena bhool gaya"),
+
+        # Tech context
+        lambda: hi("Mera") + r(EN_NP_TECH) + hi("kaam nahi kar raha"),
+        lambda: hi("Is") + r(EN_NP_TECH) + hi("mein problem aa rahi hai"),
+        lambda: hi("main") + r(EN_NP_TECH) + hi("update karna chahta hoon"),
+        lambda: hi("Naya") + r(EN_NP_TECH) + hi("aa gaya hai"),
     ]
-    return random.choice(patterns)()
+    return r(patterns)()
 
 
 def build_hindi_matrix_english_verb() -> List[TaggedToken]:
-    """Hindi sentence with English verb/adjective."""
     patterns = [
-        lambda: hi("Yeh situation")
-        + r(HI_ADJECTIVES)
-        + en("complicated")
-        + hi("ho gayi hai"),
-        lambda: r(HI_SUBJECTS)
-        + hi("yeh kaam")
-        + r(EN_ADJECTIVES)
-        + hi("tarike se")
-        + r(HI_VERBS),
-        lambda: hi("Meeting")
-        + r(EN_VERBS)
-        + hi("kar do,")
-        + r(HI_TIME)
-        + hi("nahi hogi"),
-        lambda: r(HI_SUBJECTS) + hi("yeh file") + r(EN_VERBS) + hi("karna chahta hoon"),
-        lambda: hi("Pehle") + r(EN_VERBS) + hi("karo, phir baat karte hain"),
-        lambda: hi("Please yeh") + r(EN_VERBS) + hi("mat karo") + r(HI_TIME),
+        lambda: hi("Pehle") + r(EN_VERBS_ALL) + hi("karo, phir baat karte hain"),
+        lambda: hi("Please yeh") + r(EN_VERBS_ALL) + hi("mat karo") + r(HI_TIME_SHORT),
+        lambda: hi("main") + hi("yeh") + r(EN_VERBS_WORK) + hi("karna chahta hoon"),
+        lambda: hi("Isko") + r(EN_VERBS_ALL) + hi("karna hai") + r(HI_TIME),
+        lambda: hi("Jaldi se") + r(EN_VERBS_ALL) + hi("kar do"),
+        lambda: hi("main") + hi("khud") + r(EN_VERBS_WORK) + hi("kar lunga"),
+        lambda: hi("Yeh") + r(EN_VERBS_ALL) + hi("karna zaroori hai"),
+        lambda: hi("main") + hi("pehle") + r(EN_VERBS_QUICK_TASK) + hi("karke aata hoon"),
+        lambda: hi("Unhe bolo ki") + r(EN_VERBS_WORK) + hi("kar dein"),
+        lambda: hi("Kya tum") + r(EN_VERBS_ALL) + hi("kar sakte ho"),
+        lambda: hi("Yeh") + r(EN_VERBS_EVERYDAY) + hi("karna itna mushkil nahi hai"),
     ]
-    return random.choice(patterns)()
+    return r(patterns)()
 
 
 def build_english_matrix_hindi_np() -> List[TaggedToken]:
-    """English sentence with Hindi time/expression."""
     patterns = [
-        lambda: en("Please send me the") + r(EN_NP) + r(HI_TIME),
-        lambda: en("I will")
-        + r(EN_VERBS)
-        + en("it")
-        + r(HI_TIME)
-        + en(", don't worry"),
-        lambda: en("Can you") + r(EN_VERBS) + en("this") + r(HI_TIME) + en("?"),
-        lambda: en("The") + r(EN_NP) + en("is due") + r(HI_TIME) + en(", please check"),
-        lambda: en("Let's discuss this") + r(HI_TIME) + en("after the") + r(EN_NP),
-        lambda: en("We need to") + r(EN_VERBS) + en("this") + r(HI_TIME),
+        lambda: en("Please send me the") + r(EN_NP_WORK) + r(HI_TIME_SHORT),
+        lambda: en("Can you") + r(EN_VERBS_ALL) + en("this") + r(HI_TIME_SHORT) + en("?"),
+        lambda: en("The") + r(EN_NP_WORK) + en("is due") + r(HI_TIME_SHORT) + en(", please check"),
+        lambda: en("Let's discuss this") + r(HI_TIME) + en("after the") + r(EN_NP_WORK),
+        lambda: en("We need to") + r(EN_VERBS_ALL) + en("this") + r(HI_TIME_SHORT),
+        lambda: en("I'll") + r(EN_VERBS_ALL) + en("it") + r(HI_TIME_SHORT) + en(", don't worry"),
+        lambda: en("Make sure you") + r(EN_VERBS_ALL) + en("the") + r(EN_NP_WORK) + r(HI_TIME_SHORT),
+        lambda: en("The") + r(EN_NP_WORK) + en("got") + r(EN_VERBS_WORK) + r(HI_TIME_LONG),
+        lambda: en("I was thinking we should") + r(EN_VERBS_ALL) + en("the") + r(EN_NP_EVERYDAY) + r(HI_TIME),
+        lambda: en("Could you please") + r(EN_VERBS_ALL) + en("the") + r(EN_NP_WORK) + r(HI_TIME_SHORT) + hi("tak chahiye"),
     ]
-    return random.choice(patterns)()
+    return r(patterns)()
 
 
 def build_inter_sentential() -> List[TaggedToken]:
-    """Language switch between clauses."""
     patterns = [
-        lambda: r(HI_SUBJECTS)
-        + hi("soch raha tha .")
-        + en("The")
-        + r(EN_NP)
-        + en("is really")
-        + r(EN_ADJECTIVES),
-        lambda: hi("Yeh")
-        + r(EN_NP)
-        + r(HI_ADJECTIVES)
-        + hi("important hai .")
-        + en("Please")
-        + r(EN_VERBS)
-        + en("it")
-        + r(HI_TIME),
-        lambda: en("The deadline is")
-        + r(HI_TIME)
-        + en(".")
-        + r(HI_SUBJECTS)
-        + hi("ready hoon"),
-        lambda: hi("Kal meeting hai .")
-        + en("Make sure you")
-        + r(EN_VERBS)
-        + en("the")
-        + r(EN_NP),
-        lambda: en("I finished the")
-        + r(EN_NP)
-        + en(".")
-        + r(HI_ADJECTIVES)
-        + hi("acha laga"),
+        lambda: r(HI_SUBJECTS_FIRST_PERSON) + hi("soch raha tha.") + en("The") + r(EN_NP_ALL) + en("is really") + r(EN_ADJECTIVES),
+        lambda: hi("Kal meeting hai.") + en("Make sure you") + r(EN_VERBS_ALL) + en("the") + r(EN_NP_WORK),
+        lambda: hi("Yeh kaam ho gaya.") + en("Now let's focus on the") + r(EN_NP_WORK),
+        # FIX: r(HI_EMOTIONS) already contains correctly tagged tokens
+        lambda: r(HI_EMOTIONS) + en(". The") + r(EN_NP_EVERYDAY) + en("was really") + r(EN_ADJECTIVES),
+        lambda: hi("Bahut thak gaya hoon.") + en("This") + r(EN_NP_EVERYDAY) + en("is not helping"),
+        lambda: hi("Samajh nahi aa raha.") + en("The") + r(EN_NP_TECH) + en("keeps giving errors"),
+        lambda: en("I finished the") + r(EN_NP_WORK) + en(".") + r(HI_INTENSIFIERS) + hi("acha laga"),
+        lambda: en("The") + r(EN_NP_WORK) + en("got cancelled.") + r(HI_SUBJECTS_FIRST_PERSON) + hi("khush hoon"),
+        # FIX: en("ready") + hi("hoon") — not hi("ready hoon")
+        lambda: en("I have a") + r(EN_NP_COUNTABLE) + r(HI_TIME_SHORT) + en(".") + r(HI_SUBJECTS_FIRST_PERSON) + en("ready") + hi("hoon"),
+        lambda: en("The") + r(EN_NP_TECH) + en("is not working.") + hi("Kya karein ab"),
+        lambda: en("This") + r(EN_NP_EVERYDAY) + en("is") + r(EN_ADJECTIVES) + en(".") + hi("Mujhe nahi pasand"),
     ]
-    return random.choice(patterns)()
+    return r(patterns)()
 
 
 def build_tag_switching() -> List[TaggedToken]:
-    """Discourse marker switching."""
     patterns = [
-        lambda: r(HI_DISCOURSE) + en(", the") + r(EN_NP) + en("is") + r(EN_ADJECTIVES),
-        lambda: en("The meeting was long,") + r(HI_DISCOURSE),
-        lambda: r(HI_DISCOURSE)
-        + en(",")
-        + r(HI_SUBJECTS)
-        + hi("yeh")
-        + r(EN_NP)
-        + hi("finish kar dunga"),
-        lambda: en("Yeh") + r(EN_ADJECTIVES) + en("hai,") + r(HI_DISCOURSE),
-        lambda: r(HI_DISCOURSE)
-        + en(", can you")
-        + r(EN_VERBS)
-        + en("this")
-        + r(HI_TIME)
-        + en("?"),
+        lambda: r(HI_DISCOURSE) + en(", the") + r(EN_NP_ALL) + en("is") + r(EN_ADJECTIVES),
+        lambda: r(HI_DISCOURSE) + en(", main yeh") + r(EN_NP_ALL) + hi("finish kar dunga"),
+        lambda: r(HI_DISCOURSE) + en(", can you") + r(EN_VERBS_ALL) + en("this") + r(HI_TIME_SHORT) + en("?"),
+        lambda: en("The") + r(EN_NP_ALL) + en("was") + r(EN_ADJECTIVES) + en(",") + r(HI_DISCOURSE),
+        lambda: r(HI_DISCOURSE) + en(", this") + r(EN_NP_ALL) + en("needs to be") + r(EN_VERBS_WORK) + r(HI_TIME_SHORT),
+        lambda: r(HI_DISCOURSE) + en(", I think the") + r(EN_NP_WORK) + en("is") + r(EN_ADJECTIVES),
+        # FIX: en("stress") not inside hi()
+        lambda: en("Honestly,") + hi("main yeh") + r(EN_NP_ALL) + hi("se thak gaya hoon"),
+        lambda: r(HI_DISCOURSE) + en(", let's just") + r(EN_VERBS_ALL) + en("it") + r(HI_TIME_SHORT),
     ]
-    return random.choice(patterns)()
+    return r(patterns)()
+
+
+def build_everyday_conversation() -> List[TaggedToken]:
+    patterns = [
+        # Food and social
+        lambda: r(HI_SUBJECTS_SOCIAL) + en("lunch") + hi("ke liye kahan chalein") + r(HI_TIME_SHORT),
+        lambda: hi("Aaj") + en("coffee") + hi("peeni hai,") + r(HI_SUBJECTS_SOCIAL) + hi("aa raha hai kya"),
+        lambda: hi("Kal") + en("party") + hi("mein") + r(HI_INTENSIFIERS) + en("fun") + hi("tha"),
+        lambda: hi("Yaar,") + en("this restaurant") + hi("ka khana") + r(HI_INTENSIFIERS) + en("good") + hi("hai"),
+        # FIX: hi("Main") not hi("mujhe"), en("diet") not inside hi()
+        lambda: hi("Main") + en("diet") + hi("pe hoon, isliye") + en("dessert") + hi("nahi lunga"),
+
+        # Travel
+        lambda: hi("Aaj") + en("traffic") + r(HI_INTENSIFIERS) + en("bad") + hi("tha"),
+        lambda: r(HI_SUBJECTS_SOCIAL) + en("cab") + hi("book kar liya,") + r(HI_TIME_SHORT) + hi("aa jaega"),
+        lambda: hi("Kal") + en("flight") + hi("hai,") + r(HI_SUBJECTS_SOCIAL) + hi("packing nahi ki abhi tak"),
+
+        # Health
+        lambda: r(HI_SUBJECTS_SOCIAL) + en("gym") + hi("jaana") + r(HI_INTENSIFIERS) + hi("mushkil ho gaya hai"),
+        # FIX: en("tough") not inside hi()
+        lambda: hi("Yeh") + en("workout") + r(HI_INTENSIFIERS) + en("tough") + hi("tha"),
+        lambda: r(HI_SUBJECTS_SOCIAL) + en("doctor") + hi("se milna hai") + r(HI_TIME),
+
+        # Tech
+        lambda: r(HI_SUBJECTS_SOCIAL) + en("phone") + hi("ki") + en("battery") + r(HI_INTENSIFIERS) + hi("jaldi khatam hoti hai"),
+        # FIX: en("slow") not inside hi()
+        lambda: hi("Mera") + en("laptop") + en("slow") + hi("ho gaya hai"),
+        lambda: r(HI_SUBJECTS_SOCIAL) + en("password") + hi("bhool gaya, ab kya karoon"),
+        # FIX: en("useful") not inside hi()
+        lambda: hi("Yeh naya") + en("app") + r(HI_INTENSIFIERS) + en("useful") + hi("hai"),
+
+        # Shopping
+        lambda: r(HI_SUBJECTS_SOCIAL) + en("online") + hi("order kiya tha,") + en("delivery") + r(HI_TIME_SHORT) + hi("aani chahiye"),
+        # FIX: en("good deals") not inside hi()
+        lambda: hi("Yeh") + en("sale") + hi("mein") + r(HI_INTENSIFIERS) + en("good deals") + hi("the"),
+        # FIX: en("size") not inside hi()
+        lambda: r(HI_SUBJECTS_SOCIAL) + en("return") + hi("karna hai yeh,") + en("size") + hi("sahi nahi hai"),
+
+        # Work from home
+        lambda: r(HI_SUBJECTS_FIRST_PERSON) + en("work from home") + hi("kar raha hoon") + r(HI_TIME),
+        # FIX: en("internet"), en("slow") not inside hi()
+        lambda: hi("Aaj") + en("internet") + r(HI_INTENSIFIERS) + en("slow") + hi("hai, kaam nahi ho raha"),
+        # FIX: en("zoom call"), en("connection") not inside hi()
+        lambda: r(HI_SUBJECTS_FIRST_PERSON) + en("zoom call") + hi("pe tha,") + en("connection") + hi("baar baar jaata tha"),
+    ]
+    return r(patterns)()
+
+
+def build_emotional_expression() -> List[TaggedToken]:
+    patterns = [
+        lambda: r(HI_EMOTIONS) + en("after the") + r(EN_NP_EVERYDAY),
+        lambda: r(HI_DISCOURSE) + en(", I can't believe this") + r(EN_NP_EVERYDAY) + hi("itna lamba tha"),
+        lambda: hi("Sach mein,") + en("this") + r(EN_NP_EVERYDAY) + hi("ne mujhe") + r(HI_INTENSIFIERS) + hi("khush kar diya"),
+        # FIX: en("shocked") not inside hi()
+        lambda: r(HI_SUBJECTS_SOCIAL) + hi("yeh sunke") + r(HI_INTENSIFIERS) + en("shocked") + hi("ho gaya"),
+        # FIX: en("stress") not inside hi()
+        lambda: hi("Itna") + en("stress") + hi("hai") + r(HI_TIME_LONG) + hi("se"),
+        lambda: hi("Sach keh raha hoon,") + en("this") + r(EN_NP_EVERYDAY) + hi("best hai"),
+        lambda: r(HI_SUBJECTS_SOCIAL) + r(EN_NP_EVERYDAY) + hi("dekh ke") + r(HI_INTENSIFIERS) + hi("khush ho gaya"),
+        lambda: r(HI_EMOTIONS) + en(". I didn't expect the") + r(EN_NP_EVERYDAY) + hi("itna achha hoga"),
+    ]
+    return r(patterns)()
 
 
 BUILDERS = {
-    "hindi_matrix_english_np": build_hindi_matrix_english_np,
+    "hindi_matrix_english_np":   build_hindi_matrix_english_np,
     "hindi_matrix_english_verb": build_hindi_matrix_english_verb,
-    "english_matrix_hindi_np": build_english_matrix_hindi_np,
-    "inter_sentential": build_inter_sentential,
-    "tag_switching": build_tag_switching,
+    "english_matrix_hindi_np":   build_english_matrix_hindi_np,
+    "inter_sentential":          build_inter_sentential,
+    "tag_switching":             build_tag_switching,
+    "everyday_conversation":     build_everyday_conversation,
+    "emotional_expression":      build_emotional_expression,
 }
 
 
@@ -409,8 +459,7 @@ def generate_sentences(
 
     while len(results) < num_sentences and attempts < max_attempts:
         attempts += 1
-
-        pattern_name = random.choice(list(BUILDERS.keys()))
+        pattern_name = r(list(BUILDERS.keys()))
         try:
             tokens = BUILDERS[pattern_name]()
         except Exception as e:
@@ -421,7 +470,6 @@ def generate_sentences(
             continue
 
         sp = SwitchPoint(pattern=pattern_name, tokens=tokens)
-
         if not (min_cmi <= sp.cmi <= max_cmi):
             continue
 
@@ -437,28 +485,25 @@ def save_sentences(sentences: List[SwitchPoint], output_path: Path) -> None:
         writer = csv.writer(f)
         writer.writerow(["sentence", "pattern", "cmi", "num_switches", "language_tags"])
         for sp in sentences:
-            writer.writerow(
-                [
-                    sp.sentence,
-                    sp.pattern,
-                    f"{sp.cmi:.3f}",
-                    sp.num_switches,
-                    " ".join(sp.language_tags),
-                ]
-            )
+            writer.writerow([
+                sp.sentence,
+                sp.pattern,
+                f"{sp.cmi:.3f}",
+                sp.num_switches,
+                " ".join(sp.language_tags),
+            ])
     logger.info(f"Saved {len(sentences)} sentences to {output_path}")
 
 
-def print_samples(sentences: List[SwitchPoint], n: int = 10) -> None:
-    print("\n" + "=" * 60)
-    print("SAMPLE HINGLISH SENTENCES WITH CORRECT LANGUAGE TAGS")
-    print("=" * 60)
+def print_samples(sentences: List[SwitchPoint], n: int = 15) -> None:
+    print("\n" + "="*60)
+    print("SAMPLE HINGLISH SENTENCES")
+    print("="*60)
     for sp in random.sample(sentences, min(n, len(sentences))):
         print(f"\n[{sp.pattern}]")
-        print(f"  Text   : {sp.sentence}")
-        print(f"  Tags   : {' '.join(sp.language_tags)}")
-        print(f"  CMI    : {sp.cmi:.3f} | Switches: {sp.num_switches}")
-    print("=" * 60)
+        print(f"  Text : {sp.sentence}")
+        print(f"  Tags : {' '.join(sp.language_tags)}")
+    print("="*60)
 
 
 def main(output_path: str, num_sentences: int, seed: int) -> None:
@@ -469,10 +514,8 @@ def main(output_path: str, num_sentences: int, seed: int) -> None:
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument(
-        "--output_path", type=str, default="data/codeswitched/sentences.csv"
-    )
+    parser.add_argument("--output_path",   type=str, default="data/codeswitched/sentences.csv")
     parser.add_argument("--num_sentences", type=int, default=5000)
-    parser.add_argument("--seed", type=int, default=42)
+    parser.add_argument("--seed",          type=int, default=42)
     args = parser.parse_args()
     main(args.output_path, args.num_sentences, args.seed)
