@@ -122,6 +122,19 @@ Sentence length affects some metrics and must be controlled:
 | **Boundary F0 RMSE** | Local ±100ms window, unaffected by total length | No adjustment needed |
 | **SPN** | 2-second clip centered on boundary, unaffected by total length | No adjustment needed |
 
+#### Length as an Analysis Dimension
+
+Beyond controlling for length as a confounder, results are also reported **stratified by length** as a deliberate analysis axis:
+
+| Stratum | Token range | Characteristic |
+|---|---|---|
+| Short | 5–8 tokens | Isolated switch, minimal prosodic context |
+| Long | 9–12 tokens | Multiple switch points, richer context |
+
+This separates two distinct failure modes: a model that fails on *short* sentences but not long ones has a **prosodic context dependency** — it needs surrounding words to correctly map phonemes. A model that fails on both has a fundamental **switch-boundary failure**.
+
+It also disentangles pattern effects from length effects — CS-07 intraword sentences are always short, CS-04 clause boundary sentences tend to be long. Without length stratification, per-pattern rankings could reflect length differences rather than switching difficulty.
+
 ---
 
 ## Project Structure
