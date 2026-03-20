@@ -3,11 +3,9 @@
 Generate the three script variants (Set A, B, C) from sentences.csv.
 
 Set A (text_devanagari):
-    HI-tagged tokens → Devanagari (via indic-transliteration, ITRANS scheme).
+    HI-tagged tokens → Devanagari via hand-curated dictionary (devanagari_map.py).
     EN-tagged tokens stay Roman.
     Machine-generated baseline; pending human verification for the golden set.
-    Note: output is approximate for informal Romanized Hindi — ITRANS was
-    designed for formal/classical romanization. Golden set verification corrects errors.
 
 Set B (text_roman):
     All tokens stay Romanized. The base output from codeswitching.py — no changes.
@@ -32,9 +30,8 @@ import csv
 import logging
 from pathlib import Path
 
-from indic_transliteration import sanscript
-
 from data.codeswitching import BUILDER_CS_PATTERN
+from data.devanagari_map import transliterate_hindi
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -49,36 +46,12 @@ def get_cmi_bucket(cmi: float) -> str:
         return "high"
 
 
-def roman_to_devanagari(word: str) -> str:
-    """Transliterate a single Romanized Hindi token to Devanagari (ITRANS scheme).
-
-    Lowercases before transliteration — our sentences use sentence-initial caps
-    (e.g. "Aaj", "Kal") which ITRANS would misread as different phonemes (A ≠ a).
-
-    Handles punctuation attached to words (e.g. "hai," → "है,") by stripping
-    trailing punctuation, transliterating, then re-attaching.
-
-    Known limitation: ITRANS cannot distinguish short/long 'a' in informal Hindi
-    romanization ("bura" → "बुर" instead of "बुरा"). This is expected for the
-    machine-generated baseline; the golden set is human-verified.
-    """
-    PUNCT = ".,?!;:"
-    suffix = ""
-    while word and word[-1] in PUNCT:
-        suffix = word[-1] + suffix
-        word = word[:-1]
-    if not word:
-        return suffix
-    devanagari = sanscript.transliterate(word.lower(), sanscript.ITRANS, sanscript.DEVANAGARI)
-    return devanagari + suffix
-
-
 def apply_tag_based_script(tokens: list, tags: list) -> str:
     """HI-tagged tokens → Devanagari, EN-tagged tokens stay Roman."""
     parts = []
     for word, tag in zip(tokens, tags):
         if tag == "HI":
-            parts.append(roman_to_devanagari(word))
+            parts.append(transliterate_hindi(word))
         else:
             parts.append(word)
     return " ".join(parts)
@@ -87,6 +60,7 @@ def apply_tag_based_script(tokens: list, tags: list) -> str:
 def generate_benchmark_csv(input_path: Path, output_path: Path) -> None:
     rows = []
     skipped = 0
+    unmapped = set()
 
     with open(input_path, encoding="utf-8", newline="") as f:
         reader = csv.DictReader(f)
@@ -105,6 +79,13 @@ def generate_benchmark_csv(input_path: Path, output_path: Path) -> None:
                 )
                 skipped += 1
                 continue
+
+            # Track HI words missing from dictionary
+            for tok, tag in zip(tokens, language_tags):
+                if tag == "HI":
+                    clean = tok.lower().strip(".,?!;:")
+                    if clean and clean == transliterate_hindi(clean):
+                        unmapped.add(clean)
 
             text_devanagari = apply_tag_based_script(tokens, language_tags)
             text_mixed = apply_tag_based_script(tokens, language_tags)
@@ -132,6 +113,11 @@ def generate_benchmark_csv(input_path: Path, output_path: Path) -> None:
     logger.info(f"Wrote {len(rows)} rows to {output_path}")
     if skipped:
         logger.warning(f"Skipped {skipped} rows due to token/tag length mismatch")
+    if unmapped:
+        logger.warning(
+            f"{len(unmapped)} HI words not in devanagari_map (left as Roman): "
+            f"{sorted(unmapped)}"
+        )
 
 
 def main(input_path: str, output_path: str) -> None:
