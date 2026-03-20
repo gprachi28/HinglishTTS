@@ -1,0 +1,301 @@
+golden_id,sentence_id,pattern_id,cmi_bucket,text_roman,text_devanagari,text_mixed,language_tags
+G_001,CS_00009,CS-05,low,tum gym jaana bilkul mushkil ho gaya hai,तुम gym जाना बिल्कुल मुश्किल हो गया है,तुम gym जाना बिल्कुल मुश्किल हो गया है,HI EN HI HI HI HI HI HI
+G_002,CS_00014,CS-07,low,"Yaar, use reply kar de na","यार, उसे reply कर दे ना","यार, उसे reply कर दे ना",HI HI EN HI HI HI
+G_003,CS_00021,CS-03,low,"The one-on-one was slow , matlab","The one-on-one was slow , मतलब","The one-on-one was slow , मतलब",EN EN EN EN EN HI
+G_004,CS_00028,CS-04,mid,Could you please connect the code review parso tak chahiye,Could you please connect the code review परसो तक चाहिए,Could you please connect the code review परसो तक चाहिए,EN EN EN EN EN EN EN HI HI HI
+G_005,CS_00036,CS-07,low,"Yaar, use zoom kar de na","यार, उसे zoom कर दे ना","यार, उसे zoom कर दे ना",HI HI EN HI HI HI
+G_006,CS_00088,CS-01,low,Is college ke liye bilkul taiyar nahi hoon,इस college के लिए बिल्कुल तैयार नहीं हूँ,इस college के लिए बिल्कुल तैयार नहीं हूँ,HI EN HI HI HI HI HI HI
+G_007,CS_00089,CS-02,low,Please yeh comment mat karo aaj,प्लीज़ यह comment मत करो आज,प्लीज़ यह comment मत करो आज,HI HI EN HI HI HI
+G_008,CS_00090,CS-07,low,"Yaar, use screenshot kar de na","यार, उसे screenshot कर दे ना","यार, उसे screenshot कर दे ना",HI HI EN HI HI HI
+G_009,CS_00093,CS-06,high,pull request next Friday ko 20th ko reschedule ho gaya,pull request next Friday को 20th को रिशेड्यूल हो गया,pull request next Friday को 20th को रिशेड्यूल हो गया,EN EN EN EN HI EN HI HI HI HI
+G_010,CS_00128,CS-07,low,"Yaar, use upload kar de na","यार, उसे upload कर दे ना","यार, उसे upload कर दे ना",HI HI EN HI HI HI
+G_011,CS_00132,CS-05,high,main khush hoon after the decision,मैं ख़ुश हूँ after the decision,मैं ख़ुश हूँ after the decision,HI HI HI EN EN EN
+G_012,CS_00140,CS-02,low,main pehle call karke aata hoon,मैं पहले call करके आता हूँ,मैं पहले call करके आता हूँ,HI HI EN HI HI HI
+G_013,CS_00146,CS-06,high,Friday evening ko 5 PM se 6 PM wala slot available hai,Friday evening को 5 PM से 6 PM वाला स्लॉट अवेलेबल है,Friday evening को 5 PM से 6 PM वाला स्लॉट अवेलेबल है,EN EN HI EN EN HI EN EN HI HI HI HI
+G_014,CS_00158,CS-05,high,pagal ho jaaunga after the delivery,पागल हो जाऊँगा after the delivery,पागल हो जाऊँगा after the delivery,HI HI HI EN EN EN
+G_015,CS_00184,CS-02,low,Yeh order karna itna mushkil nahi hai,यह order करना इतना मुश्किल नहीं है,यह order करना इतना मुश्किल नहीं है,HI EN HI HI HI HI HI
+G_016,CS_00202,CS-04,mid,I finished the update . ekdum acha laga,I finished the update . एकदम अच्छा लगा,I finished the update . एकदम अच्छा लगा,EN EN EN EN EN HI HI HI
+G_017,CS_00204,CS-07,low,Ab main use scroll kar lunga,अब मैं उसे scroll कर लूँगा,अब मैं उसे scroll कर लूँगा,HI HI HI EN HI HI
+G_018,CS_00224,CS-01,mid,Tera status thoda viral ho gaya,तेरा status थोड़ा viral हो गया,तेरा status थोड़ा viral हो गया,HI EN HI EN HI HI
+G_019,CS_00233,CS-07,low,Tune use screenshot kiya kya,तूने उसे screenshot किया क्या,तूने उसे screenshot किया क्या,HI HI EN HI HI
+G_020,CS_00253,CS-06,high,Google Meet pe 12 PM par milte hain,Google Meet पे 12 PM पर मिलते हैं,Google Meet पे 12 PM पर मिलते हैं,EN EN HI EN EN HI HI HI
+G_021,CS_00260,CS-02,low,Isko fix karna hai subah subah,इसको fix करना है सुबह सुबह,इसको fix करना है सुबह सुबह,HI EN HI HI HI HI
+G_022,CS_00269,CS-04,mid,Could you please subscribe the client call aaj tak chahiye,Could you please subscribe the client call आज तक चाहिए,Could you please subscribe the client call आज तक चाहिए,EN EN EN EN EN EN EN HI HI HI
+G_023,CS_00281,CS-05,mid,"bata na , I can't believe this movie itna lamba tha","बता ना , I can't believe this movie इतना लंबा था","बता ना , I can't believe this movie इतना लंबा था",HI HI EN EN EN EN EN EN HI HI HI
+G_024,CS_00309,CS-03,high,"acha , main yeh password finish kar dunga","अच्छा , main yeh password फ़िनिश कर दूँगा","अच्छा , main yeh password फ़िनिश कर दूँगा",HI EN EN EN EN HI HI HI
+G_025,CS_00311,CS-07,low,Ab main use save kar lunga,अब मैं उसे save कर लूँगा,अब मैं उसे save कर लूँगा,HI HI HI EN HI HI
+G_026,CS_00332,CS-04,mid,Samajh nahi aa raha. The charger keeps giving errors,समझ नहीं आ रहा. The charger keeps giving errors,समझ नहीं आ रहा. The charger keeps giving errors,HI HI HI HI EN EN EN EN EN
+G_027,CS_00350,CS-01,mid,Kal ka client call parso hai,कल का client call परसो है,कल का client call परसो है,HI HI EN EN HI HI
+G_028,CS_00353,CS-03,high,"dekho , main yeh routine finish kar dunga","देखो , main yeh routine फ़िनिश कर दूँगा","देखो , main yeh routine फ़िनिश कर दूँगा",HI EN EN EN EN HI HI HI
+G_029,CS_00354,CS-07,low,Tune mujhe zoom kiya kya,तूने मुझे zoom किया क्या,तूने मुझे zoom किया क्या,HI HI EN HI HI
+G_030,CS_00367,CS-07,low,Kya tune use zoom kar diya,क्या तूने उसे zoom कर दिया,क्या तूने उसे zoom कर दिया,HI HI HI EN HI HI
+G_031,CS_00397,CS-04,mid,I have a class baad mein . hum ready hoon,I have a class बाद में . हम ready हूँ,I have a class बाद में . हम ready हूँ,EN EN EN EN HI HI EN HI EN HI
+G_032,CS_00399,CS-05,high,thak gaya hoon after the lunch,थक गया हूँ after the lunch,थक गया हूँ after the lunch,HI HI HI EN EN EN
+G_033,CS_00402,CS-05,high,main khush hoon after the plan,मैं ख़ुश हूँ after the plan,मैं ख़ुश हूँ after the plan,HI HI HI EN EN EN
+G_034,CS_00407,CS-03,high,"toh , main yeh stream finish kar dunga","तो , main yeh stream फ़िनिश कर दूँगा","तो , main yeh stream फ़िनिश कर दूँगा",HI EN EN EN EN HI HI HI
+G_035,CS_00438,CS-03,high,"acha , main yeh episode finish kar dunga","अच्छा , main yeh episode फ़िनिश कर दूँगा","अच्छा , main yeh episode फ़िनिश कर दूँगा",HI EN EN EN EN HI HI HI
+G_036,CS_00454,CS-06,mid,main Gmail pe 2:30 PM available hoon,मैं Gmail पे 2:30 PM अवेलेबल हूँ,मैं Gmail पे 2:30 PM अवेलेबल हूँ,HI EN HI EN EN HI HI
+G_037,CS_00464,CS-05,mid,"theek hai , I can't believe this problem itna lamba tha","ठीक है , I can't believe this problem इतना लंबा था","ठीक है , I can't believe this problem इतना लंबा था",HI HI EN EN EN EN EN EN HI HI HI
+G_038,CS_00481,CS-07,low,Usne mujhe record kar diya,उसने मुझे record कर दिया,उसने मुझे record कर दिया,HI HI EN HI HI
+G_039,CS_00487,CS-03,high,"ek kaam karo , let's just share it baad mein","एक काम करो , let's just share it बाद में","एक काम करो , let's just share it बाद में",HI HI HI EN EN EN EN EN HI HI
+G_040,CS_00511,CS-02,low,Yeh download karna itna mushkil nahi hai,यह download करना इतना मुश्किल नहीं है,यह download करना इतना मुश्किल नहीं है,HI EN HI HI HI HI HI
+G_041,CS_00528,CS-02,low,Please yeh order mat karo parso,प्लीज़ यह order मत करो परसो,प्लीज़ यह order मत करो परसो,HI HI EN HI HI HI
+G_042,CS_00535,CS-02,low,Kya tum handle kar sakte ho,क्या तुम handle कर सकते हो,क्या तुम handle कर सकते हो,HI HI EN HI HI HI
+G_043,CS_00580,CS-07,low,"Pehle repost karo, phir baat karna","पहले repost करो, फिर बात करना","पहले repost करो, फिर बात करना",HI EN HI HI HI HI
+G_044,CS_00583,CS-04,low,Please send me the team standup parso,Please send me the team standup परसो,Please send me the team standup परसो,EN EN EN EN EN EN HI
+G_045,CS_00588,CS-06,low,"Aaj 30th tarikh hai, kal deadline hai","आज 30th तारीख़ है, कल डेडलाइन है","आज 30th तारीख़ है, कल डेडलाइन है",HI EN HI HI HI HI HI
+G_046,CS_00591,CS-01,low,Is wifi mein problem aa rahi hai,इस wifi में प्रॉब्लम आ रही है,इस wifi में प्रॉब्लम आ रही है,HI EN HI HI HI HI HI
+G_047,CS_00598,CS-04,low,Let's discuss this jaldi se after the proposal,Let's discuss this जल्दी से after the proposal,Let's discuss this जल्दी से after the proposal,EN EN EN HI HI EN EN EN
+G_048,CS_00637,CS-03,mid,"ek kaam karo , let's just google it abhi","एक काम करो , let's just google it अभी","एक काम करो , let's just google it अभी",HI HI HI EN EN EN EN EN HI
+G_049,CS_00638,CS-05,high,pagal ho jaaunga . I didn't expect the order itna achha hoga,पागल हो जाऊँगा . I didn't expect the order इतना अच्छा होगा,पागल हो जाऊँगा . I didn't expect the order इतना अच्छा होगा,HI HI HI EN EN EN EN EN EN HI HI HI
+G_050,CS_00640,CS-07,low,"Pehle save karo, phir baat karna","पहले save करो, फिर बात करना","पहले save करो, फिर बात करना",HI EN HI HI HI HI
+G_051,CS_00654,CS-01,low,main client call pe kaam kar raha hoon,मैं client call पे काम कर रहा हूँ,मैं client call पे काम कर रहा हूँ,HI EN EN HI HI HI HI HI
+G_052,CS_00657,CS-05,high,pagal ho jaaunga . I didn't expect the gym itna achha hoga,पागल हो जाऊँगा . I didn't expect the gym इतना अच्छा होगा,पागल हो जाऊँगा . I didn't expect the gym इतना अच्छा होगा,HI HI HI EN EN EN EN EN EN HI HI HI
+G_053,CS_00690,CS-06,low,Is next Friday ko chhutti hai kya,इस next Friday को छुट्टी है क्या,इस next Friday को छुट्टी है क्या,HI EN EN HI HI HI HI
+G_054,CS_00712,CS-07,low,Kya tune use upload kar diya,क्या तूने उसे upload कर दिया,क्या तूने उसे upload कर दिया,HI HI HI EN HI HI
+G_055,CS_00731,CS-04,low,"The code review is due aaj , please check","The code review is due आज , please check","The code review is due आज , please check",EN EN EN EN EN HI EN EN EN
+G_056,CS_00781,CS-05,mid,Mera laptop slow ho gaya hai,मेरा laptop slow हो गया है,मेरा laptop slow हो गया है,HI EN EN HI HI HI
+G_057,CS_00791,CS-05,mid,"main zoom call pe tha, connection baar baar jaata tha","मैं zoom call पे था, connection बार बार जाता था","मैं zoom call पे था, connection बार बार जाता था",HI EN EN HI HI EN HI HI HI HI
+G_058,CS_00817,CS-05,high,thak gaya hoon . I didn't expect the routine itna achha hoga,थक गया हूँ . I didn't expect the routine इतना अच्छा होगा,थक गया हूँ . I didn't expect the routine इतना अच्छा होगा,HI HI HI EN EN EN EN EN EN HI HI HI
+G_059,CS_00826,CS-05,high,"ek kaam karo , I can't believe this password itna lamba tha","एक काम करो , I can't believe this password इतना लंबा था","एक काम करो , I can't believe this password इतना लंबा था",HI HI HI EN EN EN EN EN EN HI HI HI
+G_060,CS_00837,CS-03,low,"Honestly, main yeh update se thak gaya hoon","Honestly, मैं यह update से थक गया हूँ","Honestly, मैं यह update से थक गया हूँ",EN HI HI EN HI HI HI HI
+G_061,CS_00861,CS-05,mid,"Yaar, this restaurant ka khana itna good hai","यार, this restaurant का खाना इतना good है","यार, this restaurant का खाना इतना good है",HI EN EN HI HI HI EN HI
+G_062,CS_00863,CS-02,low,"main share karta hoon, tum dekho","मैं share करता हूँ, तुम देखो","मैं share करता हूँ, तुम देखो",HI EN HI HI HI HI
+G_063,CS_00870,CS-06,mid,feedback Tuesday ko 5th ko reschedule ho gaya,feedback Tuesday को 5th को रिशेड्यूल हो गया,feedback Tuesday को 5th को रिशेड्यूल हो गया,EN EN HI EN HI HI HI HI
+G_064,CS_00887,CS-07,low,"Yaar, use save kar de na","यार, उसे save कर दे ना","यार, उसे save कर दे ना",HI HI EN HI HI HI
+G_065,CS_00891,CS-07,low,Ab main use record kar lunga,अब मैं उसे record कर लूँगा,अब मैं उसे record कर लूँगा,HI HI HI EN HI HI
+G_066,CS_00902,CS-06,high,main Google Drive pe 2 PM available hoon,मैं Google Drive पे 2 PM अवेलेबल हूँ,मैं Google Drive पे 2 PM अवेलेबल हूँ,HI EN EN HI EN EN HI HI
+G_067,CS_00905,CS-07,low,Usne mujhe unfollow kar diya,उसने मुझे unfollow कर दिया,उसने मुझे unfollow कर दिया,HI HI EN HI HI
+G_068,CS_00920,CS-07,low,Ab main use unfriend kar lunga,अब मैं उसे unfriend कर लूँगा,अब मैं उसे unfriend कर लूँगा,HI HI HI EN HI HI
+G_069,CS_00942,CS-07,low,Usne mujhe crop kar diya,उसने मुझे crop कर दिया,उसने मुझे crop कर दिया,HI HI EN HI HI
+G_070,CS_00953,CS-03,mid,"Honestly, main yeh cheat day se thak gaya hoon","Honestly, मैं यह cheat day से थक गया हूँ","Honestly, मैं यह cheat day से थक गया हूँ",EN HI HI EN EN HI HI HI HI
+G_071,CS_00960,CS-07,low,Tune use like kiya kya,तूने उसे like किया क्या,तूने उसे like किया क्या,HI HI EN HI HI
+G_072,CS_00969,CS-07,low,Tune mujhe unfollow kiya kya,तूने मुझे unfollow किया क्या,तूने मुझे unfollow किया क्या,HI HI EN HI HI
+G_073,CS_01002,CS-04,mid,Yeh kaam ho gaya. Now let's focus on the semester,यह काम हो गया. Now let's focus on the semester,यह काम हो गया. Now let's focus on the semester,HI HI HI HI EN EN EN EN EN EN
+G_074,CS_01012,CS-04,low,We need to order this aaj,We need to order this आज,We need to order this आज,EN EN EN EN EN HI
+G_075,CS_01014,CS-07,low,"Pehle screenshot karo, phir baat karna","पहले screenshot करो, फिर बात करना","पहले screenshot करो, फिर बात करना",HI EN HI HI HI HI
+G_076,CS_01017,CS-06,low,Is Tuesday ko chhutti hai kya,इस Tuesday को छुट्टी है क्या,इस Tuesday को छुट्टी है क्या,HI EN HI HI HI HI
+G_077,CS_01027,CS-04,mid,Could you please confirm the report baad mein tak chahiye,Could you please confirm the report बाद में तक चाहिए,Could you please confirm the report बाद में तक चाहिए,EN EN EN EN EN EN HI HI HI HI
+G_078,CS_01030,CS-07,low,Unhone sab ko like kar liya,उन्होंने सब को like कर लिया,उन्होंने सब को like कर लिया,HI HI HI EN HI HI
+G_079,CS_01053,CS-05,mid,"suno , I can't believe this routine itna lamba tha","सुनो , I can't believe this routine इतना लंबा था","सुनो , I can't believe this routine इतना लंबा था",HI EN EN EN EN EN EN HI HI HI
+G_080,CS_01070,CS-05,high,pagal ho jaaunga after the phone,पागल हो जाऊँगा after the phone,पागल हो जाऊँगा after the phone,HI HI HI EN EN EN
+G_081,CS_01080,CS-04,low,We need to approve this aaj,We need to approve this आज,We need to approve this आज,EN EN EN EN EN HI
+G_082,CS_01098,CS-03,high,"waise , main yeh laptop finish kar dunga","वैसे , main yeh laptop फ़िनिश कर दूँगा","वैसे , main yeh laptop फ़िनिश कर दूँगा",HI EN EN EN EN HI HI HI
+G_083,CS_01106,CS-04,mid,maza aa gaya . The song was really perfect,मज़ा आ गया . The song was really perfect,मज़ा आ गया . The song was really perfect,HI HI HI EN EN EN EN EN EN
+G_084,CS_01121,CS-05,high,thak gaya hoon . I didn't expect the break itna achha hoga,थक गया हूँ . I didn't expect the break इतना अच्छा होगा,थक गया हूँ . I didn't expect the break इतना अच्छा होगा,HI HI HI EN EN EN EN EN EN HI HI HI
+G_085,CS_01130,CS-04,mid,Samajh nahi aa raha. The script keeps giving errors,समझ नहीं आ रहा. The script keeps giving errors,समझ नहीं आ रहा. The script keeps giving errors,HI HI HI HI EN EN EN EN EN
+G_086,CS_01135,CS-02,low,Yeh search karna itna mushkil nahi hai,यह search करना इतना मुश्किल नहीं है,यह search करना इतना मुश्किल नहीं है,HI EN HI HI HI HI HI
+G_087,CS_01142,CS-02,low,"Pehle cancel karo, phir baat karte hain","पहले cancel करो, फिर बात करते हैं","पहले cancel करो, फिर बात करते हैं",HI EN HI HI HI HI HI
+G_088,CS_01144,CS-04,low,Can you install this abhi ?,Can you install this अभी ?,Can you install this अभी ?,EN EN EN EN HI EN
+G_089,CS_01149,CS-03,high,"matlab , main yeh reel finish kar dunga","मतलब , main yeh reel फ़िनिश कर दूँगा","मतलब , main yeh reel फ़िनिश कर दूँगा",HI EN EN EN EN HI HI HI
+G_090,CS_01185,CS-06,high,this Sunday ko 5 PM se 11 AM wala slot available hai,this Sunday को 5 PM से 11 AM वाला स्लॉट अवेलेबल है,this Sunday को 5 PM से 11 AM वाला स्लॉट अवेलेबल है,EN EN HI EN EN HI EN EN HI HI HI HI
+G_091,CS_01203,CS-04,mid,Bahut thak gaya hoon. This plan is not helping,बहुत थक गया हूँ. This plan is not helping,बहुत थक गया हूँ. This plan is not helping,HI HI HI HI EN EN EN EN EN
+G_092,CS_01204,CS-04,low,We need to handle this kal,We need to handle this कल,We need to handle this कल,EN EN EN EN EN HI
+G_093,CS_01215,CS-07,low,Maine use record kar diya,मैंने उसे record कर दिया,मैंने उसे record कर दिया,HI HI EN HI HI
+G_094,CS_01218,CS-04,low,Please send me the proposal parso,Please send me the proposal परसो,Please send me the proposal परसो,EN EN EN EN EN HI
+G_095,CS_01221,CS-07,low,Tune use forward kiya kya,तूने उसे forward किया क्या,तूने उसे forward किया क्या,HI HI EN HI HI
+G_096,CS_01238,CS-07,low,Usne mujhe block kar diya,उसने मुझे block कर दिया,उसने मुझे block कर दिया,HI HI EN HI HI
+G_097,CS_01239,CS-04,mid,This password is serious . Mujhe nahi pasand,This password is serious . मुझे नहीं पसंद,This password is serious . मुझे नहीं पसंद,EN EN EN EN EN HI HI HI
+G_098,CS_01249,CS-02,low,"main google karta hoon, tum dekho","मैं google करता हूँ, तुम देखो","मैं google करता हूँ, तुम देखो",HI EN HI HI HI HI
+G_099,CS_01255,CS-04,mid,Yeh kaam ho gaya. Now let's focus on the status,यह काम हो गया. Now let's focus on the status,यह काम हो गया. Now let's focus on the status,HI HI HI HI EN EN EN EN EN EN
+G_100,CS_01286,CS-05,mid,Mera laptop slow ho gaya hai,मेरा laptop slow हो गया है,मेरा laptop slow हो गया है,HI EN EN HI HI HI
+G_101,CS_01294,CS-06,low,Is Tuesday ko chhutti hai kya,इस Tuesday को छुट्टी है क्या,इस Tuesday को छुट्टी है क्या,HI EN HI HI HI HI
+G_102,CS_01321,CS-07,low,"Yaar, use forward kar de na","यार, उसे forward कर दे ना","यार, उसे forward कर दे ना",HI HI EN HI HI HI
+G_103,CS_01325,CS-07,low,Kya tune use upload kar diya,क्या तूने उसे upload कर दिया,क्या तूने उसे upload कर दिया,HI HI HI EN HI HI
+G_104,CS_01367,CS-06,mid,Notion pe 9 AM par milte hain,Notion पे 9 AM पर मिलते हैं,Notion पे 9 AM पर मिलते हैं,EN HI EN EN HI HI HI
+G_105,CS_01369,CS-02,low,Kya tum share kar sakte ho,क्या तुम share कर सकते हो,क्या तुम share कर सकते हो,HI HI EN HI HI HI
+G_106,CS_01370,CS-07,low,"Yaar, use zoom kar de na","यार, उसे zoom कर दे ना","यार, उसे zoom कर दे ना",HI HI EN HI HI HI
+G_107,CS_01379,CS-07,low,Usne mujhe edit kar diya,उसने मुझे edit कर दिया,उसने मुझे edit कर दिया,HI HI EN HI HI
+G_108,CS_01388,CS-02,low,Please yeh send mat karo baad mein,प्लीज़ यह send मत करो बाद में,प्लीज़ यह send मत करो बाद में,HI HI EN HI HI HI HI
+G_109,CS_01393,CS-07,low,Unhone sab ko share kar liya,उन्होंने सब को share कर लिया,उन्होंने सब को share कर लिया,HI HI HI EN HI HI
+G_110,CS_01429,CS-05,mid,hum work from home kar raha hoon raat ko,हम work from home कर रहा हूँ रात को,हम work from home कर रहा हूँ रात को,HI EN EN EN HI HI HI HI HI
+G_111,CS_01442,CS-04,low,I was thinking we should upload the weekend baad mein,I was thinking we should upload the weekend बाद में,I was thinking we should upload the weekend बाद में,EN EN EN EN EN EN EN EN HI HI
+G_112,CS_01454,CS-07,low,Unhone sab ko record kar liya,उन्होंने सब को record कर लिया,उन्होंने सब को record कर लिया,HI HI HI EN HI HI
+G_113,CS_01492,CS-04,mid,Samajh nahi aa raha. The database keeps giving errors,समझ नहीं आ रहा. The database keeps giving errors,समझ नहीं आ रहा. The database keeps giving errors,HI HI HI HI EN EN EN EN EN
+G_114,CS_01498,CS-07,low,Tune mujhe share kiya kya,तूने मुझे share किया क्या,तूने मुझे share किया क्या,HI HI EN HI HI
+G_115,CS_01502,CS-07,low,main use block kar dunga,मैं उसे block कर दूँगा,मैं उसे block कर दूँगा,HI HI EN HI HI
+G_116,CS_01511,CS-02,low,Kya tum share kar sakte ho,क्या तुम share कर सकते हो,क्या तुम share कर सकते हो,HI HI EN HI HI HI
+G_117,CS_01520,CS-01,low,Tera follow bahut zyada viral ho gaya,तेरा follow बहुत ज़्यादा viral हो गया,तेरा follow बहुत ज़्यादा viral हो गया,HI EN HI HI EN HI HI
+G_118,CS_01533,CS-07,low,Ab main use scroll kar lunga,अब मैं उसे scroll कर लूँगा,अब मैं उसे scroll कर लूँगा,HI HI HI EN HI HI
+G_119,CS_01535,CS-07,low,Tune use record kiya kya,तूने उसे record किया क्या,तूने उसे record किया क्या,HI HI EN HI HI
+G_120,CS_01538,CS-05,high,maza aa gaya after the coffee,मज़ा आ गया after the coffee,मज़ा आ गया after the coffee,HI HI HI EN EN EN
+G_121,CS_01559,CS-07,low,Maine use tag kar diya,मैंने उसे tag कर दिया,मैंने उसे tag कर दिया,HI HI EN HI HI
+G_122,CS_01599,CS-05,low,Itna stress hai jaldi se se,इतना stress है जल्दी से से,इतना stress है जल्दी से से,HI EN HI HI HI HI
+G_123,CS_01626,CS-07,low,Maine use download kar diya,मैंने उसे download कर दिया,मैंने उसे download कर दिया,HI HI EN HI HI
+G_124,CS_01648,CS-03,high,"dekho , main yeh weekend finish kar dunga","देखो , main yeh weekend फ़िनिश कर दूँगा","देखो , main yeh weekend फ़िनिश कर दूँगा",HI EN EN EN EN HI HI HI
+G_125,CS_01649,CS-01,mid,Tera meme ekdum viral ho gaya,तेरा meme एकदम viral हो गया,तेरा meme एकदम viral हो गया,HI EN HI EN HI HI
+G_126,CS_01676,CS-06,mid,Next next Friday ko interview hai,Next next Friday को interview है,Next next Friday को interview है,EN EN EN HI EN HI
+G_127,CS_01697,CS-07,low,main use repost kar dunga,मैं उसे repost कर दूँगा,मैं उसे repost कर दूँगा,HI HI EN HI HI
+G_128,CS_01712,CS-01,low,main status update baad mein tak bhej dunga,मैं status update बाद में तक भेज दूँगा,मैं status update बाद में तक भेज दूँगा,HI EN EN HI HI HI HI HI
+G_129,CS_01737,CS-03,high,"matlab , main yeh salad finish kar dunga","मतलब , main yeh salad फ़िनिश कर दूँगा","मतलब , main yeh salad फ़िनिश कर दूँगा",HI EN EN EN EN HI HI HI
+G_130,CS_01742,CS-07,low,main use share kar dunga,मैं उसे share कर दूँगा,मैं उसे share कर दूँगा,HI HI EN HI HI
+G_131,CS_01746,CS-06,mid,this Sunday ko 6 PM tak submit karna hai,this Sunday को 6 PM तक सबमिट करना है,this Sunday को 6 PM तक सबमिट करना है,EN EN HI EN EN HI HI HI HI
+G_132,CS_01750,CS-05,low,"Sach keh raha hoon, this party best hai","सच कह रहा हूँ, this party बेस्ट है","सच कह रहा हूँ, this party बेस्ट है",HI HI HI HI EN EN HI HI
+G_133,CS_01757,CS-01,mid,Tera caption itna viral ho gaya,तेरा caption इतना viral हो गया,तेरा caption इतना viral हो गया,HI EN HI EN HI HI
+G_134,CS_01758,CS-03,low,"yaar , this bug needs to be delegate kal","यार , this bug needs to be delegate कल","यार , this bug needs to be delegate कल",HI EN EN EN EN EN EN EN HI
+G_135,CS_01776,CS-01,mid,Kal ka code review parso hai,कल का code review परसो है,कल का code review परसो है,HI HI EN EN HI HI
+G_136,CS_01811,CS-07,low,Ab main use forward kar lunga,अब मैं उसे forward कर लूँगा,अब मैं उसे forward कर लूँगा,HI HI HI EN HI HI
+G_137,CS_01817,CS-01,mid,Tera story bahut viral ho gaya,तेरा story बहुत viral हो गया,तेरा story बहुत viral हो गया,HI EN HI EN HI HI
+G_138,CS_01819,CS-02,low,"main share karta hoon, tum dekho","मैं share करता हूँ, तुम देखो","मैं share करता हूँ, तुम देखो",HI EN HI HI HI HI
+G_139,CS_01837,CS-07,low,Tune mujhe share kiya kya,तूने मुझे share किया क्या,तूने मुझे share किया क्या,HI HI EN HI HI
+G_140,CS_01848,CS-02,low,"Usne save kar diya, ab kya karein","उसने save कर दिया, अब क्या करें","उसने save कर दिया, अब क्या करें",HI EN HI HI HI HI HI
+G_141,CS_01859,CS-03,mid,"sach mein , let's just postpone it parso","सच में , let's just postpone it परसो","सच में , let's just postpone it परसो",HI HI EN EN EN EN EN HI
+G_142,CS_01862,CS-04,low,Can you post this pehle ?,Can you post this पहले ?,Can you post this पहले ?,EN EN EN EN HI EN
+G_143,CS_01875,CS-02,low,"Pehle cancel karo, phir baat karte hain","पहले cancel करो, फिर बात करते हैं","पहले cancel करो, फिर बात करते हैं",HI EN HI HI HI HI HI
+G_144,CS_01876,CS-03,mid,"ek kaam karo , main yeh vlog finish kar dunga","एक काम करो , main yeh vlog फ़िनिश कर दूँगा","एक काम करो , main yeh vlog फ़िनिश कर दूँगा",HI HI HI EN EN EN EN HI HI HI
+G_145,CS_01884,CS-05,low,"aap return karna hai yeh, size sahi nahi hai","आप return करना है यह, size सही नहीं है","आप return करना है यह, size सही नहीं है",HI EN HI HI HI EN HI HI HI
+G_146,CS_01893,CS-07,low,Maine use block kar diya,मैंने उसे block कर दिया,मैंने उसे block कर दिया,HI HI EN HI HI
+G_147,CS_01959,CS-05,mid,main work from home kar raha hoon subah subah,मैं work from home कर रहा हूँ सुबह सुबह,मैं work from home कर रहा हूँ सुबह सुबह,HI EN EN EN HI HI HI HI HI
+G_148,CS_01994,CS-01,low,Aaj ka follow-up cancel ho gaya,आज का follow-up कैंसल हो गया,आज का follow-up कैंसल हो गया,HI HI EN HI HI HI
+G_149,CS_01998,CS-02,low,Yeh post karna itna mushkil nahi hai,यह post करना इतना मुश्किल नहीं है,यह post करना इतना मुश्किल नहीं है,HI EN HI HI HI HI HI
+G_150,CS_02000,CS-06,low,5th din bacha hai deadline tak,5th दिन बचा है डेडलाइन तक,5th दिन बचा है डेडलाइन तक,EN HI HI HI HI HI
+G_151,CS_02036,CS-05,mid,main work from home kar raha hoon subah subah,मैं work from home कर रहा हूँ सुबह सुबह,मैं work from home कर रहा हूँ सुबह सुबह,HI EN EN EN HI HI HI HI HI
+G_152,CS_02070,CS-03,mid,"ek kaam karo , this server needs to be escalate kal","एक काम करो , this server needs to be escalate कल","एक काम करो , this server needs to be escalate कल",HI HI HI EN EN EN EN EN EN EN HI
+G_153,CS_02071,CS-06,high,Friday evening ko 9:30 AM se 5 PM wala slot available hai,Friday evening को 9:30 AM से 5 PM वाला स्लॉट अवेलेबल है,Friday evening को 9:30 AM से 5 PM वाला स्लॉट अवेलेबल है,EN EN HI EN EN HI EN EN HI HI HI HI
+G_154,CS_02160,CS-05,high,pagal ho jaaunga . I didn't expect the party itna achha hoga,पागल हो जाऊँगा . I didn't expect the party इतना अच्छा होगा,पागल हो जाऊँगा . I didn't expect the party इतना अच्छा होगा,HI HI HI EN EN EN EN EN EN HI HI HI
+G_155,CS_02184,CS-06,mid,follow-up next Friday ko 25th ko reschedule ho gaya,follow-up next Friday को 25th को रिशेड्यूल हो गया,follow-up next Friday को 25th को रिशेड्यूल हो गया,EN EN EN HI EN HI HI HI HI
+G_156,CS_02217,CS-06,mid,end of month tak payment kar dena,end of month तक पेमेंट कर देना,end of month तक पेमेंट कर देना,EN EN EN HI HI HI HI
+G_157,CS_02221,CS-05,mid,Yeh naya app bilkul useful hai,यह नया app बिल्कुल useful है,यह नया app बिल्कुल useful है,HI HI EN HI EN HI
+G_158,CS_02228,CS-01,mid,Yeh series bahut zyada good tha,यह series बहुत ज़्यादा good था,यह series बहुत ज़्यादा good था,HI EN HI HI EN HI
+G_159,CS_02241,CS-06,mid,end of month tak payment kar dena,end of month तक पेमेंट कर देना,end of month तक पेमेंट कर देना,EN EN EN HI HI HI HI
+G_160,CS_02267,CS-06,high,Kal 11 AM baje call hai,कल 11 AM बजे call है,कल 11 AM बजे call है,HI EN EN HI EN HI
+G_161,CS_02274,CS-05,mid,"haan , I can't believe this problem itna lamba tha","हाँ , I can't believe this problem इतना लंबा था","हाँ , I can't believe this problem इतना लंबा था",HI EN EN EN EN EN EN HI HI HI
+G_162,CS_02285,CS-04,mid,The proposal got cancelled. hum khush hoon,The proposal got cancelled. हम ख़ुश हूँ,The proposal got cancelled. हम ख़ुश हूँ,EN EN EN EN HI HI HI
+G_163,CS_02293,CS-02,low,Please yeh message mat karo abhi,प्लीज़ यह message मत करो अभी,प्लीज़ यह message मत करो अभी,HI HI EN HI HI HI
+G_164,CS_02307,CS-04,mid,Let's discuss this aaj shaam ko after the sprint,Let's discuss this आज शाम को after the sprint,Let's discuss this आज शाम को after the sprint,EN EN EN HI HI HI EN EN EN
+G_165,CS_02321,CS-05,high,maza aa gaya . I didn't expect the party itna achha hoga,मज़ा आ गया . I didn't expect the party इतना अच्छा होगा,मज़ा आ गया . I didn't expect the party इतना अच्छा होगा,HI HI HI EN EN EN EN EN EN HI HI HI
+G_166,CS_02323,CS-03,mid,"ek kaam karo , let's just post it aaj","एक काम करो , let's just post it आज","एक काम करो , let's just post it आज",HI HI HI EN EN EN EN EN HI
+G_167,CS_02346,CS-04,mid,The database is not working. Kya karein ab,The database is not working. क्या करें अब,The database is not working. क्या करें अब,EN EN EN EN EN HI HI HI
+G_168,CS_02357,CS-04,low,Can you fix this kal ?,Can you fix this कल ?,Can you fix this कल ?,EN EN EN EN HI EN
+G_169,CS_02496,CS-04,low,I was thinking we should follow the order abhi,I was thinking we should follow the order अभी,I was thinking we should follow the order अभी,EN EN EN EN EN EN EN EN HI
+G_170,CS_02501,CS-04,mid,The wifi is not working. Kya karein ab,The wifi is not working. क्या करें अब,The wifi is not working. क्या करें अब,EN EN EN EN EN HI HI HI
+G_171,CS_02504,CS-05,high,thak gaya hoon after the password,थक गया हूँ after the password,थक गया हूँ after the password,HI HI HI EN EN EN
+G_172,CS_02509,CS-04,mid,I finished the sprint . bilkul acha laga,I finished the sprint . बिल्कुल अच्छा लगा,I finished the sprint . बिल्कुल अच्छा लगा,EN EN EN EN EN HI HI HI
+G_173,CS_02520,CS-02,low,main yeh check karna chahta hoon,मैं यह check करना चाहता हूँ,मैं यह check करना चाहता हूँ,HI HI EN HI HI HI
+G_174,CS_02543,CS-05,mid,yeh sunke bura laga after the plan,यह सुनके बुरा लगा after the plan,यह सुनके बुरा लगा after the plan,HI HI HI HI EN EN EN
+G_175,CS_02563,CS-04,mid,The deadline got cancelled. main khush hoon,The deadline got cancelled. मैं ख़ुश हूँ,The deadline got cancelled. मैं ख़ुश हूँ,EN EN EN EN HI HI HI
+G_176,CS_02568,CS-01,low,Aaj ka proposal bahut lamba tha,आज का proposal बहुत लंबा था,आज का proposal बहुत लंबा था,HI HI EN HI HI HI
+G_177,CS_02581,CS-03,mid,"arre , this podcast needs to be discuss baad mein","अरे , this podcast needs to be discuss बाद में","अरे , this podcast needs to be discuss बाद में",HI EN EN EN EN EN EN EN HI HI
+G_178,CS_02597,CS-04,mid,The feature is not working. Kya karein ab,The feature is not working. क्या करें अब,The feature is not working. क्या करें अब,EN EN EN EN EN HI HI HI
+G_179,CS_02616,CS-05,low,"mera dost online order kiya tha, delivery parso aani chahiye","मेरा दोस्त online ऑर्डर किया था, delivery परसो आनी चाहिए","मेरा दोस्त online ऑर्डर किया था, delivery परसो आनी चाहिए",HI HI EN HI HI HI EN HI HI HI
+G_180,CS_02626,CS-04,mid,The API is not working. Kya karein ab,The API is not working. क्या करें अब,The API is not working. क्या करें अब,EN EN EN EN EN HI HI HI
+G_181,CS_02633,CS-04,mid,Let's discuss this thodi der mein after the review,Let's discuss this थोड़ी देर में after the review,Let's discuss this थोड़ी देर में after the review,EN EN EN HI HI HI EN EN EN
+G_182,CS_02640,CS-04,mid,Yeh kaam ho gaya. Now let's focus on the weekend,यह काम हो गया. Now let's focus on the weekend,यह काम हो गया. Now let's focus on the weekend,HI HI HI HI EN EN EN EN EN EN
+G_183,CS_02690,CS-05,mid,Yeh workout bahut zyada tough tha,यह workout बहुत ज़्यादा tough था,यह workout बहुत ज़्यादा tough था,HI EN HI HI EN HI
+G_184,CS_02764,CS-06,high,Kal 4 PM baje call hai,कल 4 PM बजे call है,कल 4 PM बजे call है,HI EN EN HI EN HI
+G_185,CS_02794,CS-06,mid,report next Monday ko 1 PM par hai,report next Monday को 1 PM पर है,report next Monday को 1 PM पर है,EN EN EN HI EN EN HI HI
+G_186,CS_02799,CS-05,low,"main password bhool gaya, ab kya karoon","मैं password भूल गया, अब क्या करूं","मैं password भूल गया, अब क्या करूं",HI EN HI HI HI HI HI
+G_187,CS_02802,CS-05,low,"Sach keh raha hoon, this coffee best hai","सच कह रहा हूँ, this coffee बेस्ट है","सच कह रहा हूँ, this coffee बेस्ट है",HI HI HI HI EN EN HI HI
+G_188,CS_02841,CS-05,mid,"waise , I can't believe this diet itna lamba tha","वैसे , I can't believe this diet इतना लंबा था","वैसे , I can't believe this diet इतना लंबा था",HI EN EN EN EN EN EN HI HI HI
+G_189,CS_02845,CS-05,high,maza aa gaya . I didn't expect the order itna achha hoga,मज़ा आ गया . I didn't expect the order इतना अच्छा होगा,मज़ा आ गया . I didn't expect the order इतना अच्छा होगा,HI HI HI EN EN EN EN EN EN HI HI HI
+G_190,CS_02881,CS-03,mid,"sun na , let's just watch it parso","सुन ना , let's just watch it परसो","सुन ना , let's just watch it परसो",HI HI EN EN EN EN EN HI
+G_191,CS_02894,CS-01,mid,Tera comment zyada viral ho gaya,तेरा comment ज़्यादा viral हो गया,तेरा comment ज़्यादा viral हो गया,HI EN HI EN HI HI
+G_192,CS_02941,CS-03,high,"arre , main yeh idea finish kar dunga","अरे , main yeh idea फ़िनिश कर दूँगा","अरे , main yeh idea फ़िनिश कर दूँगा",HI EN EN EN EN HI HI HI
+G_193,CS_02972,CS-01,mid,Tera chat bahut viral ho gaya,तेरा chat बहुत viral हो गया,तेरा chat बहुत viral हो गया,HI EN HI EN HI HI
+G_194,CS_03013,CS-01,mid,Tera profile itna viral ho gaya,तेरा profile इतना viral हो गया,तेरा profile इतना viral हो गया,HI EN HI EN HI HI
+G_195,CS_03059,CS-02,low,"main save karta hoon, tum dekho","मैं save करता हूँ, तुम देखो","मैं save करता हूँ, तुम देखो",HI EN HI HI HI HI
+G_196,CS_03060,CS-03,low,"acha , this presentation needs to be check kal","अच्छा , this presentation needs to be check कल","अच्छा , this presentation needs to be check कल",HI EN EN EN EN EN EN EN HI
+G_197,CS_03064,CS-04,mid,This solution is short . Mujhe nahi pasand,This solution is short . मुझे नहीं पसंद,This solution is short . मुझे नहीं पसंद,EN EN EN EN EN HI HI HI
+G_198,CS_03068,CS-04,low,"I'll search it kal , don't worry","I'll search it कल , don't worry","I'll search it कल , don't worry",EN EN EN HI EN EN EN
+G_199,CS_03071,CS-06,high,Kal 9 AM baje call hai,कल 9 AM बजे call है,कल 9 AM बजे call है,HI EN EN HI EN HI
+G_200,CS_03074,CS-01,low,main email abhi tak bhej dunga,मैं email अभी तक भेज दूँगा,मैं email अभी तक भेज दूँगा,HI EN HI HI HI HI
+G_201,CS_03112,CS-06,low,Is Tuesday ko chhutti hai kya,इस Tuesday को छुट्टी है क्या,इस Tuesday को छुट्टी है क्या,HI EN HI HI HI HI
+G_202,CS_03140,CS-01,mid,Kal ka code review abhi hai,कल का code review अभी है,कल का code review अभी है,HI HI EN EN HI HI
+G_203,CS_03157,CS-04,low,Let's discuss this baad mein after the report,Let's discuss this बाद में after the report,Let's discuss this बाद में after the report,EN EN EN HI HI EN EN EN
+G_204,CS_03197,CS-05,mid,Yeh naya app kaafi useful hai,यह नया app काफ़ी useful है,यह नया app काफ़ी useful है,HI HI EN HI EN HI
+G_205,CS_03221,CS-04,low,Can you subscribe this parso ?,Can you subscribe this परसो ?,Can you subscribe this परसो ?,EN EN EN EN HI EN
+G_206,CS_03234,CS-04,low,We need to reset this kal,We need to reset this कल,We need to reset this कल,EN EN EN EN EN HI
+G_207,CS_03238,CS-01,low,Aaj ka email bahut lamba tha,आज का email बहुत लंबा था,आज का email बहुत लंबा था,HI HI EN HI HI HI
+G_208,CS_03249,CS-04,low,Let's discuss this is hafte after the email,Let's discuss this इस हफ़्ते after the email,Let's discuss this इस हफ़्ते after the email,EN EN EN HI HI EN EN EN
+G_209,CS_03260,CS-01,mid,Tera caption kaafi viral ho gaya,तेरा caption काफ़ी viral हो गया,तेरा caption काफ़ी viral हो गया,HI EN HI EN HI HI
+G_210,CS_03265,CS-05,mid,tension ho rahi hai after the break,tension हो रही है after the break,tension हो रही है after the break,EN HI HI HI EN EN EN
+G_211,CS_03274,CS-03,mid,"ek kaam karo , this email needs to be confirm kal","एक काम करो , this email needs to be confirm कल","एक काम करो , this email needs to be confirm कल",HI HI HI EN EN EN EN EN EN EN HI
+G_212,CS_03314,CS-01,mid,Tera meme kaafi viral ho gaya,तेरा meme काफ़ी viral हो गया,तेरा meme काफ़ी viral हो गया,HI EN HI EN HI HI
+G_213,CS_03316,CS-05,low,main break dekh ke bahut zyada khush ho gaya,मैं break देख के बहुत ज़्यादा ख़ुश हो गया,मैं break देख के बहुत ज़्यादा ख़ुश हो गया,HI EN HI HI HI HI HI HI HI
+G_214,CS_03319,CS-03,mid,"matlab , can you post this baad mein ?","मतलब , can you post this बाद में ?","मतलब , can you post this बाद में ?",HI EN EN EN EN EN HI HI EN
+G_215,CS_03347,CS-04,mid,This song is complicated . Mujhe nahi pasand,This song is complicated . मुझे नहीं पसंद,This song is complicated . मुझे नहीं पसंद,EN EN EN EN EN HI HI HI
+G_216,CS_03414,CS-06,mid,next Friday ko 2:30 PM tak submit karna hai,next Friday को 2:30 PM तक सबमिट करना है,next Friday को 2:30 PM तक सबमिट करना है,EN EN HI EN EN HI HI HI HI
+G_217,CS_03444,CS-05,low,"Main diet pe hoon, isliye dessert nahi lunga","मैं diet पे हूँ, इसलिए dessert नहीं लूँगा","मैं diet पे हूँ, इसलिए dessert नहीं लूँगा",HI EN HI HI HI EN HI HI
+G_218,CS_03450,CS-06,mid,main Instagram pe 3 PM available hoon,मैं Instagram पे 3 PM अवेलेबल हूँ,मैं Instagram पे 3 PM अवेलेबल हूँ,HI EN HI EN EN HI HI
+G_219,CS_03465,CS-01,mid,Yeh reel thodi si good tha,यह reel थोड़ी सी good था,यह reel थोड़ी सी good था,HI EN HI HI EN HI
+G_220,CS_03477,CS-03,low,"Honestly, main yeh degree se thak gaya hoon","Honestly, मैं यह degree से थक गया हूँ","Honestly, मैं यह degree से थक गया हूँ",EN HI HI EN HI HI HI HI
+G_221,CS_03480,CS-05,low,"mera dost online order kiya tha, delivery abhi aani chahiye","मेरा दोस्त online ऑर्डर किया था, delivery अभी आनी चाहिए","मेरा दोस्त online ऑर्डर किया था, delivery अभी आनी चाहिए",HI HI EN HI HI HI EN HI HI HI
+G_222,CS_03485,CS-04,mid,I finished the budget . bahut zyada acha laga,I finished the budget . बहुत ज़्यादा अच्छा लगा,I finished the budget . बहुत ज़्यादा अच्छा लगा,EN EN EN EN EN HI HI HI HI
+G_223,CS_03488,CS-03,mid,"haan , let's just check it baad mein","हाँ , let's just check it बाद में","हाँ , let's just check it बाद में",HI EN EN EN EN EN HI HI
+G_224,CS_03520,CS-03,high,"yaar , main yeh review finish kar dunga","यार , main yeh review फ़िनिश कर दूँगा","यार , main yeh review फ़िनिश कर दूँगा",HI EN EN EN EN HI HI HI
+G_225,CS_03521,CS-05,low,"Aaj internet zyada slow hai, kaam nahi ho raha","आज internet ज़्यादा slow है, काम नहीं हो रहा","आज internet ज़्यादा slow है, काम नहीं हो रहा",HI EN HI EN HI HI HI HI HI
+G_226,CS_03525,CS-06,mid,April 1 tak payment kar dena,April 1 तक पेमेंट कर देना,April 1 तक पेमेंट कर देना,EN EN HI HI HI HI
+G_227,CS_03552,CS-01,mid,Tera follow bahut viral ho gaya,तेरा follow बहुत viral हो गया,तेरा follow बहुत viral हो गया,HI EN HI EN HI HI
+G_228,CS_03571,CS-06,high,Kal 9:30 AM baje call hai,कल 9:30 AM बजे call है,कल 9:30 AM बजे call है,HI EN EN HI EN HI
+G_229,CS_03601,CS-01,low,Yeh snack ka kya plan hai,यह snack का क्या प्लान है,यह snack का क्या प्लान है,HI EN HI HI HI HI
+G_230,CS_03615,CS-02,low,"Usne comment kar diya, ab kya karein","उसने comment कर दिया, अब क्या करें","उसने comment कर दिया, अब क्या करें",HI EN HI HI HI HI HI
+G_231,CS_03650,CS-01,low,Tera meme thodi si viral ho gaya,तेरा meme थोड़ी सी viral हो गया,तेरा meme थोड़ी सी viral हो गया,HI EN HI HI EN HI HI
+G_232,CS_03689,CS-06,high,client call Thursday ko April 1 ko reschedule ho gaya,client call Thursday को April 1 को रिशेड्यूल हो गया,client call Thursday को April 1 को रिशेड्यूल हो गया,EN EN EN HI EN EN HI HI HI HI
+G_233,CS_03690,CS-02,low,"Usne stream kar diya, ab kya karein","उसने stream कर दिया, अब क्या करें","उसने stream कर दिया, अब क्या करें",HI EN HI HI HI HI HI
+G_234,CS_03702,CS-02,low,main yeh reset karna chahta hoon,मैं यह reset करना चाहता हूँ,मैं यह reset करना चाहता हूँ,HI HI EN HI HI HI
+G_235,CS_03714,CS-01,mid,Tera like zyada viral ho gaya,तेरा like ज़्यादा viral हो गया,तेरा like ज़्यादा viral हो गया,HI EN HI EN HI HI
+G_236,CS_03717,CS-02,low,main yeh watch karna chahta hoon,मैं यह watch करना चाहता हूँ,मैं यह watch करना चाहता हूँ,HI HI EN HI HI HI
+G_237,CS_03727,CS-01,mid,Tera feed kaafi viral ho gaya,तेरा feed काफ़ी viral हो गया,तेरा feed काफ़ी viral हो गया,HI EN HI EN HI HI
+G_238,CS_03732,CS-01,low,Is API mein problem aa rahi hai,इस API में प्रॉब्लम आ रही है,इस API में प्रॉब्लम आ रही है,HI EN HI HI HI HI HI
+G_239,CS_03752,CS-03,low,"haan , can you cancel this abhi ?","हाँ , can you cancel this अभी ?","हाँ , can you cancel this अभी ?",HI EN EN EN EN EN HI EN
+G_240,CS_03786,CS-06,high,Kal 11 AM baje call hai,कल 11 AM बजे call है,कल 11 AM बजे call है,HI EN EN HI EN HI
+G_241,CS_03810,CS-03,high,"arre , main yeh movie finish kar dunga","अरे , main yeh movie फ़िनिश कर दूँगा","अरे , main yeh movie फ़िनिश कर दूँगा",HI EN EN EN EN HI HI HI
+G_242,CS_03815,CS-03,low,"toh , this bug needs to be review abhi","तो , this bug needs to be review अभी","तो , this bug needs to be review अभी",HI EN EN EN EN EN EN EN HI
+G_243,CS_03837,CS-01,low,Mera one-on-one abhi bhi pending hai,मेरा one-on-one अभी भी पेंडिंग है,मेरा one-on-one अभी भी पेंडिंग है,HI EN HI HI HI HI
+G_244,CS_03847,CS-03,mid,"theek hai , main yeh dessert finish kar dunga","ठीक है , main yeh dessert फ़िनिश कर दूँगा","ठीक है , main yeh dessert फ़िनिश कर दूँगा",HI HI EN EN EN EN HI HI HI
+G_245,CS_03862,CS-01,low,Is class ke liye bilkul taiyar nahi hoon,इस class के लिए बिल्कुल तैयार नहीं हूँ,इस class के लिए बिल्कुल तैयार नहीं हूँ,HI EN HI HI HI HI HI HI
+G_246,CS_03871,CS-02,low,"main watch karta hoon, tum dekho","मैं watch करता हूँ, तुम देखो","मैं watch करता हूँ, तुम देखो",HI EN HI HI HI HI
+G_247,CS_03872,CS-01,mid,Kal ka team standup aaj hai,कल का team standup आज है,कल का team standup आज है,HI HI EN EN HI HI
+G_248,CS_03874,CS-06,high,Kal 11 AM baje call hai,कल 11 AM बजे call है,कल 11 AM बजे call है,HI EN EN HI EN HI
+G_249,CS_03906,CS-03,mid,"arre , let's just delegate it baad mein","अरे , let's just delegate it बाद में","अरे , let's just delegate it बाद में",HI EN EN EN EN EN HI HI
+G_250,CS_03940,CS-03,mid,"sun na , main yeh ticket finish kar dunga","सुन ना , main yeh ticket फ़िनिश कर दूँगा","सुन ना , main yeh ticket फ़िनिश कर दूँगा",HI HI EN EN EN EN HI HI HI
+G_251,CS_03948,CS-03,low,"The dessert was complicated , bata na","The dessert was complicated , बता ना","The dessert was complicated , बता ना",EN EN EN EN EN HI HI
+G_252,CS_03966,CS-03,high,"acha , main yeh deployment finish kar dunga","अच्छा , main yeh deployment फ़िनिश कर दूँगा","अच्छा , main yeh deployment फ़िनिश कर दूँगा",HI EN EN EN EN HI HI HI
+G_253,CS_03975,CS-03,mid,"arre , this caption needs to be reschedule baad mein","अरे , this caption needs to be reschedule बाद में","अरे , this caption needs to be reschedule बाद में",HI EN EN EN EN EN EN EN HI HI
+G_254,CS_04000,CS-03,mid,"ek kaam karo , main yeh pull request finish kar dunga","एक काम करो , main yeh pull request फ़िनिश कर दूँगा","एक काम करो , main yeh pull request फ़िनिश कर दूँगा",HI HI HI EN EN EN EN EN HI HI HI
+G_255,CS_04004,CS-01,mid,Tera like kaafi viral ho gaya,तेरा like काफ़ी viral हो गया,तेरा like काफ़ी viral हो गया,HI EN HI EN HI HI
+G_256,CS_04010,CS-01,low,meri friend dessert lena bhool gaya,मेरी फ्रेंड dessert लेना भूल गया,मेरी फ्रेंड dessert लेना भूल गया,HI HI EN HI HI HI
+G_257,CS_04020,CS-02,low,Isko google karna hai baad mein,इसको google करना है बाद में,इसको google करना है बाद में,HI EN HI HI HI HI
+G_258,CS_04027,CS-02,low,"main stream karta hoon, tum dekho","मैं stream करता हूँ, तुम देखो","मैं stream करता हूँ, तुम देखो",HI EN HI HI HI HI
+G_259,CS_04034,CS-01,low,Aaj ka proposal bahut lamba tha,आज का proposal बहुत लंबा था,आज का proposal बहुत लंबा था,HI HI EN HI HI HI
+G_260,CS_04047,CS-06,high,Friday evening ko 4:30 PM se 3 PM wala slot available hai,Friday evening को 4:30 PM से 3 PM वाला स्लॉट अवेलेबल है,Friday evening को 4:30 PM से 3 PM वाला स्लॉट अवेलेबल है,EN EN HI EN EN HI EN EN HI HI HI HI
+G_261,CS_04071,CS-02,low,"Usne comment kar diya, ab kya karein","उसने comment कर दिया, अब क्या करें","उसने comment कर दिया, अब क्या करें",HI EN HI HI HI HI HI
+G_262,CS_04076,CS-03,low,"Honestly, main yeh like se thak gaya hoon","Honestly, मैं यह like से थक गया हूँ","Honestly, मैं यह like से थक गया हूँ",EN HI HI EN HI HI HI HI
+G_263,CS_04094,CS-06,low,yeh Slack wala roadmap baad mein tha,यह Slack वाला roadmap बाद में था,यह Slack वाला roadmap बाद में था,HI EN HI EN HI HI HI
+G_264,CS_04140,CS-02,low,main yeh charge karna chahta hoon,मैं यह charge करना चाहता हूँ,मैं यह charge करना चाहता हूँ,HI HI EN HI HI HI
+G_265,CS_04153,CS-02,low,Please yeh handle mat karo parso,प्लीज़ यह handle मत करो परसो,प्लीज़ यह handle मत करो परसो,HI HI EN HI HI HI
+G_266,CS_04175,CS-06,mid,follow-up next Friday ko 3 PM par hai,follow-up next Friday को 3 PM पर है,follow-up next Friday को 3 PM पर है,EN EN EN HI EN EN HI HI
+G_267,CS_04190,CS-01,mid,Tera story bahut viral ho gaya,तेरा story बहुत viral हो गया,तेरा story बहुत viral हो गया,HI EN HI EN HI HI
+G_268,CS_04198,CS-02,low,main pehle send karke aata hoon,मैं पहले send करके आता हूँ,मैं पहले send करके आता हूँ,HI HI EN HI HI HI
+G_269,CS_04210,CS-01,mid,Tera meme itna viral ho gaya,तेरा meme इतना viral हो गया,तेरा meme इतना viral हो गया,HI EN HI EN HI HI
+G_270,CS_04229,CS-03,low,"The break was complicated , haan","The break was complicated , हाँ","The break was complicated , हाँ",EN EN EN EN EN HI
+G_271,CS_04399,CS-02,low,Please yeh approve mat karo parso,प्लीज़ यह approve मत करो परसो,प्लीज़ यह approve मत करो परसो,HI HI EN HI HI HI
+G_272,CS_04401,CS-06,low,Aaj ka Jira wala email parso shift ho gaya,आज का Jira वाला email परसो शिफ़्ट हो गया,आज का Jira वाला email परसो शिफ़्ट हो गया,HI HI EN HI EN HI HI HI HI
+G_273,CS_04426,CS-06,low,Is Tuesday ko chhutti hai kya,इस Tuesday को छुट्टी है क्या,इस Tuesday को छुट्टी है क्या,HI EN HI HI HI HI
+G_274,CS_04436,CS-02,low,"main like karta hoon, tum dekho","मैं like करता हूँ, तुम देखो","मैं like करता हूँ, तुम देखो",HI EN HI HI HI HI
+G_275,CS_04438,CS-02,low,Isko google karna hai aaj shaam ko,इसको google करना है आज शाम को,इसको google करना है आज शाम को,HI EN HI HI HI HI HI
+G_276,CS_04446,CS-02,low,main pehle share karke aata hoon,मैं पहले share करके आता हूँ,मैं पहले share करके आता हूँ,HI HI EN HI HI HI
+G_277,CS_04531,CS-01,low,Is app mein problem aa rahi hai,इस app में प्रॉब्लम आ रही है,इस app में प्रॉब्लम आ रही है,HI EN HI HI HI HI HI
+G_278,CS_04547,CS-02,low,"Usne unfollow kar diya, ab kya karein","उसने unfollow कर दिया, अब क्या करें","उसने unfollow कर दिया, अब क्या करें",HI EN HI HI HI HI HI
+G_279,CS_04559,CS-02,low,"Pehle check karo, phir baat karte hain","पहले check करो, फिर बात करते हैं","पहले check करो, फिर बात करते हैं",HI EN HI HI HI HI HI
+G_280,CS_04561,CS-03,low,"yaar , the degree is serious","यार , the degree is serious","यार , the degree is serious",HI EN EN EN EN EN
+G_281,CS_04570,CS-01,mid,Tera selfie ekdum viral ho gaya,तेरा selfie एकदम viral हो गया,तेरा selfie एकदम viral हो गया,HI EN HI EN HI HI
+G_282,CS_04590,CS-03,high,"suno , main yeh one-on-one finish kar dunga","सुनो , main yeh one-on-one फ़िनिश कर दूँगा","सुनो , main yeh one-on-one फ़िनिश कर दूँगा",HI EN EN EN EN HI HI HI
+G_283,CS_04609,CS-01,mid,Kal ka team standup kal hai,कल का team standup कल है,कल का team standup कल है,HI HI EN EN HI HI
+G_284,CS_04615,CS-06,mid,yeh Teams wala review kal tha,यह Teams वाला review कल था,यह Teams वाला review कल था,HI EN HI EN HI HI
+G_285,CS_04674,CS-01,mid,Yeh stream bahut zyada good tha,यह stream बहुत ज़्यादा good था,यह stream बहुत ज़्यादा good था,HI EN HI HI EN HI
+G_286,CS_04704,CS-03,high,"waise , main yeh delivery finish kar dunga","वैसे , main yeh delivery फ़िनिश कर दूँगा","वैसे , main yeh delivery फ़िनिश कर दूँगा",HI EN EN EN EN HI HI HI
+G_287,CS_04745,CS-06,mid,Thursday ko 4:30 PM se 9:30 AM wala slot available hai,Thursday को 4:30 PM से 9:30 AM वाला स्लॉट अवेलेबल है,Thursday को 4:30 PM से 9:30 AM वाला स्लॉट अवेलेबल है,EN HI EN EN HI EN EN HI HI HI HI
+G_288,CS_04756,CS-06,low,"Aaj 20th tarikh hai, kal deadline hai","आज 20th तारीख़ है, कल डेडलाइन है","आज 20th तारीख़ है, कल डेडलाइन है",HI EN HI HI HI HI HI
+G_289,CS_04782,CS-02,low,main pehle call karke aata hoon,मैं पहले call करके आता हूँ,मैं पहले call करके आता हूँ,HI HI EN HI HI HI
+G_290,CS_04791,CS-03,mid,"sach mein , can you cancel this parso ?","सच में , can you cancel this परसो ?","सच में , can you cancel this परसो ?",HI HI EN EN EN EN EN HI EN
+G_291,CS_04794,CS-02,low,Yeh charge karna itna mushkil nahi hai,यह charge करना इतना मुश्किल नहीं है,यह charge करना इतना मुश्किल नहीं है,HI EN HI HI HI HI HI
+G_292,CS_04799,CS-02,low,"main post karta hoon, tum dekho","मैं post करता हूँ, तुम देखो","मैं post करता हूँ, तुम देखो",HI EN HI HI HI HI
+G_293,CS_04803,CS-02,low,Yeh download karna itna mushkil nahi hai,यह download करना इतना मुश्किल नहीं है,यह download करना इतना मुश्किल नहीं है,HI EN HI HI HI HI HI
+G_294,CS_04831,CS-01,mid,Yeh episode thodi si good tha,यह episode थोड़ी सी good था,यह episode थोड़ी सी good था,HI EN HI HI EN HI
+G_295,CS_04849,CS-01,mid,Yeh reel thodi si good tha,यह reel थोड़ी सी good था,यह reel थोड़ी सी good था,HI EN HI HI EN HI
+G_296,CS_04876,CS-06,low,Aaj ka WhatsApp wala budget baad mein shift ho gaya,आज का WhatsApp वाला budget बाद में शिफ़्ट हो गया,आज का WhatsApp वाला budget बाद में शिफ़्ट हो गया,HI HI EN HI EN HI HI HI HI HI
+G_297,CS_04920,CS-06,high,Google Meet pe 6 PM par milte hain,Google Meet पे 6 PM पर मिलते हैं,Google Meet पे 6 PM पर मिलते हैं,EN EN HI EN EN HI HI HI
+G_298,CS_04938,CS-06,mid,budget next Monday ko 9 AM par hai,budget next Monday को 9 AM पर है,budget next Monday को 9 AM पर है,EN EN EN HI EN EN HI HI
+G_299,CS_04971,CS-02,low,Kya tum install kar sakte ho,क्या तुम install कर सकते हो,क्या तुम install कर सकते हो,HI HI EN HI HI HI
+G_300,CS_05000,CS-06,mid,yeh Gmail wala status update abhi tha,यह Gmail वाला status update अभी था,यह Gmail वाला status update अभी था,HI EN HI EN EN HI HI

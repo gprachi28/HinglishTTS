@@ -1,0 +1,61 @@
+{
+  "total": 300,
+  "seed": 42,
+  "source": "data/codeswitched/benchmark_v1.csv",
+  "pattern_counts": {
+    "CS-01": 43,
+    "CS-02": 43,
+    "CS-03": 43,
+    "CS-04": 43,
+    "CS-05": 43,
+    "CS-06": 43,
+    "CS-07": 42
+  },
+  "cmi_counts": {
+    "high": 45,
+    "low": 152,
+    "mid": 103
+  },
+  "length_stats": {
+    "min": 5,
+    "max": 12,
+    "mean": 7.3
+  },
+  "cross_tab": {
+    "CS-01": {
+      "low": 17,
+      "mid": 26,
+      "high": 0
+    },
+    "CS-02": {
+      "low": 43,
+      "mid": 0,
+      "high": 0
+    },
+    "CS-03": {
+      "low": 11,
+      "mid": 17,
+      "high": 15
+    },
+    "CS-04": {
+      "low": 17,
+      "mid": 26,
+      "high": 0
+    },
+    "CS-05": {
+      "low": 11,
+      "mid": 17,
+      "high": 15
+    },
+    "CS-06": {
+      "low": 11,
+      "mid": 17,
+      "high": 15
+    },
+    "CS-07": {
+      "low": 42,
+      "mid": 0,
+      "high": 0
+    }
+  }
+}
