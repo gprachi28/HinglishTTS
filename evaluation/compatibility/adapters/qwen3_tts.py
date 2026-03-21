@@ -3,7 +3,7 @@
 Qwen3-TTS Base adapter — voice cloning mode.
 
 Install:
-    hf download Qwen/Qwen3-TTS-12Hz-1.7B --local-dir models/qwen3_tts/weights
+    hf download Qwen/Qwen3-TTS-12Hz-1.7B-Base --local-dir models/qwen3_tts/weights
     pip install -U qwen-tts
     # Model is gated — run `huggingface-cli login` first
 
