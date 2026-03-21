@@ -1,63 +1,49 @@
-# evaluation/compatibility/adapters/fish_speech.py
+# evaluation/compatibility/adapters/fish_audio_s2.py
 """
-Fish-Speech 1.5 adapter.
+Fish Audio S2 Pro adapter.
 
 Install:
-    cd models/fish_speech
-    pip install -e ".[stable]"
-    # Download weights:
-    huggingface-cli download fishaudio/fish-speech-1.5 --local-dir models/fish_speech/weights
+    hf download fishaudio/fish-audio-s2-pro --local-dir models/fish_audio_s2/weights
+    pip install fish-audio-sdk   # update package name if different
 
-Repo: https://github.com/fishaudio/fish-speech
-Supported scripts: Roman, Devanagari (reported), Mixed
+Note: HF repo name is a placeholder — verify at huggingface.co/fishaudio
 """
 
+import subprocess
+import tempfile
 import time
 from pathlib import Path
 
 from .base import SynthResult, TTSAdapter
 
-WEIGHTS_DIR = Path(__file__).parents[3] / "models" / "fish_speech" / "weights"
-REPO_DIR = Path(__file__).parents[3] / "models" / "fish_speech"
+WEIGHTS_DIR = Path(__file__).parents[3] / "models" / "fish_audio_s2" / "weights"
+REPO_DIR = Path(__file__).parents[3] / "models" / "fish_audio_s2"
 
 
-class FishSpeechAdapter(TTSAdapter):
-    name = "fish_speech"
+class FishAudioS2Adapter(TTSAdapter):
+    name = "fish_audio_s2"
     supported_scripts = ["roman", "devanagari", "mixed"]
 
     def __init__(self):
         self._model = None
-        self._tokenizer = None
 
     def is_available(self) -> bool:
-        if not WEIGHTS_DIR.exists():
-            return False
-        try:
-            import fish_speech  # noqa: F401
-            return True
-        except ImportError:
-            return False
+        return WEIGHTS_DIR.exists()
 
     def load(self) -> None:
-        # Fish-Speech uses its own inference CLI; we call it via subprocess
-        # or via the Python API if available.
-        # Import deferred — only available after pip install -e .
-        pass
+        pass  # lazy-loaded at synthesis time via subprocess
 
     def synthesize(self, text: str, script_variant: str) -> SynthResult:
-        import subprocess
-        import tempfile
-        import os
-        import numpy as np
-        import soundfile as sf
-
         if not WEIGHTS_DIR.exists():
             return SynthResult(
                 success=False,
-                error=f"Fish-Speech weights not found at {WEIGHTS_DIR}"
+                error=f"Fish Audio S2 Pro weights not found at {WEIGHTS_DIR}"
             )
 
         try:
+            import os
+            import soundfile as sf
+
             with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as tmp:
                 tmp_path = tmp.name
 
@@ -70,11 +56,8 @@ class FishSpeechAdapter(TTSAdapter):
 
             start = time.perf_counter()
             result = subprocess.run(
-                cmd,
-                capture_output=True,
-                text=True,
-                cwd=str(REPO_DIR),
-                timeout=120,
+                cmd, capture_output=True, text=True,
+                cwd=str(REPO_DIR), timeout=120,
             )
             latency = time.perf_counter() - start
 

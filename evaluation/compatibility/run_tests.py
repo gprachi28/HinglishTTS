@@ -56,8 +56,8 @@ CAPABILITY_REPORT_PATH = HERE.parent.parent / "CAPABILITY_REPORT.md"
 
 # ── Registry ─────────────────────────────────────────────────
 def get_all_adapters():
-    from .adapters.cosyvoice2 import CosyVoice2Adapter
-    from .adapters.fish_speech import FishSpeechAdapter
+    from .adapters.cosyvoice3 import CosyVoice3Adapter
+    from .adapters.fish_audio_s2 import FishAudioS2Adapter
     from .adapters.glow_tts import GlowTTSAdapter
     from .adapters.qwen3_tts import Qwen3TTSAdapter
     from .adapters.xtts_v2 import XTTSV2Adapter
@@ -65,9 +65,9 @@ def get_all_adapters():
     return {
         "glow_tts": GlowTTSAdapter,
         "qwen3_tts": Qwen3TTSAdapter,
-        "cosyvoice2": CosyVoice2Adapter,
+        "cosyvoice3": CosyVoice3Adapter,
         "xtts_v2": XTTSV2Adapter,
-        "fish_speech": FishSpeechAdapter,
+        "fish_audio_s2": FishAudioS2Adapter,
     }
 
 
