@@ -1,23 +1,21 @@
 # evaluation/compatibility/adapters/qwen3_tts.py
 """
-Qwen3-TTS adapter.
+Qwen3-TTS Base adapter — voice cloning mode.
 
 Install:
-    pip install transformers accelerate
-    # Download weights:
-    huggingface-cli download Qwen/Qwen3-TTS --local-dir models/qwen3_tts/weights
+    hf download Qwen/Qwen3-TTS-12Hz-1.7B --local-dir models/qwen3_tts/weights
+    pip install -U qwen-tts
+    # Model is gated — run `huggingface-cli login` first
 
-HuggingFace: https://huggingface.co/Qwen/Qwen3-TTS
-Supported scripts: Roman, Devanagari (self-reported), Mixed
-Note: Qwen3-TTS supports multilingual including Hindi/Devanagari per docs.
+Model type: Base (supports generate_voice_clone() with reference audio).
+            Do NOT use the VoiceDesign variant here — it lacks voice cloning.
+Sample rate: 24000 Hz
 """
 
 import time
 from pathlib import Path
 
-import numpy as np
-
-from .base import SynthResult, TTSAdapter
+from .base import REF_AUDIO_PATH, SynthResult, TTSAdapter
 
 WEIGHTS_DIR = Path(__file__).parents[3] / "models" / "qwen3_tts" / "weights"
 
@@ -28,51 +26,62 @@ class Qwen3TTSAdapter(TTSAdapter):
 
     def __init__(self):
         self._model = None
-        self._processor = None
 
     def is_available(self) -> bool:
         if not WEIGHTS_DIR.exists():
             return False
         try:
-            from transformers import AutoModelForCausalLM, AutoProcessor  # noqa: F401
+            from qwen_tts.inference import qwen3_tts_model  # noqa: F401
             return True
         except ImportError:
             return False
 
     def load(self) -> None:
-        from transformers import AutoModelForCausalLM, AutoProcessor
         import torch
+        from qwen_tts.inference.qwen3_tts_model import Qwen3TTSModel
 
-        self._processor = AutoProcessor.from_pretrained(str(WEIGHTS_DIR))
-        self._model = AutoModelForCausalLM.from_pretrained(
+        self._model = Qwen3TTSModel.from_pretrained(
             str(WEIGHTS_DIR),
-            torch_dtype=torch.float16,
             device_map="auto",
+            dtype=torch.float16,
         )
 
     def synthesize(self, text: str, script_variant: str) -> SynthResult:
         if self._model is None:
             return SynthResult(success=False, error="Model not loaded — call load() first")
+        if not REF_AUDIO_PATH.exists():
+            return SynthResult(success=False, error=f"Reference audio not found: {REF_AUDIO_PATH}")
+
+        # Hindi has no native language ID — use "english" for Roman,
+        # None for Devanagari/mixed to expose the gap explicitly.
+        language = "english" if script_variant == "roman" else None
+
+        warnings = []
+        if language is None:
+            warnings.append(
+                f"Hindi not in codec_language_id — {script_variant} uses language=None"
+            )
 
         try:
-            import torch
-
-            inputs = self._processor(text=text, return_tensors="pt").to(self._model.device)
+            prompt = self._model.create_voice_clone_prompt(str(REF_AUDIO_PATH))
 
             start = time.perf_counter()
-            with torch.no_grad():
-                output_ids = self._model.generate(**inputs, max_new_tokens=2048)
+            wavs, sample_rate = self._model.generate_voice_clone(
+                text=text,
+                voice_clone_prompt=prompt,
+                language=language,
+            )
             latency = time.perf_counter() - start
 
-            # Decode audio tokens to waveform
-            audio = self._processor.decode_audio(output_ids)
-            sr = self._processor.audio_sample_rate
+            if not wavs:
+                return SynthResult(success=False, error="Model returned empty audio")
 
             return SynthResult(
                 success=True,
-                latency_s=latency,
-                audio=audio.cpu().numpy().squeeze(),
-                sample_rate=sr,
+                latency_s=round(latency, 3),
+                audio=wavs[0],
+                sample_rate=sample_rate,
+                warnings=warnings,
             )
 
         except Exception as e:
@@ -81,7 +90,6 @@ class Qwen3TTSAdapter(TTSAdapter):
     def unload(self) -> None:
         import gc
         self._model = None
-        self._processor = None
         gc.collect()
         try:
             import torch

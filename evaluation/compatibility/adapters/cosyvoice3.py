@@ -1,6 +1,6 @@
 # evaluation/compatibility/adapters/cosyvoice3.py
 """
-CosyVoice 3 adapter.
+CosyVoice 3 adapter — voice cloning with reference audio.
 
 Install:
     hf download FunAudioLLM/CosyVoice3 --local-dir models/cosyvoice3/weights
@@ -12,7 +12,9 @@ Note: HF repo name is a placeholder — verify at huggingface.co/FunAudioLLM
 import time
 from pathlib import Path
 
-from .base import SynthResult, TTSAdapter
+import soundfile as sf
+
+from .base import REF_AUDIO_PATH, SynthResult, TTSAdapter
 
 WEIGHTS_DIR = Path(__file__).parents[3] / "models" / "cosyvoice3" / "weights"
 REPO_DIR = Path(__file__).parents[3] / "models" / "cosyvoice3"
@@ -37,10 +39,18 @@ class CosyVoice3Adapter(TTSAdapter):
     def synthesize(self, text: str, script_variant: str) -> SynthResult:
         if self._model is None:
             return SynthResult(success=False, error="Model not loaded — call load() first")
+        if not REF_AUDIO_PATH.exists():
+            return SynthResult(success=False, error=f"Reference audio not found: {REF_AUDIO_PATH}")
 
         try:
+            ref_audio, ref_sr = sf.read(str(REF_AUDIO_PATH), dtype="float32")
+
             start = time.perf_counter()
-            output = list(self._model.inference_sft(tts_text=text))
+            output = list(self._model.inference_zero_shot(
+                tts_text=text,
+                prompt_speech_16k=ref_audio,
+                prompt_text="",
+            ))
             latency = time.perf_counter() - start
 
             if not output:
