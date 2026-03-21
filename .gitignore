@@ -26,6 +26,12 @@ READMEpersonal.md
 PROJECT_PLAN.md
 research_notes.md
 
+# Models — cloned repos and downloaded weights (can be very large)
+models/
+
+# Evaluation results — audio and per-run reports
+evaluation/compatibility/results/
+
 # IDE
 .vscode/
 .idea/
