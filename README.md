@@ -47,12 +47,29 @@ The same sentences are fed in three script variants, isolating the impact of tra
 
 ### Tier 2: Models Under Evaluation
 
-| Model | Architecture | Params | Multilingual |
-|---|---|---|---|
-| Qwen3-TTS | Qwen-Omni E2E | 1.7B | Yes (incl. Hindi) |
-| CosyVoice 2 | E2E | 0.5B | Yes |
-| XTTS v2 | Autoregressive | — | Yes |
-| Fish-Speech 1.5 | Autoregressive | — | Yes |
+| Model | Architecture | Params | Multilingual | Ecosystem |
+|---|---|---|---|---|
+| Qwen3-TTS | Autoregressive codec (Qwen-Omni backbone) | 1.7B | Yes (incl. Hindi) | Alibaba |
+| CosyVoice 3 | Flow-matching + LLM text encoder | — | Yes (incl. Hindi) | Alibaba |
+| XTTS v2 | Autoregressive | — | Yes | Coqui (independent) |
+| Fish Audio S2 Pro | Codec-based | — | Yes | Independent |
+
+#### Model Ecosystem Grouping
+
+CosyVoice 3 and Qwen3-TTS share the same BPE tokenizer (Qwen's tokenizer) because CosyVoice 3 uses a Qwen LLM as its text encoder backbone. This has implications for fair comparison:
+
+- **Tokenization is identical**: both models split Hinglish input (Roman, Devanagari, mixed) into the same subwords. OOV handling at switch boundaries, Devanagari coverage, and intraword splitting (`unfriend`, `डेडलाइन`) are identical.
+- **Training data overlap**: both are Alibaba-trained models, likely pretrained on overlapping multilingual corpora with Hindi/Devanagari coverage. Differences in Hindi phonetic fidelity scores between them reflect architecture and fine-tuning, not data access.
+- **Cross-ecosystem comparison is the headline**: when Alibaba models outperform XTTS v2 or Fish Audio on Hindi metrics, it may reflect shared training advantage rather than architectural superiority.
+
+Results are therefore reported in two clusters:
+
+| Cluster | Models | Shared components |
+|---|---|---|
+| **Alibaba ecosystem** | Qwen3-TTS, CosyVoice 3 | Tokenizer, pretraining corpus, Qwen LLM |
+| **Independent** | XTTS v2, Fish Audio S2 Pro | Nothing shared |
+
+Within-cluster comparisons (Qwen3-TTS vs CosyVoice 3) isolate **architectural** differences. Cross-cluster comparisons measure **ecosystem advantage** as a finding in its own right.
 
 ### Tier 3: Evaluation Metrics
 
@@ -139,6 +156,25 @@ It also disentangles pattern effects from length effects — CS-07 intraword sen
 
 ---
 
+## Project Status
+
+| Phase | Component | Status |
+|-------|-----------|--------|
+| **Phase 0** | Test set generation (7 patterns, 5000 sentences) | ✅ Complete |
+| **Phase 1** | Golden set selection (300 sentences) | ✅ Complete |
+| **Phase 1** | Golden set Devanagari verification | 🔄 In progress |
+| **Phase 1.5** | Model compatibility testing (test harness) | ✅ Complete |
+| **Phase 1.5** | XTTS-v2 adapter (Phase 1.5 ✓ 90% pass) | ✅ Complete |
+| **Phase 1.5** | Qwen3-TTS adapter | ✅ Complete |
+| **Phase 1.5** | CosyVoice 3 adapter | 🔄 In progress |
+| **Phase 1.5** | Fish Audio S2 adapter | 📌 Pending |
+| **Phase 2** | Audio synthesis pipeline | 📌 Pending |
+| **Phase 3** | Objective acoustic metrics (PIER, F0, MCD) | 📌 Pending |
+| **Phase 4** | Human evaluation (MOS, SPN) | 📌 Pending |
+| **Phase 5** | Analysis & write-up | 📌 Pending |
+
+**Latest (Phase 1.5):** XTTS-v2 successfully tested with 90% pass rate across Roman, Devanagari, and mixed-script inputs. Known limitation: numerical/entity code-switching (CS-06).
+
 ## Project Structure
 
 ```
@@ -147,16 +183,27 @@ HinglishTTS/
 │   ├── codeswitching.py            # Controlled test set generator (7 patterns)
 │   ├── preprocess_streaming.py     # Audio preprocessing
 │   ├── codeswitched/               # Generated benchmark sentences (CSV)
-│   └── golden/                     # Human-verified Devanagari + recordings
+│   ├── golden/                     # Human-verified Devanagari + recordings
+│   └── devanagari_map.py           # Hand-curated Roman→Devanagari dictionary
 ├── normalization/
 │   └── g2p.py                      # G2P pipeline for reference transcriptions
 ├── evaluation/
-│   ├── synthesize.py               # Run models on benchmark set
-│   ├── acoustic_metrics.py         # PIER, F0 RMSE, MCD
-│   ├── tpi.py                      # Transliteration Penalty Index
-│   └── human_eval/                 # MOS + SPN collection setup
+│   ├── compatibility/
+│   │   ├── run_tests.py            # Phase 1.5 test harness
+│   │   ├── test_set.csv            # 20 test sentences (all 7 patterns)
+│   │   └── adapters/               # Model wrappers
+│   │       ├── base.py             # Adapter interface
+│   │       ├── qwen3_tts.py        # ✅ Tested
+│   │       ├── xtts_v2.py          # ✅ Tested (90%)
+│   │       ├── cosyvoice3.py       # 🔄 In progress
+│   │       └── fish_audio_s2.py    # 📌 Pending
+│   ├── synthesize.py               # Phase 2: Run models on benchmark set
+│   ├── acoustic_metrics.py         # Phase 3: PIER, F0 RMSE, MCD
+│   ├── tpi.py                      # Phase 3: Transliteration Penalty Index
+│   └── human_eval/                 # Phase 4: MOS + SPN collection setup
 ├── tests/
-└── results/                        # Per-model outputs and analysis
+├── CAPABILITY_REPORT.md            # Phase 1.5 results (auto-generated)
+└── results/                        # Phase 2+: Per-model outputs and analysis
 ```
 
 ---
@@ -180,14 +227,40 @@ make test
 
 ## Results
 
-*Evaluation in progress.*
+### Phase 1.5: Model Capability Testing (✅ Complete)
+
+Script variant compatibility across 20 test sentences (all 7 code-switching patterns):
+
+**Alibaba Ecosystem**
+
+| Model | Roman | Devanagari | Mixed | Latency | Status |
+|---|---|---|---|---|---|
+| Qwen3-TTS | ✅ Tested | ✅ Tested | ✅ Tested | — | ✅ Adapter ready |
+| CosyVoice 3 | ? | ? | ? | — | 🔄 Testing in progress |
+
+**Independent**
+
+| Model | Roman | Devanagari | Mixed | Latency | Status |
+|---|---|---|---|---|---|
+| XTTS v2 | ~ 18/20 (90%) | ~ 18/20 (90%) | ~ 18/20 (90%) | 2.1s/sent | ✅ Adapter ready |
+| Fish Audio S2 Pro | ? | ? | ? | — | 📌 Testing pending |
+
+**XTTS-v2 Detailed Results:**
+- **Roman:** 18/20 pass (90%), 2.67s per sentence
+- **Devanagari:** 18/20 pass (90%), 2.10s per sentence
+- **Mixed:** 18/20 pass (90%), 2.02s per sentence
+- **Known limitation:** Fails on CS-06 (numerical/entity code-switching) patterns
+
+### Phase 2+: Objective Metrics (⏳ In Progress)
+
+*Full benchmark results (PIER, TPI, MCD, H-Index, MOS, SPN) will be published after Phase 2 synthesis and Phase 3 metric computation.*
 
 | Model | MOS ↑ | SPN ↑ | PIER ↓ | TPI ↓ | H-Index ↑ |
 |---|---|---|---|---|---|
-| Qwen3-TTS | — | — | — | — | — |
-| CosyVoice 2 | — | — | — | — | — |
-| XTTS v2 | — | — | — | — | — |
-| Fish-Speech 1.5 | — | — | — | — | — |
+| Qwen3-TTS | ⏳ | ⏳ | ⏳ | ⏳ | ⏳ |
+| CosyVoice 3 | ⏳ | ⏳ | ⏳ | ⏳ | ⏳ |
+| XTTS v2 | ⏳ | ⏳ | ⏳ | ⏳ | ⏳ |
+| Fish Audio S2 Pro | ⏳ | ⏳ | ⏳ | ⏳ | ⏳ |
 
 ---
 
