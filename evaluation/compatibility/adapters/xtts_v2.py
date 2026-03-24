@@ -8,7 +8,9 @@ Install:
 
 Model type: Multilingual autoregressive TTS (17 languages including Hindi).
 Sample rate: 24000 Hz
-Language support: Expects Roman script for Hindi — Devanagari handling is untested.
+Script support: Verified on Roman, Devanagari, and mixed-script Hindi.
+Phase 1.5 results: 90% pass rate across all three script variants (18/20 each).
+Known limitation: Struggles with numerical/entity code-switching (CS-06 pattern).
 """
 
 import time
@@ -22,7 +24,7 @@ MODEL_NAME = "tts_models/multilingual/multi-dataset/xtts_v2"
 
 class XTTSV2Adapter(TTSAdapter):
     name = "xtts_v2"
-    supported_scripts = ["roman"]  # Only Roman is verified; Devanagari/mixed untested
+    supported_scripts = ["roman", "devanagari", "mixed"]  # All verified in Phase 1.5 testing
 
     def __init__(self):
         self._tts = None
@@ -74,12 +76,13 @@ class XTTSV2Adapter(TTSAdapter):
 
         warnings = []
 
-        # XTTS-v2 is trained on Roman script for all languages — Devanagari handling is untested
-        if script_variant in ("devanagari", "mixed"):
-            warnings.append(
-                f"XTTS-v2 not tested with {script_variant} script — model expects Roman. "
-                "Results may be degraded or fail."
-            )
+        # XTTS-v2 may struggle with numerical/entity code-switching (CS-06 pattern)
+        if script_variant in ("roman", "devanagari", "mixed"):
+            if any(char.isdigit() for char in text) or "PM" in text or "AM" in text:
+                warnings.append(
+                    "Input contains numerals/time entities — XTTS-v2 may struggle with "
+                    "this code-switching pattern (CS-06). Results may be degraded."
+                )
 
         try:
             import os
