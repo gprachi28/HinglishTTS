@@ -44,8 +44,17 @@ class XTTSV2Adapter(TTSAdapter):
         import torch
         from TTS.api import TTS
 
-        gpu = torch.cuda.is_available() or torch.backends.mps.is_available()
-        self._tts = TTS(MODEL_NAME, gpu=gpu, progress_bar=False, in_memory=True)
+        # Determine device: CUDA → MPS → CPU
+        if torch.cuda.is_available():
+            device = "cuda"
+        elif torch.backends.mps.is_available():
+            device = "mps"
+        else:
+            device = "cpu"
+
+        # TTS API: gpu parameter is deprecated, use device via to()
+        self._tts = TTS(MODEL_NAME, gpu=False, progress_bar=False)
+        self._tts.to(device)
 
     def synthesize(self, text: str, script_variant: str) -> SynthResult:
         """
