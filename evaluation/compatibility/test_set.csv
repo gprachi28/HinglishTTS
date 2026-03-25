@@ -1,36 +1,115 @@
-test_id,category,note,text,language_tags
-T01,devanagari_pure,Expanded from test harness,Aaj bahut kaam karna hai,
-T02,devanagari_pure,Expanded from test harness,Mujhe kal subah jaldi uthna padega,
-T03,roman_pure,Expanded from test harness,Aaj bahut kaam karna hai,
-T04,roman_pure,Expanded from test harness,Yaar main bahut thak gaya hoon,
-T05,mixed_script,Expanded from test harness,Mujhe meeting mein jaana hai,
-T06,mixed_script,Expanded from test harness,Yeh deadline bahut important hai,
-T07,cs01_noun_insertion,Expanded from test harness,Aaj ka meeting bahut lamba tha,
-T08,cs01_noun_insertion,Expanded from test harness,Mera code review pending hai,
-T09,cs02_verb_grafting,Expanded from test harness,Pehle send karo phir baat karte hain,
-T10,cs02_verb_grafting,Expanded from test harness,Yeh file download karke bhej do,
-T11,cs03_tag_switching,Expanded from test harness,Yaar the deadline is really urgent,
-T12,cs03_tag_switching,Expanded from test harness,The project got cancelled. Main khush hoon,
-T13,cs04_clause_boundary,Expanded from test harness,Main soch raha tha. The meeting is really long,
-T14,cs04_clause_boundary,Expanded from test harness,I finished the report. Ekdum acha laga,
-T15,cs05_technical_slang,Expanded from test harness,Mera laptop slow ho gaya hai kya karoon,
-T16,cs05_technical_slang,Expanded from test harness,Kal party mein bahut fun tha,
-T17,cs06_numerical_entity,Expanded from test harness,Meeting Monday ko 3 PM par hai,
-T18,cs06_numerical_entity,Expanded from test harness,Google Meet pe 5 PM par milte hain,
-T19,cs07_intraword,Expanded from test harness,Usne mujhe unfriend kar diya,
-T20,cs07_intraword,Expanded from test harness,Maine use screenshot kar liya,
-T21,cs01_noun_insertion,"Balanced expansion from golden set (CS-01, low)",Is college ke liye bilkul taiyar nahi hoon,HI EN HI HI HI HI HI HI
-T22,cs01_noun_insertion,"Balanced expansion from golden set (CS-01, mid)",Tera status thoda viral ho gaya,HI EN HI EN HI HI
-T23,cs02_verb_grafting,"Balanced expansion from golden set (CS-02, low)",Please yeh comment mat karo aaj,HI HI EN HI HI HI
-T24,cs03_tag_switching,"Balanced expansion from golden set (CS-03, low)","The one-on-one was slow , matlab",EN EN EN EN EN HI
-T25,cs03_tag_switching,"Balanced expansion from golden set (CS-03, mid)","ek kaam karo , let's just google it abhi",HI HI HI EN EN EN EN EN HI
-T26,cs03_tag_switching,"Balanced expansion from golden set (CS-03, high)","acha , main yeh password finish kar dunga",HI EN EN EN EN HI HI HI
-T27,cs04_clause_boundary,"Balanced expansion from golden set (CS-04, low)",Please send me the team standup parso,EN EN EN EN EN EN HI
-T28,cs04_clause_boundary,"Balanced expansion from golden set (CS-04, mid)",Could you please connect the code review parso tak chahiye,EN EN EN EN EN EN EN HI HI HI
-T29,cs05_technical_slang,"Balanced expansion from golden set (CS-05, low)",tum gym jaana bilkul mushkil ho gaya hai,HI EN HI HI HI HI HI HI
-T30,cs05_technical_slang,"Balanced expansion from golden set (CS-05, mid)","bata na , I can't believe this movie itna lamba tha",HI HI EN EN EN EN EN EN HI HI HI
-T31,cs05_technical_slang,"Balanced expansion from golden set (CS-05, high)",main khush hoon after the decision,HI HI HI EN EN EN
-T32,cs06_numerical_entity,"Balanced expansion from golden set (CS-06, low)","Aaj 30th tarikh hai, kal deadline hai",HI EN HI HI HI HI HI
-T33,cs06_numerical_entity,"Balanced expansion from golden set (CS-06, mid)",main Gmail pe 2:30 PM available hoon,HI EN HI EN EN HI HI
-T34,cs06_numerical_entity,"Balanced expansion from golden set (CS-06, high)",pull request next Friday ko 20th ko reschedule ho gaya,EN EN EN EN HI EN HI HI HI HI
-T35,cs07_intraword,"Balanced expansion from golden set (CS-07, low)","Yaar, use reply kar de na",HI HI EN HI HI HI
+test_id,category,text,language_tags
+T01,cs01_noun_insertion,Aaj ka meeting bahut lamba tha,HI HI EN HI HI HI
+T02,cs01_noun_insertion,Mera code review pending hai,HI EN EN EN HI
+T03,cs02_verb_grafting,Pehle send karo phir baat karte hain,HI EN HI HI HI HI HI
+T04,cs02_verb_grafting,Yeh file download karke bhej do,HI EN EN HI HI HI
+T05,cs03_tag_switching,Yaar the deadline is really urgent,HI EN EN EN EN EN
+T06,cs03_tag_switching,The project got cancelled. Main khush hoon,EN EN EN EN HI HI HI
+T07,cs04_clause_boundary,Main soch raha tha. The meeting is really long,HI HI HI HI EN EN EN EN EN
+T08,cs04_clause_boundary,I finished the report. Ekdum acha laga,EN EN EN EN HI HI HI
+T09,cs05_technical_slang,Mera laptop slow ho gaya hai kya karoon,HI EN EN HI HI HI HI HI
+T10,cs05_technical_slang,Kal party mein bahut fun tha,HI EN HI HI EN HI
+T11,cs06_numerical_entity,Meeting Monday ko 3 PM par hai,EN EN HI EN EN HI HI
+T12,cs06_numerical_entity,Google Meet par 5 PM milte hain,EN EN HI EN EN HI HI
+T13,cs07_intraword,Usne mujhe unfriend kar diya,HI HI EN HI HI
+T14,cs07_intraword,Maine use screenshot kar liya,HI HI EN HI HI
+T15,cs01_noun_insertion,Is college ke liye bilkul taiyar nahi hoon,HI EN HI HI HI HI HI HI
+T16,cs01_noun_insertion,Tera status thoda viral ho gaya,HI EN HI EN HI HI
+T17,cs01_noun_insertion,Is wifi mein problem aa rahi hai,HI EN HI HI HI HI HI
+T18,cs01_noun_insertion,Kal ka client call parso hai,HI HI EN EN HI HI
+T19,cs01_noun_insertion,main client call pe kaam kar raha hoon,HI EN EN HI HI HI HI HI
+T20,cs01_noun_insertion,Tera meme ekdum viral ho gaya,HI EN HI EN HI HI
+T21,cs01_noun_insertion,Tera follow bahut zyada viral ho gaya,HI EN HI HI EN HI HI
+T22,cs01_noun_insertion,Tera caption itna viral ho gaya,HI EN HI EN HI HI
+T23,cs01_noun_insertion,main status update baad mein tak bhej dunga,HI EN EN HI HI HI HI HI
+T24,cs01_noun_insertion,Kal ka code review parso hai,HI HI EN EN HI HI
+T25,cs01_noun_insertion,Aaj ka follow-up cancel ho gaya,HI HI EN HI HI HI
+T26,cs01_noun_insertion,Tera story bahut viral ho gaya,HI EN HI EN HI HI
+T27,cs01_noun_insertion,Aaj ka proposal bahut lamba tha,HI HI EN HI HI HI
+T28,cs01_noun_insertion,Kal ka meeting parso hai,HI HI EN EN HI
+T29,cs01_noun_insertion,Main presentation kal complete kar dunga,HI EN HI EN HI HI
+T30,cs02_verb_grafting,Please yeh comment mat karo aaj,HI HI EN HI HI HI
+T31,cs02_verb_grafting,main pehle call karke aata hoon,HI HI EN HI HI HI
+T32,cs02_verb_grafting,Yeh order karna itna mushkil nahi hai,HI EN HI HI HI HI HI
+T33,cs02_verb_grafting,Isko fix karna hai subah subah,HI EN HI HI HI HI
+T34,cs02_verb_grafting,Yeh download karna itna mushkil nahi hai,HI EN HI HI HI HI HI
+T35,cs02_verb_grafting,Please yeh order mat karo parso,HI HI EN HI HI HI
+T36,cs02_verb_grafting,Kya tum yeh handle kar sakte ho,HI HI HI EN HI HI HI
+T37,cs02_verb_grafting,"main share karta hoon, tum dekho",HI EN HI HI HI HI
+T38,cs02_verb_grafting,Yeh search karna itna mushkil nahi hai,HI EN HI HI HI HI HI
+T39,cs02_verb_grafting,"Pehle cancel karo, phir baat karte hain",HI EN HI HI HI HI HI
+T40,cs02_verb_grafting,"main google karta hoon, tum dekho",HI EN HI HI HI HI
+T41,cs02_verb_grafting,Kya tum yeh handle kar paoge,HI HI HI EN HI HI HI
+T42,cs02_verb_grafting,Please yeh send mat karo baad mein,HI HI EN HI HI HI HI
+T43,cs02_verb_grafting,Kya tum yeh share kar paoge,HI HI HI EN HI HI HI
+T44,cs03_tag_switching,"The one-on-one was slow , matlab",EN EN EN EN EN HI
+T45,cs03_tag_switching,"ek kaam karo , let's just google it abhi",HI HI HI EN EN EN EN EN HI
+T46,cs03_tag_switching,"acha , main yeh password finish kar dunga",HI EN EN EN EN HI HI HI
+T47,cs03_tag_switching,"Honestly, main yeh update se thak gaya hoon",EN HI HI EN HI HI HI HI
+T48,cs03_tag_switching,"Honestly, main yeh cheat day se thak gaya hoon",EN HI HI EN EN HI HI HI HI
+T49,cs03_tag_switching,"dekho , main yeh routine finish kar dunga",HI EN EN EN EN HI HI HI
+T50,cs03_tag_switching,"yaar, this bug ko fix karna padega kal",HI HI EN EN EN HI HI
+T51,cs03_tag_switching,"sach mein , let's just postpone it parso",HI HI EN EN EN EN EN HI
+T52,cs03_tag_switching,"toh , main yeh stream finish kar dunga",HI EN EN EN EN HI HI HI
+T53,cs03_tag_switching,"acha, this presentation ko prepare karna hai kal",HI HI EN EN EN EN HI HI
+T54,cs03_tag_switching,"ek kaam karo , main yeh vlog finish kar dunga",HI HI HI EN EN EN EN HI HI HI
+T55,cs03_tag_switching,"acha , main yeh episode finish kar dunga",HI EN EN EN EN HI HI HI
+T56,cs03_tag_switching,"Honestly, main yeh degree se thak gaya hoon",EN HI HI EN HI HI HI HI
+T57,cs03_tag_switching,"ek kaam karo, this issue ko solve karna padega kal",HI HI HI HI EN EN EN HI HI
+T58,cs03_tag_switching,"ek kaam karo , let's just share it baad mein",HI HI HI EN EN EN EN EN HI HI
+T59,cs04_clause_boundary,Please send me the team standup parso,EN EN EN EN EN EN HI
+T60,cs04_clause_boundary,Could you please check the code review parso,EN EN EN EN HI EN EN HI
+T61,cs04_clause_boundary,Let's discuss this jaldi se after the proposal,EN EN EN HI HI EN EN EN
+T62,cs04_clause_boundary,I finished the update . ekdum acha laga,EN EN EN EN EN HI HI HI
+T63,cs04_clause_boundary,"The code review is due aaj , please check",EN EN EN EN EN HI EN EN EN
+T64,cs04_clause_boundary,Could you please join the client call aaj,EN EN EN EN EN EN EN HI
+T65,cs04_clause_boundary,We need to order this aaj,EN EN EN EN EN HI
+T66,cs04_clause_boundary,Samajh nahi aa raha. The charger keeps giving errors,HI HI HI HI EN EN EN EN EN
+T67,cs04_clause_boundary,We need to approve this aaj,EN EN EN EN EN HI
+T68,cs04_clause_boundary,"I have a class baad mein, main ready hoon",EN EN EN EN HI HI HI EN HI
+T69,cs04_clause_boundary,Can you install this abhi ?,EN EN EN EN HI EN
+T70,cs04_clause_boundary,Yeh kaam ho gaya. Now let's focus on the semester,HI HI HI HI EN EN EN EN EN EN
+T71,cs04_clause_boundary,We need to handle this kal,EN EN EN EN EN HI
+T72,cs04_clause_boundary,Could you please send the report baad mein,EN EN EN EN EN EN HI HI
+T73,cs05_technical_slang,tum gym jaana bilkul mushkil ho gaya hai,HI EN HI HI HI HI HI HI
+T74,cs05_technical_slang,"bata na , I can't believe this movie itna lamba tha",HI HI EN EN EN EN EN EN HI HI HI
+T75,cs05_technical_slang,main khush hoon after the decision,HI HI HI EN EN EN
+T76,cs05_technical_slang,"Itna stress hai, jaldi se samhal lo",HI HI HI HI HI EN HI
+T77,cs05_technical_slang,"theek hai , I can't believe this problem itna lamba tha",HI HI EN EN EN EN EN EN HI HI HI
+T78,cs05_technical_slang,pagal ho jaaunga after the delivery,HI HI HI EN EN EN
+T79,cs05_technical_slang,"Sach keh raha hoon, this party best hai",HI HI HI HI EN EN HI HI
+T80,cs05_technical_slang,Mera laptop slow ho gaya hai,HI EN EN HI HI HI
+T81,cs05_technical_slang,thak gaya hoon after the lunch,HI HI HI EN EN EN
+T82,cs05_technical_slang,"aap return karna hai yeh, size sahi nahi hai",HI EN HI HI HI EN HI HI HI
+T83,cs05_technical_slang,"main zoom call pe tha, connection baar baar jaata tha",HI EN EN HI HI EN HI HI HI HI
+T84,cs05_technical_slang,main khush hoon after the plan,HI HI HI EN EN EN
+T85,cs05_technical_slang,"Mera dost ne online order kiya tha, delivery kal aani hai",HI HI HI EN HI HI HI HI HI
+T86,cs05_technical_slang,"Yaar, is restaurant ka khana bahut achcha hai",HI HI HI EN HI HI HI HI
+T87,cs06_numerical_entity,"Aaj 30th tarikh hai, kal deadline hai",HI EN HI HI HI HI HI
+T88,cs06_numerical_entity,main Gmail pe 2:30 PM available hoon,HI EN HI EN EN HI HI
+T89,cs06_numerical_entity,pull request next Friday ko 20th ko reschedule ho gaya,EN EN EN EN HI EN HI HI HI HI
+T90,cs06_numerical_entity,Is next Friday ko chhutti hai kya,HI EN EN HI HI HI HI
+T91,cs06_numerical_entity,feedback Tuesday ko 5th ko reschedule ho gaya,EN EN HI EN HI HI HI HI
+T92,cs06_numerical_entity,Friday evening ko 5 PM se 6 PM wala slot available hai,EN EN HI EN EN HI EN EN HI HI HI HI
+T93,cs06_numerical_entity,Is Tuesday ko chhutti hai kya,HI EN HI HI HI HI
+T94,cs06_numerical_entity,Is Friday ko milte hain,HI EN HI HI HI
+T95,cs06_numerical_entity,Google Meet pe 12 PM par milte hain,EN EN HI EN EN HI HI HI
+T96,cs06_numerical_entity,Is Monday ko chhutti hai kya,HI EN HI HI HI
+T97,cs06_numerical_entity,Next next Friday ko interview hai,EN EN EN HI EN HI
+T98,cs06_numerical_entity,main Gmail pe available hoon,HI EN HI EN HI
+T99,cs06_numerical_entity,5th din bacha hai deadline tak,EN HI HI HI HI HI
+T100,cs06_numerical_entity,this Sunday ko 6 PM tak submit karna hai,EN EN HI EN EN HI HI HI HI
+T101,cs07_intraword,"Yaar, use reply kar de na",HI HI EN HI HI HI
+T102,cs07_intraword,"Yaar, use zoom kar de na",HI HI EN HI HI HI
+T103,cs07_intraword,"Yaar, use screenshot kar de na",HI HI EN HI HI HI
+T104,cs07_intraword,"Yaar, use upload kar de na",HI HI EN HI HI HI
+T105,cs07_intraword,Ab main use scroll kar lunga,HI HI HI EN HI HI
+T106,cs07_intraword,Ab main use save kar lunga,HI HI HI EN HI HI
+T107,cs07_intraword,Kya tune use zoom kar diya,HI HI HI EN HI HI
+T108,cs07_intraword,"Pehle repost karo, phir baat karna",HI EN HI HI HI HI
+T109,cs07_intraword,"Pehle save karo, phir baat karna",HI EN HI HI HI HI
+T110,cs07_intraword,Kya tune use upload kar diya,HI HI HI EN HI HI
+T111,cs07_intraword,"Yaar, use save kar de na",HI HI EN HI HI HI
+T112,cs07_intraword,Ab main use record kar lunga,HI HI HI EN HI HI
+T113,cs07_intraword,Ab main use unfriend kar lunga,HI HI HI EN HI HI
+T114,cs07_intraword,"Pehle screenshot karo, phir baat karna",HI EN HI HI HI HI
