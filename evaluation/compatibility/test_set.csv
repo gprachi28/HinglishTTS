@@ -1,21 +1,21 @@
-test_id,category,note,text_roman,text_devanagari,text_mixed,language_tags
-T01,devanagari_pure,Baseline: pure Hindi — simple sentence,Aaj bahut kaam karna hai,आज बहुत काम करना है,आज बहुत काम करना है,HI HI HI HI HI
-T02,devanagari_pure,Baseline: pure Hindi — verb-final structure,Mujhe kal subah jaldi uthna padega,मुझे कल सुबह जल्दी उठना पड़ेगा,मुझे कल सुबह जल्दी उठना पड़ेगा,HI HI HI HI HI HI
-T03,roman_pure,Baseline: pure Roman Hindi — no script switch,Aaj bahut kaam karna hai,आज बहुत काम करना है,आज बहुत काम करना है,HI HI HI HI HI
-T04,roman_pure,Baseline: pure Roman Hindi — colloquial register,Yaar main bahut thak gaya hoon,यार मैं बहुत थक गया हूं,यार मैं बहुत थक गया हूं,HI HI HI HI HI HI
-T05,mixed_script,Core challenge: EN noun inserted into Hindi sentence,Mujhe meeting mein jaana hai,मुझे मीटिंग में जाना है,मुझे meeting में जाना है,HI EN HI HI HI
-T06,mixed_script,Core challenge: multiple EN words in Hindi sentence,Yeh deadline bahut important hai,यह डेडलाइन बहुत इम्पॉर्टेंट है,यह deadline बहुत important है,HI EN HI EN HI
-T07,cs01_noun_insertion,CS-01: EN noun inserted into Hindi matrix (Roman),Aaj ka meeting bahut lamba tha,आज का मीटिंग बहुत लंबा था,आज का meeting बहुत लंबा था,HI HI EN HI HI HI
-T08,cs01_noun_insertion,CS-01: EN multi-word noun phrase in Hindi matrix,Mera code review pending hai,मेरा कोड रिव्यू पेंडिंग है,मेरा code review pending है,HI EN EN EN HI
-T09,cs02_verb_grafting,CS-02: EN verb stem + Hindi morphological suffix,Pehle send karo phir baat karte hain,पहले सेंड करो फिर बात करते हैं,पहले send करो फिर बात करते हैं,HI EN HI HI HI HI HI
-T10,cs02_verb_grafting,CS-02: EN verb embedded in Hindi verb phrase,Yeh file download karke bhej do,यह फ़ाइल डाउनलोड करके भेज दो,यह file download करके भेज दो,HI EN EN HI HI HI
-T11,cs03_tag_switching,CS-03: Hindi discourse marker prefixed to EN clause,Yaar the deadline is really urgent,यार द डेडलाइन इज़ रियली अर्जेंट,यार the deadline is really urgent,HI EN EN EN EN EN
-T12,cs03_tag_switching,CS-03: EN sentence followed by Hindi discourse tag,The project got cancelled. Main khush hoon,द प्रोजेक्ट गॉट कैंसिल्ड. मैं ख़ुश हूँ,The project got cancelled. मैं ख़ुश हूँ,EN EN EN EN HI HI HI
-T13,cs04_clause_boundary,CS-04: Hindi clause + EN clause (inter-sentential),Main soch raha tha. The meeting is really long,मैं सोच रहा था. द मीटिंग इज़ रियली लॉन्ग,मैं सोच रहा था. The meeting is really long,HI HI HI HI EN EN EN EN EN
-T14,cs04_clause_boundary,CS-04: EN clause + Hindi emotional response,I finished the report. Ekdum acha laga,आई फिनिश्ड द रिपोर्ट. एकदम अच्छा लगा,I finished the report. एकदम अच्छा लगा,EN EN EN EN HI HI HI
-T15,cs05_technical_slang,CS-05: Tech slang — EN noun in conversational Hindi,Mera laptop slow ho gaya hai kya karoon,मेरा लैपटॉप स्लो हो गया है क्या करूं,मेरा laptop slow हो गया है क्या करूं,HI EN EN HI HI HI HI HI
-T16,cs05_technical_slang,CS-05: Social context — EN words in Hindi party talk,Kal party mein bahut fun tha,कल पार्टी में बहुत फन था,कल party में बहुत fun था,HI EN HI HI EN HI
-T17,cs06_numerical_entity,CS-06: Named entity (day + time) anchored in Hindi,Meeting Monday ko 3 PM par hai,मीटिंग मंडे को 3 पीएम पर है,Meeting Monday को 3 PM पर है,EN EN HI EN EN HI HI
-T18,cs06_numerical_entity,CS-06: Platform name + time expression in Hindi context,Google Meet pe 5 PM par milte hain,गूगल मीट पे 5 पीएम पर मिलते हैं,Google Meet पे 5 PM पर मिलते हैं,EN EN HI EN EN HI HI HI
-T19,cs07_intraword,CS-07: EN verb stem (social action) + Hindi inflection — hardest case,Usne mujhe unfriend kar diya,उसने मुझे अनफ्रेंड कर दिया,उसने मुझे unfriend कर दिया,HI HI EN HI HI
-T20,cs07_intraword,CS-07: EN verb stem (screenshot) + Hindi compound verb,Maine use screenshot kar liya,मैंने उसे स्क्रीनशॉट कर लिया,मैंने उसे screenshot कर लिया,HI HI EN HI HI
+test_id,category,note,text,language_tags
+T01,devanagari_pure,Baseline: pure Hindi — simple sentence,Aaj bahut kaam karna hai,HI HI HI HI HI
+T02,devanagari_pure,Baseline: pure Hindi — verb-final structure,Mujhe kal subah jaldi uthna padega,HI HI HI HI HI HI
+T03,roman_pure,Baseline: pure Roman Hindi — no script switch,Aaj bahut kaam karna hai,HI HI HI HI HI
+T04,roman_pure,Baseline: pure Roman Hindi — colloquial register,Yaar main bahut thak gaya hoon,HI HI HI HI HI HI
+T05,mixed_script,Core challenge: EN noun inserted into Hindi sentence,Mujhe meeting mein jaana hai,HI EN HI HI HI
+T06,mixed_script,Core challenge: multiple EN words in Hindi sentence,Yeh deadline bahut important hai,HI EN HI EN HI
+T07,cs01_noun_insertion,CS-01: EN noun inserted into Hindi matrix (Roman),Aaj ka meeting bahut lamba tha,HI HI EN HI HI HI
+T08,cs01_noun_insertion,CS-01: EN multi-word noun phrase in Hindi matrix,Mera code review pending hai,HI EN EN EN HI
+T09,cs02_verb_grafting,CS-02: EN verb stem + Hindi morphological suffix,Pehle send karo phir baat karte hain,HI EN HI HI HI HI HI
+T10,cs02_verb_grafting,CS-02: EN verb embedded in Hindi verb phrase,Yeh file download karke bhej do,HI EN EN HI HI HI
+T11,cs03_tag_switching,CS-03: Hindi discourse marker prefixed to EN clause,Yaar the deadline is really urgent,HI EN EN EN EN EN
+T12,cs03_tag_switching,CS-03: EN sentence followed by Hindi discourse tag,The project got cancelled. Main khush hoon,EN EN EN EN HI HI HI
+T13,cs04_clause_boundary,CS-04: Hindi clause + EN clause (inter-sentential),Main soch raha tha. The meeting is really long,HI HI HI HI EN EN EN EN EN
+T14,cs04_clause_boundary,CS-04: EN clause + Hindi emotional response,I finished the report. Ekdum acha laga,EN EN EN EN HI HI HI
+T15,cs05_technical_slang,CS-05: Tech slang — EN noun in conversational Hindi,Mera laptop slow ho gaya hai kya karoon,HI EN EN HI HI HI HI HI
+T16,cs05_technical_slang,CS-05: Social context — EN words in Hindi party talk,Kal party mein bahut fun tha,HI EN HI HI EN HI
+T17,cs06_numerical_entity,CS-06: Named entity (day + time) anchored in Hindi,Meeting Monday ko 3 PM par hai,EN EN HI EN EN HI HI
+T18,cs06_numerical_entity,CS-06: Platform name + time expression in Hindi context,Google Meet pe 5 PM par milte hain,EN EN HI EN EN HI HI HI
+T19,cs07_intraword,CS-07: EN verb stem (social action) + Hindi inflection — hardest case,Usne mujhe unfriend kar diya,HI HI EN HI HI
+T20,cs07_intraword,CS-07: EN verb stem (screenshot) + Hindi compound verb,Maine use screenshot kar liya,HI HI EN HI HI

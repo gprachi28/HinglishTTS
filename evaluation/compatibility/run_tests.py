@@ -1,18 +1,16 @@
 # evaluation/compatibility/run_tests.py
 """
-Code-Switching Model Test Runner.
+Code-Switching Test Runner (Roman Script Only).
 
-For each model × test sentence × script variant:
-  - Synthesize audio
-  - Record success/failure, latency, errors
-  - Save audio to results/{model}/{test_id}_{variant}.wav
+For each test sentence, synthesizes audio in Roman script (how Hinglish
+is actually used in India — not testing script agnosticism).
 
 Outputs:
-  - results/{model}/report.json   — per-model structured results
+  - results/{model}/report.json   — per-model results
   - results/{model}/audio/        — synthesized audio files
 
 Usage:
-    # Test all available models (Qwen3-TTS and Fish Audio S2):
+    # Test all available models:
     python -m evaluation.compatibility.run_tests
 
     # Test specific model:
@@ -42,11 +40,9 @@ import numpy as np
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 logger = logging.getLogger(__name__)
 
-SCRIPT_VARIANTS = ["roman", "devanagari", "mixed"]
+SCRIPT_VARIANTS = ["roman"]  # Roman script only — how Hinglish is actually used in India
 TEXT_COLUMNS = {
-    "roman": "text_roman",
-    "devanagari": "text_devanagari",
-    "mixed": "text_mixed",
+    "roman": "text",
 }
 
 HERE = Path(__file__).parent

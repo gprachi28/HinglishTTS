@@ -10,7 +10,7 @@ Traditional metrics (WER, BLEU, MCD, F0) **do not capture code-switching quality
 
 ### 1. Test Set (7 Code-Switching Patterns)
 
-20 linguistically controlled test sentences covering:
+20 linguistically controlled test sentences in Roman script (how Hinglish is actually used in India — not testing script agnosticism). Covering:
 - **CS-01** Noun Insertion: "Main office ja raha hoon"
 - **CS-02** Verb Grafting: "File download kar lo"
 - **CS-03** Tag Switching: "Baarish ho rahi hai, isn't it?"
@@ -19,9 +19,7 @@ Traditional metrics (WER, BLEU, MCD, F0) **do not capture code-switching quality
 - **CS-06** Numerical/Entity: "Meeting Thursday ko 3 PM par hai"
 - **CS-07** Intraword: "Usne mujhe unfriend kar-diya"
 
-Each sentence available in 3 script variants: Roman, Devanagari, Mixed.
-
-**Golden Set**: 300 sentences (6–12 tokens) stratified by pattern, CMI (0.1–0.7), and register.
+**Golden Set**: 300 sentences (6–12 tokens) in Roman script, stratified by pattern, CMI (0.1–0.7), and register.
 
 ### 2. Custom Evaluation Metrics (CSPI Framework)
 
