@@ -1,25 +1,22 @@
 # evaluation/compatibility/run_metrics.py
 """
-Master evaluation metrics runner — Code-Switching Phonetic Index (CSPI) Pipeline.
+Code-Switching Phonetic Index (CSPI) Pipeline — Master metrics runner.
 
-Focuses on custom code-switching evaluation metrics designed specifically for
-code-mixed speech synthesis. Traditional metrics (F0, LID, etc.) fail to capture
-code-switching quality, so we use language-aware metrics:
+Executes custom evaluation metrics for code-switched speech synthesis:
 
   1. H-Index    — Hindi token recognition (via ASR)
   2. E-Index    — English token recognition (via ASR)
   3. Phoneme-Accuracy — Language-specific phoneme fidelity
   4. CSPI       — Code-Switching Phonetic Index (composite metric)
-  5. VQS        — Vector Quantization Stability (code-switching consistency)
+  5. VQS        — Voice Quality Stability (MFCC formant continuity)
 
-All results saved to:
-    evaluation/compatibility/results/{model}/
-      hindex.json                  — H-Index per sentence and category
-      eindex.json                  — E-Index per sentence and category
-      phoneme_accuracy.json        — Hindi and English phoneme accuracy
-      cspi_comparison.json         — Equal-weight CSPI
-      cspi_refined_per-sentence.json — Language-aware CSPI
-      vqs_analysis.json            — VQS stability metrics
+Results saved to: evaluation/compatibility/results/{model}/
+  - hindex.json
+  - eindex.json
+  - phoneme_accuracy.json
+  - cspi_comparison.json (equal-weight)
+  - cspi_refined_per-sentence.json (language-aware)
+  - vqs_analysis.json
 
 Usage:
     python -m evaluation.compatibility.run_metrics --model qwen3_tts
@@ -33,15 +30,15 @@ import sys
 from pathlib import Path
 
 HERE = Path(__file__).parent
-PROJECT_ROOT = HERE.parents[1]   # HinglishTTS/
+PROJECT_ROOT = HERE.parents[1]
 RESULTS_DIR = HERE / "results"
 
 
-# ── Subprocess runner ─────────────────────────────────────────
-def run_step(label: str, module: str, extra_args: list[str]) -> int:
-    print(f"\n{'='*60}")
+def run_step(label: str, module: str, extra_args: list) -> int:
+    """Run a metric computation step."""
+    print(f"\n{'='*70}")
     print(f"{label}")
-    print("=" * 60)
+    print("=" * 70)
     cmd = [sys.executable, "-m", module] + extra_args
     result = subprocess.run(cmd, cwd=str(PROJECT_ROOT))
     if result.returncode != 0:
@@ -49,144 +46,108 @@ def run_step(label: str, module: str, extra_args: list[str]) -> int:
     return result.returncode
 
 
-# ── Load JSON helper ──────────────────────────────────────────
 def load_json(path: Path) -> dict | None:
+    """Load JSON results file."""
     if not path.exists():
         return None
     with open(path) as f:
         return json.load(f)
 
 
-# ── Summary printer ───────────────────────────────────────────
 def print_summary(model: str, results_dir: Path) -> None:
-    tpi    = load_json(results_dir / "tpi.json")
-    pier   = load_json(results_dir / "pier_mixed.json")
+    """Print metrics summary."""
     hindex = load_json(results_dir / "hindex.json")
-    f0     = load_json(results_dir / "f0.json")
-    lid    = load_json(results_dir / "lid.json")
+    eindex = load_json(results_dir / "eindex.json")
+    phoneme = load_json(results_dir / "phoneme_accuracy.json")
+    cspi = load_json(results_dir / "cspi_comparison.json")
+    cspi_refined = load_json(results_dir / "cspi_refined_per-sentence.json")
+    vqs = load_json(results_dir / "vqs_analysis.json")
 
-    print(f"\n{'='*60}")
-    print(f"METRICS SUMMARY — {model}")
-    print("=" * 60)
-
-    # WER + TPI
-    if tpi:
-        wer = tpi.get("avg_wer", {})
-        print(f"\n  WER")
-        for v in ["roman", "devanagari", "mixed"]:
-            w = wer.get(v)
-            bar = f"  {w:.4f}" if w is not None else "  —"
-            print(f"    {v:<12}{bar}")
-        tpi_rd = tpi.get("tpi_roman_vs_devanagari")
-        tpi_md = tpi.get("tpi_mixed_vs_devanagari")
-        print(f"  TPI (Roman vs Devanagari):  {f'{tpi_rd:+.1f}%' if tpi_rd is not None else 'N/A'}")
-        print(f"  TPI (Mixed  vs Devanagari): {f'{tpi_md:+.1f}%' if tpi_md is not None else 'N/A'}")
-    else:
-        print("\n  TPI: not available")
-
-    # PIER
-    if pier:
-        print(f"\n  PIER (mixed):       {pier.get('overall_pier', '—')}")
-    else:
-        print("\n  PIER: not available")
+    print(f"\n{'='*70}")
+    print(f"CSPI METRICS SUMMARY — {model}")
+    print("=" * 70)
 
     # H-Index
     if hindex:
-        print(f"  H-Index (weighted): {hindex.get('weighted_hindex', '—')}")
-    else:
-        print("  H-Index: not available")
+        h_idx = hindex.get("weighted_hindex", "—")
+        print(f"\n  H-Index (Hindi tokens):     {h_idx}")
 
-    # F0
-    if f0:
-        vs = f0.get("variant_summary", {})
-        print(f"  F0 std-dev (proxy):")
-        for v in ["roman", "devanagari", "mixed"]:
-            m = vs.get(v, {}).get("mean")
-            print(f"    {v:<12}  {f'{m:.2f} Hz' if m is not None else '— (silent/skip)'}")
-    else:
-        print("  F0: not available")
+    # E-Index
+    if eindex:
+        e_idx = eindex.get("weighted_eindex", "—")
+        print(f"  E-Index (English tokens):   {e_idx}")
 
-    # LID
-    if lid:
-        print(f"  LID confidence:     {lid.get('overall_lid_confidence', '—')}")
-    else:
-        print("  LID: not available")
+    # Phoneme Accuracy
+    if phoneme:
+        h_phon = phoneme.get("h_phoneme_accuracy", "—")
+        e_phon = phoneme.get("e_phoneme_accuracy", "—")
+        print(f"  H-Phoneme Accuracy:         {h_phon}")
+        print(f"  E-Phoneme Accuracy:         {e_phon}")
+
+    # CSPI
+    if cspi and "ranking" in cspi:
+        for item in cspi["ranking"]:
+            if item["model"] == model:
+                cspi_score = item.get("cspi", "—")
+                print(f"  CSPI (Equal-Weight):        {cspi_score}")
+                break
+
+    # CSPI Refined
+    if cspi_refined and "results" in cspi_refined:
+        for result in cspi_refined["results"]:
+            if result["model"] == model:
+                cspi_refined_score = result.get("weighted_cspi", "—")
+                print(f"  CSPI (Language-Aware):      {cspi_refined_score}")
+                break
+
+    # VQS
+    if vqs:
+        vqs_score = vqs.get("overall_stability", "—")
+        print(f"  VQS (Voice Quality):        {vqs_score}")
 
     print()
 
 
-# ── Main ─────────────────────────────────────────────────────
 def main():
-    parser = argparse.ArgumentParser(description="Run all Phase 1.5 evaluation metrics")
-    parser.add_argument("--model", required=True, help="Model name (e.g. cosyvoice3, xtts_v2)")
-    parser.add_argument(
-        "--whisper-model", default="medium",
-        help="Whisper model size for transcription (default: medium)"
-    )
-    parser.add_argument(
-        "--skip-transcription", action="store_true",
-        help="Skip Whisper re-transcription if transcripts.json already exists"
-    )
+    parser = argparse.ArgumentParser(description="Run CSPI evaluation pipeline")
+    parser.add_argument("--model", required=True, help="Model name (qwen3_tts, fish_audio_s2)")
     args = parser.parse_args()
 
     audio_dir = RESULTS_DIR / args.model / "audio"
     if not audio_dir.exists():
         print(f"ERROR: No audio found at {audio_dir}")
-        print("Run 'python -m evaluation.compatibility.run_tests --models {model}' first.")
+        print("Run 'python -m evaluation.compatibility.run_tests' first.")
         sys.exit(1)
 
-    transcripts_path = RESULTS_DIR / args.model / "transcripts.json"
     model_results = RESULTS_DIR / args.model
 
-    # ── Step 1: TPI (generates transcripts.json) ─────────────
-    if args.skip_transcription and transcripts_path.exists():
-        print(f"\n[1/5] TPI — re-computing from cached transcripts ({transcripts_path.name})")
-        run_step(
-            "[1/5] TPI",
-            "evaluation.compatibility.compute_tpi",
-            ["--model", args.model, "--whisper-model", args.whisper_model,
-             "--transcripts", str(transcripts_path)],
-        )
-    else:
-        run_step(
-            "[1/5] TPI + Whisper Transcription",
-            "evaluation.compatibility.compute_tpi",
-            ["--model", args.model, "--whisper-model", args.whisper_model],
-        )
+    # Run CSPI pipeline steps
+    run_step("[1/5] H-Index", "evaluation.compatibility.compute_hindex", ["--model", args.model])
+    run_step("[2/5] E-Index", "evaluation.compatibility.compute_eindex", ["--model", args.model])
+    run_step("[3/5] Phoneme Accuracy", "evaluation.compatibility.compute_phoneme_accuracy", ["--model", args.model])
+    run_step("[4/5] CSPI (Equal-Weight)", "evaluation.compatibility.compute_cspi", ["--model", args.model])
+    run_step("[5/5] CSPI (Language-Aware)", "evaluation.compatibility.compute_cspi_refined", ["--model", args.model, "--weighting-mode", "per-sentence"])
 
-    if not transcripts_path.exists():
-        print("\nERROR: transcripts.json not generated. Cannot run PIER, H-Index, or LID.")
-        sys.exit(1)
+    # Optional: VQS
+    run_step("[+] Voice Quality Stability", "evaluation.compatibility.compute_vqs", ["--model", args.model])
 
-    # ── Steps 2-5 ─────────────────────────────────────────────
-    run_step("[2/5] PIER", "evaluation.compatibility.compute_pier",
-             ["--model", args.model, "--variant", "mixed"])
-
-    run_step("[3/5] H-Index", "evaluation.compatibility.compute_hindex",
-             ["--model", args.model])
-
-    run_step("[4/5] F0 RMSE", "evaluation.compatibility.compute_f0",
-             ["--model", args.model])
-
-    run_step("[5/5] LID", "evaluation.compatibility.compute_lid",
-             ["--model", args.model])
-
-    # ── Combined summary ──────────────────────────────────────
+    # Print summary
     print_summary(args.model, model_results)
 
-    # Save combined summary JSON
+    # Save combined summary
     combined = {
         "model": args.model,
-        "tpi":    load_json(model_results / "tpi.json"),
-        "pier":   load_json(model_results / "pier_mixed.json"),
         "hindex": load_json(model_results / "hindex.json"),
-        "f0":     load_json(model_results / "f0.json"),
-        "lid":    load_json(model_results / "lid.json"),
+        "eindex": load_json(model_results / "eindex.json"),
+        "phoneme_accuracy": load_json(model_results / "phoneme_accuracy.json"),
+        "cspi": load_json(model_results / "cspi_comparison.json"),
+        "cspi_refined": load_json(model_results / "cspi_refined_per-sentence.json"),
+        "vqs": load_json(model_results / "vqs_analysis.json"),
     }
-    out = model_results / "metrics_summary.json"
+    out = model_results / "cspi_summary.json"
     with open(out, "w") as f:
         json.dump(combined, f, indent=2, ensure_ascii=False)
-    print(f"Combined summary saved → {out}")
+    print(f"Summary saved → {out}")
 
 
 if __name__ == "__main__":

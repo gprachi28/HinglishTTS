@@ -40,7 +40,7 @@ Traditional metrics (WER, BLEU, MCD, F0) **do not capture code-switching quality
 
 ### 3. Supporting Metrics
 
-- **VQS** (Vector Quantization Stability): Consistency of VQ codes across code-switch boundaries
+- **VQS** (Voice Quality Stability): MFCC-based formant continuity measuring synthesis smoothness and naturalness at code-switch boundaries
 - **Reliability**: % of test cases producing usable output (accounts for silent failures)
 
 ## Project Status

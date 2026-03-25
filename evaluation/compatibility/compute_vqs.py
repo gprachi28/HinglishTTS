@@ -33,7 +33,7 @@ from scipy.spatial.distance import euclidean
 
 HERE = Path(__file__).parent
 RESULTS_DIR = HERE / "results"
-SCRIPT_VARIANTS = ["roman", "devanagari", "mixed"]
+SCRIPT_VARIANTS = ["roman"]  # Roman script only
 
 
 def compute_mfcc_formant_continuity(
