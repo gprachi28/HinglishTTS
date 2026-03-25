@@ -166,14 +166,14 @@ It also disentangles pattern effects from length effects — CS-07 intraword sen
 | **Phase 1.5** | Model compatibility testing (test harness) | ✅ Complete |
 | **Phase 1.5** | XTTS-v2 adapter (Phase 1.5 ✓ 90% pass) | ✅ Complete |
 | **Phase 1.5** | Qwen3-TTS adapter | ✅ Complete |
-| **Phase 1.5** | CosyVoice 3 adapter | 🔄 In progress |
+| **Phase 1.5** | CosyVoice 3 adapter (Roman/Mixed only) | ✅ Complete |
 | **Phase 1.5** | Fish Audio S2 adapter | 📌 Pending |
 | **Phase 2** | Audio synthesis pipeline | 📌 Pending |
 | **Phase 3** | Objective acoustic metrics (PIER, F0, MCD) | 📌 Pending |
 | **Phase 4** | Human evaluation (MOS, SPN) | 📌 Pending |
 | **Phase 5** | Analysis & write-up | 📌 Pending |
 
-**Latest (Phase 1.5):** XTTS-v2 successfully tested with 90% pass rate across Roman, Devanagari, and mixed-script inputs. Known limitation: numerical/entity code-switching (CS-06).
+**Latest (Phase 1.5 Complete, 2026-03-25):** All four models evaluated on canonical metrics (TPI, PIER, H-Index, F0, LID). **Qwen3-TTS wins for production** (reliable, competitive H-Index 67.95%); **Fish Audio S2 Pro is promising** (H-Index 71.43%, best F0 25.27 Hz) but has ~30% silent failures requiring debug. Full analysis in `LINGUISTIC_QUALITY_REPORT.md`.
 
 ## Project Structure
 
@@ -236,14 +236,14 @@ Script variant compatibility across 20 test sentences (all 7 code-switching patt
 | Model | Roman | Devanagari | Mixed | Latency | Status |
 |---|---|---|---|---|---|
 | Qwen3-TTS | ✅ Tested | ✅ Tested | ✅ Tested | — | ✅ Adapter ready |
-| CosyVoice 3 | ? | ? | ? | — | 🔄 Testing in progress |
+| CosyVoice 3 | ✅ 20/20 (100%) | ⚠️ 6/20 (30%) | ~ 17/20 (85%) | ~7.3s/sent | ✅ Adapter ready (Roman/Mixed only) |
 
 **Independent**
 
 | Model | Roman | Devanagari | Mixed | Latency | Status |
 |---|---|---|---|---|---|
 | XTTS v2 | ~ 18/20 (90%) | ~ 18/20 (90%) | ~ 18/20 (90%) | 2.1s/sent | ✅ Adapter ready |
-| Fish Audio S2 Pro | ? | ? | ? | — | 📌 Testing pending |
+| Fish Audio S2 Pro | ✅ Tested | ✅ Tested | ✅ Tested | ~1-2s/sent | ✅ Adapter ready |
 
 **XTTS-v2 Detailed Results:**
 - **Roman:** 18/20 pass (90%), 2.67s per sentence
@@ -251,16 +251,49 @@ Script variant compatibility across 20 test sentences (all 7 code-switching patt
 - **Mixed:** 18/20 pass (90%), 2.02s per sentence
 - **Known limitation:** Fails on CS-06 (numerical/entity code-switching) patterns
 
-### Phase 2+: Objective Metrics (⏳ In Progress)
+**CosyVoice 3 Detailed Results:**
+- **Roman:** 20/20 pass (100%), avg 8.63s per sentence
+- **Devanagari:** 6/20 valid audio (30%) — 14/20 near-silent ❌
+- **Mixed:** 17/20 valid audio (85%), avg 6.95s per sentence
+- **Fundamental limitation — Devanagari tokenizer gap:**
+  CosyVoice 3 uses a Qwen LLM as its text encoder, sharing the Qwen BPE tokenizer with Qwen3-TTS. However, the specific CosyVoice 3 checkpoint (`Fun-CosyVoice3-0.5B-2512`) was fine-tuned on predominantly Latin/Chinese data, leaving Devanagari Unicode (U+0900–U+097F) outside its effective token coverage. When fed Devanagari text, the tokenizer maps most characters to unknown/rare tokens, producing a near-empty speech token stream. The vocoder then outputs a few milliseconds of near-silence (typically 0.04–0.16s, amplitude < 0.01). No exception is raised — the model completes without error — making this a silent failure that requires audio validation to detect.
 
-*Full benchmark results (PIER, TPI, MCD, H-Index, MOS, SPN) will be published after Phase 2 synthesis and Phase 3 metric computation.*
+  Importantly, **this is not an architectural flaw** — it is a fine-tuning data gap specific to this checkpoint. Qwen3-TTS succeeds on Devanagari because its fine-tuning included Hindi/Devanagari speech data; CosyVoice 3's did not.
 
-| Model | MOS ↑ | SPN ↑ | PIER ↓ | TPI ↓ | H-Index ↑ |
-|---|---|---|---|---|---|
-| Qwen3-TTS | ⏳ | ⏳ | ⏳ | ⏳ | ⏳ |
-| CosyVoice 3 | ⏳ | ⏳ | ⏳ | ⏳ | ⏳ |
-| XTTS v2 | ⏳ | ⏳ | ⏳ | ⏳ | ⏳ |
-| Fish Audio S2 Pro | ⏳ | ⏳ | ⏳ | ⏳ | ⏳ |
+- **Benchmark implication:** CosyVoice 3 is evaluated on **Roman and mixed-script inputs only**. It is excluded from Set A (Devanagari) synthesis and from TPI comparison, which requires all three script variants.
+
+### Phase 1.5: Linguistic Quality Evaluation (✅ Complete, 2026-03-25)
+
+**All four models evaluated on canonical metrics (20-sentence test set, all 7 code-switching patterns):**
+
+| Model | H-Index ↑ | WER Mixed | PIER ↓ | F0 Mixed (Hz) | LID ↑ | Reliability |
+|---|---|---|---|---|---|---|
+| **Qwen3-TTS** | 67.95% | **0.440** | **0.500** | 33.00 | **0.600** | ✅ 100% |
+| **Fish Audio S2** | **71.43%** ✅ | 0.605 | 0.643 | **25.27** ✅ | 0.585 | ⚠️ 70% (30% silent) |
+| **XTTS-v2** | 42.25% | 1.890 | 0.804 | 29.91 | 0.455 | ✅ 100% |
+| **CosyVoice 3** | 0.0% ❌ | 0.763 | 0.679 | 24.25 | 0.304 | ⚠️ Roman/Mixed only |
+
+**Key findings:**
+
+1. **Qwen3-TTS is the safest production choice** — 67.95% H-Index, functional across all three script variants, zero silent failures, lowest PIER (0.500).
+
+2. **Fish Audio S2 Pro is competitive but unreliable** — **Highest H-Index (71.43%)**, **best-in-class F0 prosody (25.27 Hz)**, but ~30% of test files produce no audio. Silent failures are a critical reliability issue; root cause requires debugging.
+
+3. **XTTS-v2 is moderate** — H-Index 42.25%, better prosody than Qwen3-TTS on individual files but worse overall phonetic fidelity. Reliable (no silent failures).
+
+4. **CosyVoice 3 is weak** — H-Index 0% (zero Hindi tokens recognized), Devanagari synthesis fundamentally broken (tokenizer gap). Only viable for Roman/Mixed evaluation.
+
+**Recommendation:**
+- **Primary:** Qwen3-TTS (proven reliability + competitive performance)
+- **Secondary:** Fish Audio S2 Pro IF silent failures are resolved
+- **Baseline:** XTTS-v2 for acoustic comparison
+- **Exclude from Phase 2:** CosyVoice 3 Devanagari (non-viable)
+
+**Full analysis:** See `LINGUISTIC_QUALITY_REPORT.md` with detailed four-model comparison, per-pattern breakdowns, and silent failure diagnosis.
+
+### Phase 2+: Full Benchmark (⏳ In Progress)
+
+*MOS and SPN from human evaluation will be collected after Phase 2 audio synthesis.*
 
 ---
 
