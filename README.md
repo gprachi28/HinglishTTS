@@ -79,9 +79,6 @@ HinglishTTS/
 └── README.md                         # This file
 ```
 
-## Implementation Notes
-
-Previous exploration: CosyVoice3 and XTTS-v2 were evaluated as initial models but neither worked reliably out-of-the-box for Hinglish synthesis—revealing that even state-of-the-art multilingual TTS systems lack robust code-switching support, validating the necessity of this benchmark.
 
 ## Citation
 
