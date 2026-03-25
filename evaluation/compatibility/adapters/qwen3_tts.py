@@ -40,10 +40,20 @@ class Qwen3TTSAdapter(TTSAdapter):
         import torch
         from qwen_tts.inference.qwen3_tts_model import Qwen3TTSModel
 
+        if torch.backends.mps.is_available():
+            device_map = {"": "mps"}
+            dtype = torch.float16
+        elif torch.cuda.is_available():
+            device_map = "auto"
+            dtype = torch.float16
+        else:
+            device_map = {"": "cpu"}
+            dtype = torch.float32
+
         self._model = Qwen3TTSModel.from_pretrained(
             str(WEIGHTS_DIR),
-            device_map="auto",
-            dtype=torch.float16,
+            device_map=device_map,
+            dtype=dtype,
         )
 
     def synthesize(self, text: str, script_variant: str) -> SynthResult:
@@ -62,8 +72,17 @@ class Qwen3TTSAdapter(TTSAdapter):
                 f"Hindi not in codec_language_id — {script_variant} uses language=None"
             )
 
+        # Transcript of hindi_ref.wav — required for ICL (x_vector_only_mode=False)
+        REF_TEXT = (
+            "Gas connection band hone ki khabaron par sarkar ki safai: "
+            "Kaha - sabhi ko e-KYC ki zaroorat nahin; "
+            "keval ve log karaen jinaka record adhoora"
+        )
+
         try:
-            prompt = self._model.create_voice_clone_prompt(str(REF_AUDIO_PATH))
+            prompt = self._model.create_voice_clone_prompt(
+                str(REF_AUDIO_PATH), ref_text=REF_TEXT
+            )
 
             start = time.perf_counter()
             wavs, sample_rate = self._model.generate_voice_clone(

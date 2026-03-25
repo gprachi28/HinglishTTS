@@ -17,7 +17,7 @@ from typing import Optional
 import numpy as np
 
 # Shared reference audio for voice cloning across all models
-REF_AUDIO_PATH = Path(__file__).parents[2] / "assets" / "hindi_ref.wav"
+REF_AUDIO_PATH = Path(__file__).parents[1] / "assets" / "hindi_ref.wav"
 
 
 @dataclass
