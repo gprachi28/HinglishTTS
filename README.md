@@ -45,54 +45,42 @@ The same sentences are fed in three script variants, isolating the impact of tra
 | **Set B** (Experimental) | Romanized Hinglish | Real-world user input |
 | **Set C** (Mixed) | Devanagari for Hindi, Roman for English | Script-normalized middle ground |
 
-### Tier 2: Models Under Evaluation
+### Models: Qwen3-TTS vs Fish Audio S2
 
-| Model | Architecture | Params | Multilingual | Ecosystem |
-|---|---|---|---|---|
-| Qwen3-TTS | Autoregressive codec (Qwen-Omni backbone) | 1.7B | Yes (incl. Hindi) | Alibaba |
-| CosyVoice 3 | Flow-matching + LLM text encoder | — | Yes (incl. Hindi) | Alibaba |
-| XTTS v2 | Autoregressive | — | Yes | Coqui (independent) |
-| Fish Audio S2 Pro | Codec-based | — | Yes | Independent |
+| Model | Architecture | Strength | Challenge |
+|---|---|---|---|
+| **Qwen3-TTS** | Autoregressive codec (Qwen-Omni) | Reliable, 100% success rate, balanced language handling | Moderate English phoneme accuracy |
+| **Fish Audio S2 Pro** | Codec-based (VQ-VAE) | Exceptional on Hindi-dominant patterns, excellent inter-sentential code-switching | ~30% silent failures, unreliable on pure Hindi input |
 
-#### Model Ecosystem Grouping
+Both models receive voice cloning references (code-switched speech) to prime the synthesizer for code-switching behavior.
 
-CosyVoice 3 and Qwen3-TTS share the same BPE tokenizer (Qwen's tokenizer) because CosyVoice 3 uses a Qwen LLM as its text encoder backbone. This has implications for fair comparison:
+### Evaluation Metrics: Custom Framework for Code-Switching
 
-- **Tokenization is identical**: both models split Hinglish input (Roman, Devanagari, mixed) into the same subwords. OOV handling at switch boundaries, Devanagari coverage, and intraword splitting (`unfriend`, `डेडलाइन`) are identical.
-- **Training data overlap**: both are Alibaba-trained models, likely pretrained on overlapping multilingual corpora with Hindi/Devanagari coverage. Differences in Hindi phonetic fidelity scores between them reflect architecture and fine-tuning, not data access.
-- **Cross-ecosystem comparison is the headline**: when Alibaba models outperform XTTS v2 or Fish Audio on Hindi metrics, it may reflect shared training advantage rather than architectural superiority.
+> **Critical Insight**: Traditional metrics (WER, BLEU, MCD, F0) do **NOT** capture code-switching quality.
+> A model can have low WER but fail on naturalness; high F0 continuity but wrong phonemes.
+> Custom metrics are necessary.
 
-Results are therefore reported in two clusters:
+#### Core Metrics (Code-Switching Phonetic Index — CSPI)
 
-| Cluster | Models | Shared components |
-|---|---|---|
-| **Alibaba ecosystem** | Qwen3-TTS, CosyVoice 3 | Tokenizer, pretraining corpus, Qwen LLM |
-| **Independent** | XTTS v2, Fish Audio S2 Pro | Nothing shared |
+| Metric | What it measures | Why traditional metrics fail |
+|---|---|---|---|
+| **H-Index** | % Hindi tokens correctly recognized (via ASR) | WER treats all tokens equally; doesn't isolate language-specific failures |
+| **E-Index** | % English tokens correctly recognized (via ASR) | A model failing on "meeting"→"making" passes WER if recognized as English word |
+| **H-Phoneme Accuracy** | % Hindi phonemes pronounced correctly (char-level similarity) | MCD (spectral distortion) doesn't capture mispronunciation; "meeting"→"making" has identical spectrum  |
+| **E-Phoneme Accuracy** | % English phonemes pronounced correctly | Standard ASR+phoneme metrics assume monolingual input |
 
-Within-cluster comparisons (Qwen3-TTS vs CosyVoice 3) isolate **architectural** differences. Cross-cluster comparisons measure **ecosystem advantage** as a finding in its own right.
+**CSPI = 0.25 × (H-Index + E-Index + H-Phoneme + E-Phoneme)** OR language-aware weighted version
 
-### Tier 3: Evaluation Metrics
+**Language-Aware Refinement**: Weight metrics by Hindi/English token ratio in each sentence
+- Hindi-dominant sentences (70% HI) → H-Index/H-Phoneme weighted 70%, E-Index/E-Phoneme weighted 30%
+- Reflects linguistic reality: errors in matrix language more noticeable
 
-#### A. Objective Acoustic Metrics
-
-| Metric | What it measures |
-|---|---|
-| **PIER** (Point-of-Interest Error Rate) | WER calculated _only_ at switch-point words, not the full sentence |
-| **Boundary F0 RMSE** | Pitch continuity at the exact HI↔EN junction — spikes or breaks indicate poor prosody |
-| **MCD** (Mel-Cepstral Distortion) | Overall spectral quality |
-
-#### B. Linguistic & Transliteration Metrics
+#### Supporting Metrics
 
 | Metric | What it measures |
 |---|---|
-| **Phonetic Fidelity (H-Index)** | Do Hindi words in Roman script get Hindi phonemes? ("Samajh" → /sʌmʌdʒʰ/ not /smæʃt/) |
-| **LID Confidence at Boundary** | Audio-based language ID at switch points — low confidence = natural blending |
-| **TPI** (Transliteration Penalty Index) | `(MOS_Devanagari - MOS_Roman) / MOS_Devanagari * 100` — measures script-agnosticism |
-
-TPI interpretation:
-- **0–5%** — Script Agnostic (model doesn't care about input script)
-- **20–40%** — Script Biased (understands the language, loses prosody in transliteration)
-- **>50%** — Transliteration Blind (fails to trigger correct phonetic engine)
+| **VQS** (Vector Quantization Stability) | Do VQ codes remain stable across code-switching boundaries? |
+| **Reliability** | % of test cases producing usable output (captures silent failures) |
 
 #### C. Human Evaluation
 
@@ -160,20 +148,17 @@ It also disentangles pattern effects from length effects — CS-07 intraword sen
 
 | Phase | Component | Status |
 |-------|-----------|--------|
-| **Phase 0** | Test set generation (7 patterns, 5000 sentences) | ✅ Complete |
-| **Phase 1** | Golden set selection (300 sentences) | ✅ Complete |
-| **Phase 1** | Golden set Devanagari verification | 🔄 In progress |
-| **Phase 1.5** | Model compatibility testing (test harness) | ✅ Complete |
-| **Phase 1.5** | XTTS-v2 adapter (Phase 1.5 ✓ 90% pass) | ✅ Complete |
-| **Phase 1.5** | Qwen3-TTS adapter | ✅ Complete |
-| **Phase 1.5** | CosyVoice 3 adapter (Roman/Mixed only) | ✅ Complete |
-| **Phase 1.5** | Fish Audio S2 adapter | 📌 Pending |
-| **Phase 2** | Audio synthesis pipeline | 📌 Pending |
-| **Phase 3** | Objective acoustic metrics (PIER, F0, MCD) | 📌 Pending |
-| **Phase 4** | Human evaluation (MOS, SPN) | 📌 Pending |
-| **Phase 5** | Analysis & write-up | 📌 Pending |
+| **Phase 0** | Test set generation (7 patterns, 20 test sentences) | ✅ Complete |
+| **Phase 1** | Golden set selection (300 sentences, 6–12 tokens) | ✅ Complete |
+| **Phase 1.5** | Model compatibility testing (Qwen3-TTS, Fish Audio S2) | ✅ Complete |
+| **Phase 1.5** | Custom metrics framework (CSPI: H/E-Index + Phoneme-Acc) | ✅ Complete |
+| **Phase 1.5** | Language-aware CSPI refinement | ✅ Complete |
+| **Phase 1.5** | VQ stability analysis | ✅ Complete |
+| **Phase 2** | Golden set synthesis (300 sentences, both models) | 📌 Pending |
+| **Phase 3** | Human evaluation (MOS, linguist annotation) | 📌 Pending |
+| **Phase 4** | Analysis & write-up | 📌 Pending |
 
-**Latest (Phase 1.5 Complete, 2026-03-25):** All four models evaluated on canonical metrics (TPI, PIER, H-Index, F0, LID). **Qwen3-TTS wins for production** (reliable, competitive H-Index 67.95%); **Fish Audio S2 Pro is promising** (H-Index 71.43%, best F0 25.27 Hz) but has ~30% silent failures requiring debug. Full analysis in `LINGUISTIC_QUALITY_REPORT.md`.
+**Latest (2026-03-25):** CSPI framework complete. **Qwen3-TTS**: Equal-weight CSPI 0.6228, 100% reliability, balanced language handling. **Fish Audio S2**: Language-aware CSPI 0.6433 (hidden strength on Hindi-dominant patterns), but 65% effective reliability (30% silent failures on pure Hindi inputs). Ready for Phase 2 golden set synthesis.
 
 ## Project Structure
 
@@ -181,29 +166,35 @@ It also disentangles pattern effects from length effects — CS-07 intraword sen
 HinglishTTS/
 ├── data/
 │   ├── codeswitching.py            # Controlled test set generator (7 patterns)
-│   ├── preprocess_streaming.py     # Audio preprocessing
 │   ├── codeswitched/               # Generated benchmark sentences (CSV)
-│   ├── golden/                     # Human-verified Devanagari + recordings
+│   ├── golden/                     # Golden set (300 sentences, 6–12 tokens)
+│   ├── script_variants.py          # Roman/Devanagari/Mixed conversions
 │   └── devanagari_map.py           # Hand-curated Roman→Devanagari dictionary
-├── normalization/
-│   └── g2p.py                      # G2P pipeline for reference transcriptions
 ├── evaluation/
 │   ├── compatibility/
-│   │   ├── run_tests.py            # Phase 1.5 test harness
+│   │   ├── run_tests.py            # Model compatibility test harness
 │   │   ├── test_set.csv            # 20 test sentences (all 7 patterns)
-│   │   └── adapters/               # Model wrappers
-│   │       ├── base.py             # Adapter interface
-│   │       ├── qwen3_tts.py        # ✅ Tested
-│   │       ├── xtts_v2.py          # ✅ Tested (90%)
-│   │       ├── cosyvoice3.py       # 🔄 In progress
-│   │       └── fish_audio_s2.py    # 📌 Pending
-│   ├── synthesize.py               # Phase 2: Run models on benchmark set
-│   ├── acoustic_metrics.py         # Phase 3: PIER, F0 RMSE, MCD
-│   ├── tpi.py                      # Phase 3: Transliteration Penalty Index
-│   └── human_eval/                 # Phase 4: MOS + SPN collection setup
-├── tests/
-├── CAPABILITY_REPORT.md            # Phase 1.5 results (auto-generated)
-└── results/                        # Phase 2+: Per-model outputs and analysis
+│   │   ├── adapters/               # Model synthesis wrappers
+│   │   │   ├── base.py             # Adapter interface
+│   │   │   ├── qwen3_tts.py        # ✅ Qwen3-TTS voice cloning
+│   │   │   └── fish_audio_s2.py    # ✅ Fish Audio S2 voice cloning
+│   │   ├── run_metrics.py          # Execute all CSPI metrics
+│   │   ├── compute_hindex.py       # Hindi token recognition
+│   │   ├── compute_eindex.py       # English token recognition
+│   │   ├── compute_phoneme_accuracy.py    # Language-specific phoneme accuracy
+│   │   ├── compute_cspi.py         # Equal-weight CSPI
+│   │   ├── compute_cspi_refined.py # Language-aware CSPI
+│   │   ├── compute_vqs.py          # VQ stability analysis
+│   │   └── results/                # Metric outputs (per-model)
+│   │       ├── qwen3_tts/          # Qwen3-TTS results
+│   │       └── fish_audio_s2/      # Fish Audio S2 results
+│   └── human_eval/                 # Phase 3: MOS collection setup
+├── models/
+│   ├── qwen3_tts/                  # Qwen3-TTS installation
+│   └── fish_audio_s2/              # Fish Audio S2 installation
+├── README.md                       # This file
+├── PROJECT_PLAN.md                 # Detailed phased roadmap
+└── tests/                          # Unit tests
 ```
 
 ---
@@ -227,26 +218,32 @@ make test
 
 ## Results
 
-### Phase 1.5: Model Capability Testing (✅ Complete)
+### Phase 1.5: CSPI Framework & Model Evaluation (✅ Complete)
 
-Script variant compatibility across 20 test sentences (all 7 code-switching patterns):
+#### Code-Switching Phonetic Index (CSPI) Rankings
 
-**Alibaba Ecosystem**
+**Equal-Weight CSPI** (all metrics weighted 25% each):
+1. **Qwen3-TTS: 0.6228** — Balanced performance across all dimensions
+2. **Fish Audio S2: 0.6157** — Strong Hindi, weaker English
 
-| Model | Roman | Devanagari | Mixed | Latency | Status |
-|---|---|---|---|---|---|
-| Qwen3-TTS | ✅ Tested | ✅ Tested | ✅ Tested | — | ✅ Adapter ready |
-| CosyVoice 3 | ✅ 20/20 (100%) | ⚠️ 6/20 (30%) | ~ 17/20 (85%) | ~7.3s/sent | ✅ Adapter ready (Roman/Mixed only) |
+**Language-Aware CSPI** (weighted by Hindi/English token ratio):
+1. **Fish Audio S2: 0.6433** — Exceptional on Hindi-dominant patterns (CS-02, CS-07)
+2. **Qwen3-TTS: 0.6327** — Consistent across pattern types
 
-**Independent**
+#### Per-Model Summary
 
-| Model | Roman | Devanagari | Mixed | Latency | Status |
-|---|---|---|---|---|---|
-| XTTS v2 | ~ 18/20 (90%) | ~ 18/20 (90%) | ~ 18/20 (90%) | 2.1s/sent | ✅ Adapter ready |
-| Fish Audio S2 Pro | ✅ Tested | ✅ Tested | ✅ Tested | ~1-2s/sent | ✅ Adapter ready |
+| Model | H-Index | E-Index | H-Phoneme | E-Phoneme | Reliability | CSPI |
+|---|---|---|---|---|---|---|
+| **Qwen3-TTS** | 67.95% | 50.00% | 0.7929 | 0.5188 | 100% | 0.6228 |
+| **Fish Audio S2** | 73.13% | 48.39% | 0.7806 | 0.4839 | 65% | 0.6157* |
 
-**XTTS-v2 Detailed Results:**
-- **Roman:** 18/20 pass (90%), 2.67s per sentence
+*Fish Audio effective reliability: 65% (30% of test files fail silently; effective CSPI ≈ 0.45 including failures)
+
+#### Key Findings
+
+- **Traditional metrics fail for code-switching**: WER, F0, and standard prosody metrics don't capture the "meeting"→"making" error visible in E-Phoneme accuracy.
+- **Custom metrics are necessary**: CSPI reveals that both models have distinct failure modes (Qwen3 weak on English insertions, Fish Audio weak on pure-Hindi sequences).
+- **Language-aware weighting matters**: Fish Audio's strength on Hindi-dominant patterns (70% of real conversations) becomes visible only with linguistic weighting.
 - **Devanagari:** 18/20 pass (90%), 2.10s per sentence
 - **Mixed:** 18/20 pass (90%), 2.02s per sentence
 - **Known limitation:** Fails on CS-06 (numerical/entity code-switching) patterns

@@ -1,6 +1,6 @@
 # evaluation/compatibility/run_tests.py
 """
-Model Compatibility Test Runner — Phase 1.5.
+Code-Switching Model Test Runner.
 
 For each model × test sentence × script variant:
   - Synthesize audio
@@ -9,22 +9,23 @@ For each model × test sentence × script variant:
 
 Outputs:
   - results/{model}/report.json   — per-model structured results
-  - CAPABILITY_REPORT.md          — human-readable summary table
+  - results/{model}/audio/        — synthesized audio files
 
 Usage:
-    # Test all available models:
+    # Test all available models (Qwen3-TTS and Fish Audio S2):
     python -m evaluation.compatibility.run_tests
 
-    # Test specific models:
-    python -m evaluation.compatibility.run_tests --models xtts_v2 fish_speech
+    # Test specific model:
+    python -m evaluation.compatibility.run_tests --models qwen3_tts
 
     # Dry-run — check availability only, no synthesis:
     python -m evaluation.compatibility.run_tests --dry-run
 
 Notes:
-  - Requires GPU. Run on a machine with CUDA available.
-  - Models not installed will show as SKIP in the report (not a failure).
-  - Audio is saved at 22050 Hz WAV for downstream MOS/MCD evaluation.
+  - Requires GPU for most models.
+  - Audio is saved at 22050 Hz WAV for downstream metric computation.
+  - Traditional metrics (F0, WER alone) do NOT capture code-switching quality.
+  - Use CSPI (Code-Switching Phonetic Index) for proper evaluation.
 """
 
 import argparse
@@ -56,17 +57,11 @@ CAPABILITY_REPORT_PATH = HERE.parent.parent / "CAPABILITY_REPORT.md"
 
 # ── Registry ─────────────────────────────────────────────────
 def get_all_adapters():
-    from .adapters.cosyvoice3 import CosyVoice3Adapter
     from .adapters.fish_audio_s2 import FishAudioS2Adapter
-    from .adapters.glow_tts import GlowTTSAdapter
     from .adapters.qwen3_tts import Qwen3TTSAdapter
-    from .adapters.xtts_v2 import XTTSV2Adapter
 
     return {
-        "glow_tts": GlowTTSAdapter,
         "qwen3_tts": Qwen3TTSAdapter,
-        "cosyvoice3": CosyVoice3Adapter,
-        "xtts_v2": XTTSV2Adapter,
         "fish_audio_s2": FishAudioS2Adapter,
     }
 
