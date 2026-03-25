@@ -1,21 +1,36 @@
 test_id,category,note,text,language_tags
-T01,devanagari_pure,Baseline: pure Hindi — simple sentence,Aaj bahut kaam karna hai,HI HI HI HI HI
-T02,devanagari_pure,Baseline: pure Hindi — verb-final structure,Mujhe kal subah jaldi uthna padega,HI HI HI HI HI HI
-T03,roman_pure,Baseline: pure Roman Hindi — no script switch,Aaj bahut kaam karna hai,HI HI HI HI HI
-T04,roman_pure,Baseline: pure Roman Hindi — colloquial register,Yaar main bahut thak gaya hoon,HI HI HI HI HI HI
-T05,mixed_script,Core challenge: EN noun inserted into Hindi sentence,Mujhe meeting mein jaana hai,HI EN HI HI HI
-T06,mixed_script,Core challenge: multiple EN words in Hindi sentence,Yeh deadline bahut important hai,HI EN HI EN HI
-T07,cs01_noun_insertion,CS-01: EN noun inserted into Hindi matrix (Roman),Aaj ka meeting bahut lamba tha,HI HI EN HI HI HI
-T08,cs01_noun_insertion,CS-01: EN multi-word noun phrase in Hindi matrix,Mera code review pending hai,HI EN EN EN HI
-T09,cs02_verb_grafting,CS-02: EN verb stem + Hindi morphological suffix,Pehle send karo phir baat karte hain,HI EN HI HI HI HI HI
-T10,cs02_verb_grafting,CS-02: EN verb embedded in Hindi verb phrase,Yeh file download karke bhej do,HI EN EN HI HI HI
-T11,cs03_tag_switching,CS-03: Hindi discourse marker prefixed to EN clause,Yaar the deadline is really urgent,HI EN EN EN EN EN
-T12,cs03_tag_switching,CS-03: EN sentence followed by Hindi discourse tag,The project got cancelled. Main khush hoon,EN EN EN EN HI HI HI
-T13,cs04_clause_boundary,CS-04: Hindi clause + EN clause (inter-sentential),Main soch raha tha. The meeting is really long,HI HI HI HI EN EN EN EN EN
-T14,cs04_clause_boundary,CS-04: EN clause + Hindi emotional response,I finished the report. Ekdum acha laga,EN EN EN EN HI HI HI
-T15,cs05_technical_slang,CS-05: Tech slang — EN noun in conversational Hindi,Mera laptop slow ho gaya hai kya karoon,HI EN EN HI HI HI HI HI
-T16,cs05_technical_slang,CS-05: Social context — EN words in Hindi party talk,Kal party mein bahut fun tha,HI EN HI HI EN HI
-T17,cs06_numerical_entity,CS-06: Named entity (day + time) anchored in Hindi,Meeting Monday ko 3 PM par hai,EN EN HI EN EN HI HI
-T18,cs06_numerical_entity,CS-06: Platform name + time expression in Hindi context,Google Meet pe 5 PM par milte hain,EN EN HI EN EN HI HI HI
-T19,cs07_intraword,CS-07: EN verb stem (social action) + Hindi inflection — hardest case,Usne mujhe unfriend kar diya,HI HI EN HI HI
-T20,cs07_intraword,CS-07: EN verb stem (screenshot) + Hindi compound verb,Maine use screenshot kar liya,HI HI EN HI HI
+T01,devanagari_pure,Expanded from test harness,Aaj bahut kaam karna hai,
+T02,devanagari_pure,Expanded from test harness,Mujhe kal subah jaldi uthna padega,
+T03,roman_pure,Expanded from test harness,Aaj bahut kaam karna hai,
+T04,roman_pure,Expanded from test harness,Yaar main bahut thak gaya hoon,
+T05,mixed_script,Expanded from test harness,Mujhe meeting mein jaana hai,
+T06,mixed_script,Expanded from test harness,Yeh deadline bahut important hai,
+T07,cs01_noun_insertion,Expanded from test harness,Aaj ka meeting bahut lamba tha,
+T08,cs01_noun_insertion,Expanded from test harness,Mera code review pending hai,
+T09,cs02_verb_grafting,Expanded from test harness,Pehle send karo phir baat karte hain,
+T10,cs02_verb_grafting,Expanded from test harness,Yeh file download karke bhej do,
+T11,cs03_tag_switching,Expanded from test harness,Yaar the deadline is really urgent,
+T12,cs03_tag_switching,Expanded from test harness,The project got cancelled. Main khush hoon,
+T13,cs04_clause_boundary,Expanded from test harness,Main soch raha tha. The meeting is really long,
+T14,cs04_clause_boundary,Expanded from test harness,I finished the report. Ekdum acha laga,
+T15,cs05_technical_slang,Expanded from test harness,Mera laptop slow ho gaya hai kya karoon,
+T16,cs05_technical_slang,Expanded from test harness,Kal party mein bahut fun tha,
+T17,cs06_numerical_entity,Expanded from test harness,Meeting Monday ko 3 PM par hai,
+T18,cs06_numerical_entity,Expanded from test harness,Google Meet pe 5 PM par milte hain,
+T19,cs07_intraword,Expanded from test harness,Usne mujhe unfriend kar diya,
+T20,cs07_intraword,Expanded from test harness,Maine use screenshot kar liya,
+T21,cs01_noun_insertion,"Balanced expansion from golden set (CS-01, low)",Is college ke liye bilkul taiyar nahi hoon,HI EN HI HI HI HI HI HI
+T22,cs01_noun_insertion,"Balanced expansion from golden set (CS-01, mid)",Tera status thoda viral ho gaya,HI EN HI EN HI HI
+T23,cs02_verb_grafting,"Balanced expansion from golden set (CS-02, low)",Please yeh comment mat karo aaj,HI HI EN HI HI HI
+T24,cs03_tag_switching,"Balanced expansion from golden set (CS-03, low)","The one-on-one was slow , matlab",EN EN EN EN EN HI
+T25,cs03_tag_switching,"Balanced expansion from golden set (CS-03, mid)","ek kaam karo , let's just google it abhi",HI HI HI EN EN EN EN EN HI
+T26,cs03_tag_switching,"Balanced expansion from golden set (CS-03, high)","acha , main yeh password finish kar dunga",HI EN EN EN EN HI HI HI
+T27,cs04_clause_boundary,"Balanced expansion from golden set (CS-04, low)",Please send me the team standup parso,EN EN EN EN EN EN HI
+T28,cs04_clause_boundary,"Balanced expansion from golden set (CS-04, mid)",Could you please connect the code review parso tak chahiye,EN EN EN EN EN EN EN HI HI HI
+T29,cs05_technical_slang,"Balanced expansion from golden set (CS-05, low)",tum gym jaana bilkul mushkil ho gaya hai,HI EN HI HI HI HI HI HI
+T30,cs05_technical_slang,"Balanced expansion from golden set (CS-05, mid)","bata na , I can't believe this movie itna lamba tha",HI HI EN EN EN EN EN EN HI HI HI
+T31,cs05_technical_slang,"Balanced expansion from golden set (CS-05, high)",main khush hoon after the decision,HI HI HI EN EN EN
+T32,cs06_numerical_entity,"Balanced expansion from golden set (CS-06, low)","Aaj 30th tarikh hai, kal deadline hai",HI EN HI HI HI HI HI
+T33,cs06_numerical_entity,"Balanced expansion from golden set (CS-06, mid)",main Gmail pe 2:30 PM available hoon,HI EN HI EN EN HI HI
+T34,cs06_numerical_entity,"Balanced expansion from golden set (CS-06, high)",pull request next Friday ko 20th ko reschedule ho gaya,EN EN EN EN HI EN HI HI HI HI
+T35,cs07_intraword,"Balanced expansion from golden set (CS-07, low)","Yaar, use reply kar de na",HI HI EN HI HI HI
