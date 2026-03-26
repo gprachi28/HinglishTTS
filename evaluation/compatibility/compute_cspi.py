@@ -47,29 +47,28 @@ def compute_cspi(model: str, weights: dict = None) -> dict:
 
     model_dir = RESULTS_DIR / model
 
-    # Load individual metrics
-    try:
-        with open(model_dir / "hindex.json") as f:
-            hindex_data = json.load(f)
-        h_index = hindex_data.get("weighted_hindex", 0)
-    except (FileNotFoundError, json.JSONDecodeError):
-        h_index = None
+    def _load_variant(filename_stem: str, key: str):
+        """Load metric averaging across roman and mixed variants if both exist."""
+        vals = []
+        for v in ["roman", "mixed"]:
+            path = model_dir / f"{filename_stem}_{v}.json"
+            if path.exists():
+                with open(path) as f:
+                    vals.append(json.load(f).get(key, 0))
+        if not vals:
+            # Fallback to legacy single-variant file
+            path = model_dir / f"{filename_stem}.json"
+            if path.exists():
+                with open(path) as f:
+                    return json.load(f).get(key)
+            return None
+        return round(sum(vals) / len(vals), 4)
 
-    try:
-        with open(model_dir / "eindex.json") as f:
-            eindex_data = json.load(f)
-        e_index = eindex_data.get("weighted_eindex", 0)
-    except (FileNotFoundError, json.JSONDecodeError):
-        e_index = None
-
-    try:
-        with open(model_dir / "phoneme_accuracy.json") as f:
-            phoneme_data = json.load(f)
-        h_phoneme = phoneme_data.get("h_phoneme_accuracy", 0)
-        e_phoneme = phoneme_data.get("e_phoneme_accuracy", 0)
-    except (FileNotFoundError, json.JSONDecodeError):
-        h_phoneme = None
-        e_phoneme = None
+    # Load individual metrics (averaged across variants)
+    h_index = _load_variant("hindex", "weighted_hindex")
+    e_index = _load_variant("eindex", "weighted_eindex")
+    h_phoneme = _load_variant("phoneme_accuracy", "h_phoneme_accuracy")
+    e_phoneme = _load_variant("phoneme_accuracy", "e_phoneme_accuracy")
 
     # Compute CSPI
     if all(x is not None for x in [h_index, e_index, h_phoneme, e_phoneme]):

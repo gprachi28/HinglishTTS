@@ -60,40 +60,41 @@ def get_language_ratios_per_sentence() -> dict:
 
 
 def load_metrics(model: str) -> dict:
-    """Load H-Index, E-Index, H-Phoneme, E-Phoneme from JSON files."""
+    """
+    Load H-Index, E-Index, H-Phoneme, E-Phoneme from per-variant JSON files.
+
+    Reads roman and mixed variants separately and averages them per sentence,
+    matching the behaviour of compute_cspi.py.
+    """
     model_dir = RESULTS_DIR / model
+    metrics: dict[str, dict[str, list]] = {}
 
-    metrics = {}
+    def _accumulate(filename: str, key_map: dict):
+        """Read per_sentence from filename and accumulate values by test_id."""
+        path = model_dir / filename
+        if not path.exists():
+            return
+        with open(path) as f:
+            data = json.load(f)
+        for item in data.get("per_sentence", []):
+            tid = item["test_id"]
+            metrics.setdefault(tid, {})
+            for src_key, dst_key in key_map.items():
+                val = item.get(src_key)
+                if val is not None:
+                    metrics[tid].setdefault(dst_key, []).append(val)
 
-    try:
-        with open(model_dir / "hindex.json") as f:
-            hindex_data = json.load(f)
-            for item in hindex_data.get("per_sentence", []):
-                test_id = item["test_id"]
-                metrics.setdefault(test_id, {})["h_index"] = item.get("h_index")
-    except (FileNotFoundError, json.JSONDecodeError, KeyError):
-        pass
+    for variant in ["roman", "mixed"]:
+        _accumulate(f"hindex_{variant}.json",           {"h_index":          "h_index"})
+        _accumulate(f"eindex_{variant}.json",           {"e_index":          "e_index"})
+        _accumulate(f"phoneme_accuracy_{variant}.json", {"hindi_phoneme_acc": "h_phoneme",
+                                                         "english_phoneme_acc": "e_phoneme"})
 
-    try:
-        with open(model_dir / "eindex.json") as f:
-            eindex_data = json.load(f)
-            for item in eindex_data.get("per_sentence", []):
-                test_id = item["test_id"]
-                metrics.setdefault(test_id, {})["e_index"] = item.get("e_index")
-    except (FileNotFoundError, json.JSONDecodeError, KeyError):
-        pass
-
-    try:
-        with open(model_dir / "phoneme_accuracy.json") as f:
-            phoneme_data = json.load(f)
-            for item in phoneme_data.get("per_sentence", []):
-                test_id = item["test_id"]
-                metrics.setdefault(test_id, {})["h_phoneme"] = item.get("hindi_phoneme_acc")
-                metrics.setdefault(test_id, {})["e_phoneme"] = item.get("english_phoneme_acc")
-    except (FileNotFoundError, json.JSONDecodeError, KeyError):
-        pass
-
-    return metrics
+    # Average across variants
+    return {
+        tid: {k: sum(vals) / len(vals) for k, vals in dim.items()}
+        for tid, dim in metrics.items()
+    }
 
 
 def compute_cspi_per_sentence(h_idx, e_idx, h_phon, e_phon, hindi_ratio, english_ratio):
@@ -229,7 +230,7 @@ def main():
     if args.model:
         models = [args.model]
     else:
-        models = ["qwen3_tts", "fish_audio_s2", "xtts_v2", "cosyvoice3"]
+        models = ["sarvam_tts", "qwen3_tts", "fish_audio_s2", "xtts_v2", "cosyvoice3"]
 
     print("\n" + "=" * 110)
     print("CSPI REFINED (Language-Aware Weighting)")
