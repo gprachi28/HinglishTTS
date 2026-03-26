@@ -778,11 +778,10 @@ The 5-metric pipeline (TPI, PIER, H-Index, F0, LID) measures **speech quality pr
 ### Immediate (add to Phase 3):
 1. **EN-Phoneme Accuracy Metric** — Apply H-Index logic to English tokens (phoneme-level ASR comparison)
 2. **Speech Rate Consistency** — Ratio of actual_duration / expected_duration (target: 0.95–1.05)
-3. **Voice Quality Stability** — MFCC-based formant continuity as a proxy for accent/quality consistency
 
 ### Medium-term (Phase 4):
-4. **Formal MOS Study** — 10–15 native Hinglish speakers rating naturalness on 15–20 sentences per model
-5. **Phoneme Error Analysis** — Per-token phoneme accuracy for both Hindi and English (finer than H-Index)
+3. **Formal MOS Study** — 10–15 native Hinglish speakers rating naturalness on 15–20 sentences per model
+4. **Phoneme Error Analysis** — Per-token phoneme accuracy for both Hindi and English (finer than H-Index)
 
 ### Outcome:
 These additions will shift evaluation from "technical sound quality" to **"code-switching usability"** — answering the real question: *"Would a native Hinglish speaker naturally use this for daily communication?"*

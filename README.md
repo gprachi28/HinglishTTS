@@ -40,7 +40,6 @@ Traditional metrics (WER, BLEU, MCD, F0) **do not capture code-switching quality
 
 ### 3. Supporting Metrics
 
-- **VQS** (Voice Quality Stability): MFCC-based formant continuity measuring synthesis smoothness and naturalness at code-switch boundaries
 - **Reliability**: % of test cases producing usable output (accounts for silent failures)
 
 ## Project Status
@@ -71,7 +70,6 @@ HinglishTTS/
 │   │   ├── compute_phoneme_accuracy.py # Phoneme-level accuracy
 │   │   ├── compute_cspi.py           # CSPI (equal-weight)
 │   │   ├── compute_cspi_refined.py   # CSPI (language-aware)
-│   │   ├── compute_vqs.py            # VQ stability
 │   │   └── results/                  # Metric outputs
 │   └── human_eval/                   # MOS collection setup
 └── README.md                         # This file

@@ -8,7 +8,6 @@ Executes custom evaluation metrics for code-switched speech synthesis:
   2. E-Index    — English token recognition (via ASR)
   3. Phoneme-Accuracy — Language-specific phoneme fidelity
   4. CSPI       — Code-Switching Phonetic Index (composite metric)
-  5. VQS        — Voice Quality Stability (MFCC formant continuity)
 
 Results saved to: evaluation/compatibility/results/{model}/
   - hindex.json
@@ -16,7 +15,6 @@ Results saved to: evaluation/compatibility/results/{model}/
   - phoneme_accuracy.json
   - cspi_comparison.json (equal-weight)
   - cspi_refined_per-sentence.json (language-aware)
-  - vqs_analysis.json
 
 Usage:
     python -m evaluation.compatibility.run_metrics --model qwen3_tts
@@ -61,7 +59,6 @@ def print_summary(model: str, results_dir: Path) -> None:
     phoneme = load_json(results_dir / "phoneme_accuracy.json")
     cspi = load_json(results_dir / "cspi_comparison.json")
     cspi_refined = load_json(results_dir / "cspi_refined_per-sentence.json")
-    vqs = load_json(results_dir / "vqs_analysis.json")
 
     print(f"\n{'='*70}")
     print(f"CSPI METRICS SUMMARY — {model}")
@@ -100,11 +97,6 @@ def print_summary(model: str, results_dir: Path) -> None:
                 print(f"  CSPI (Language-Aware):      {cspi_refined_score}")
                 break
 
-    # VQS
-    if vqs:
-        vqs_score = vqs.get("overall_stability", "—")
-        print(f"  VQS (Voice Quality):        {vqs_score}")
-
     print()
 
 
@@ -128,9 +120,6 @@ def main():
     run_step("[4/5] CSPI (Equal-Weight)", "evaluation.compatibility.compute_cspi", ["--model", args.model])
     run_step("[5/5] CSPI (Language-Aware)", "evaluation.compatibility.compute_cspi_refined", ["--model", args.model, "--weighting-mode", "per-sentence"])
 
-    # Optional: VQS
-    run_step("[+] Voice Quality Stability", "evaluation.compatibility.compute_vqs", ["--model", args.model])
-
     # Print summary
     print_summary(args.model, model_results)
 
@@ -142,7 +131,6 @@ def main():
         "phoneme_accuracy": load_json(model_results / "phoneme_accuracy.json"),
         "cspi": load_json(model_results / "cspi_comparison.json"),
         "cspi_refined": load_json(model_results / "cspi_refined_per-sentence.json"),
-        "vqs": load_json(model_results / "vqs_analysis.json"),
     }
     out = model_results / "cspi_summary.json"
     with open(out, "w") as f:
