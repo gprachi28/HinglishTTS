@@ -22,6 +22,7 @@ import argparse
 import csv
 import json
 import re
+import sys
 import unicodedata
 from pathlib import Path
 from difflib import SequenceMatcher
@@ -29,6 +30,18 @@ from difflib import SequenceMatcher
 HERE = Path(__file__).parent
 TEST_SET_PATH = HERE / "test_set.csv"
 RESULTS_DIR = HERE / "results"
+
+# Import devanagari_map for hand-curated Roman→Devanagari conversion
+sys.path.insert(0, str(HERE.parents[1] / "data"))
+from devanagari_map import transliterate_hindi
+
+
+# ── Text transliteration (Roman → Devanagari) ──────────────────────
+def transliterate_roman_to_devanagari(text: str) -> str:
+    """Convert Roman Hinglish to Devanagari using hand-curated dictionary."""
+    words = text.split()
+    transliterated = [transliterate_hindi(word) for word in words]
+    return " ".join(transliterated)
 
 
 # ── Normalisation ─────────────────────────────────────────────
@@ -184,17 +197,19 @@ def main():
     hindi_similarities = []
     english_similarities = []
 
-    print(f"\nPhoneme-Level Accuracy — {args.model} (mixed variant)")
+    print(f"\nPhoneme-Level Accuracy — {args.model} (roman variant)")
     print("-" * 85)
     print(f"  {'Test ID':<8} {'Category':<20} {'HI Acc':>8} {'EN Acc':>8} {'Notes':>45}")
     print(f"  {'-'*8} {'-'*20} {'-'*8} {'-'*8} {'-'*45}")
 
     for test_id, row in test_rows.items():
-        ref = row["text_mixed"]
-        hyp = transcripts.get(f"{test_id}_mixed", "")
+        ref = row["text"]
+        ref_normalized = transliterate_roman_to_devanagari(ref)
+        hyp = transcripts.get(f"{test_id}_roman", "")
         tags = row["language_tags"].split()
 
-        data = compute_sentence_phoneme_accuracy(ref, hyp, tags)
+        # Compare using normalized (Devanagari) reference
+        data = compute_sentence_phoneme_accuracy(ref_normalized, hyp, tags)
 
         hi_tokens = data["hindi_tokens"]
         en_tokens = data["english_tokens"]
@@ -228,6 +243,9 @@ def main():
         results.append({
             "test_id": test_id,
             "category": row["category"],
+            "ref": ref,
+            "ref_normalized": ref_normalized,
+            "hyp": hyp,
             "hindi_phoneme_acc": hi_acc,
             "english_phoneme_acc": en_acc,
             "hindi_tokens": hi_tokens,
@@ -246,7 +264,7 @@ def main():
 
     output = {
         "model": args.model,
-        "variant": "mixed",
+        "variant": "roman",
         "h_phoneme_accuracy": avg_hi_acc,
         "e_phoneme_accuracy": avg_en_acc,
         "per_sentence": results,

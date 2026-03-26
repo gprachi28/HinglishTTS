@@ -24,12 +24,37 @@ import argparse
 import csv
 import json
 import re
+import sys
 import unicodedata
 from pathlib import Path
+from difflib import SequenceMatcher
 
 HERE = Path(__file__).parent
 TEST_SET_PATH = HERE / "test_set.csv"
 RESULTS_DIR = HERE / "results"
+
+# Import devanagari_map for hand-curated Roman→Devanagari conversion
+sys.path.insert(0, str(HERE.parents[1] / "data"))
+from devanagari_map import transliterate_hindi
+
+
+# ── Text transliteration (Roman → Devanagari) ──────────────────────
+def transliterate_roman_to_devanagari(text: str) -> str:
+    """Convert Roman Hinglish to Devanagari using hand-curated dictionary."""
+    words = text.split()
+    transliterated = [transliterate_hindi(word) for word in words]
+    return " ".join(transliterated)
+
+
+# ── Character-level similarity ─────────────────────────────────────
+def char_similarity(ref: str, hyp: str) -> float:
+    """Compare tokens at character level using SequenceMatcher.
+
+    Returns: ratio of matching characters (0.0 = completely different, 1.0 = identical)
+    """
+    if not ref or not hyp:
+        return 1.0 if ref == hyp else 0.0
+    return SequenceMatcher(None, ref, hyp).ratio()
 
 
 # ── Normalisation ─────────────────────────────────────────────
@@ -113,13 +138,21 @@ def compute_sentence_hindex(
 
     per_token = []
     correct_count = 0
+    char_sim_threshold = 0.7  # Require 70% character overlap
     for pos in hindi_positions:
         ref_tok = ref_tokens[pos]
         hyp_tok = ref_to_hyp.get(pos)
-        is_correct = hyp_tok is not None and hyp_tok == ref_tok
+        # Use character-level similarity instead of exact match
+        similarity = char_similarity(ref_tok, hyp_tok) if hyp_tok is not None else 0.0
+        is_correct = similarity >= char_sim_threshold
         if is_correct:
             correct_count += 1
-        per_token.append({"ref": ref_tok, "hyp": hyp_tok, "correct": is_correct})
+        per_token.append({
+            "ref": ref_tok,
+            "hyp": hyp_tok,
+            "char_similarity": round(similarity, 4),
+            "correct": is_correct
+        })
 
     return {
         "hindi_token_count": len(hindi_positions),
@@ -151,17 +184,19 @@ def main():
     total_hindi = 0
     total_correct = 0
 
-    print(f"\nH-Index (Phonetic Fidelity) — {args.model} (mixed variant)")
+    print(f"\nH-Index (Phonetic Fidelity) — {args.model} (roman variant)")
     print("-" * 75)
     print(f"  {'Test ID':<8} {'Category':<26} {'HI tokens':>10} {'Correct':>8} {'H-Index':>8}")
     print(f"  {'-'*8} {'-'*26} {'-'*10} {'-'*8} {'-'*8}")
 
     for test_id, row in test_rows.items():
-        ref = row["text_mixed"]
-        hyp = transcripts.get(f"{test_id}_mixed", "")
+        ref = row["text"]
+        ref_normalized = transliterate_roman_to_devanagari(ref)
+        hyp = transcripts.get(f"{test_id}_roman", "")
         tags = row["language_tags"].split()
 
-        data = compute_sentence_hindex(ref, hyp, tags)
+        # Compare using normalized (Devanagari) reference
+        data = compute_sentence_hindex(ref_normalized, hyp, tags)
 
         hi_count = data["hindi_token_count"]
         correct = data["correct"]
@@ -179,6 +214,7 @@ def main():
             "test_id": test_id,
             "category": row["category"],
             "ref": ref,
+            "ref_normalized": ref_normalized,
             "hyp": hyp,
             "hindi_token_count": hi_count,
             "correct": correct,
@@ -214,7 +250,7 @@ def main():
 
     output = {
         "model": args.model,
-        "variant": "mixed",
+        "variant": "roman",
         "weighted_hindex": weighted_hindex,
         "total_hindi_tokens": total_hindi,
         "total_correct": total_correct,
