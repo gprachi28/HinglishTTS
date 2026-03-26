@@ -179,6 +179,8 @@ def compute_sentence_phoneme_accuracy(
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--model", default="qwen3_tts")
+    parser.add_argument("--variant", default="roman", choices=["roman", "mixed"])
+    parser.add_argument("--limit", type=int, default=None, help="Process only first N sentences")
     args = parser.parse_args()
 
     transcripts_path = RESULTS_DIR / args.model / "transcripts.json"
@@ -191,21 +193,25 @@ def main():
         transcripts = json.load(f)
 
     with open(TEST_SET_PATH, encoding="utf-8") as f:
-        test_rows = {row["test_id"]: row for row in csv.DictReader(f)}
+        rows = list(csv.DictReader(f))
+        if args.limit:
+            rows = rows[:args.limit]
+        test_rows = {row["test_id"]: row for row in rows}
 
     results = []
     hindi_similarities = []
     english_similarities = []
 
-    print(f"\nPhoneme-Level Accuracy — {args.model} (roman variant)")
+    print(f"\nPhoneme-Level Accuracy — {args.model} ({args.variant} variant)")
     print("-" * 85)
     print(f"  {'Test ID':<8} {'Category':<20} {'HI Acc':>8} {'EN Acc':>8} {'Notes':>45}")
     print(f"  {'-'*8} {'-'*20} {'-'*8} {'-'*8} {'-'*45}")
 
     for test_id, row in test_rows.items():
-        ref = row["text"]
+        ref = row["text_roman"]
         ref_normalized = transliterate_roman_to_devanagari(ref)
-        hyp = transcripts.get(f"{test_id}_roman", "")
+        hyp_raw = transcripts.get(f"{test_id}_{args.variant}", "")
+        hyp = transliterate_roman_to_devanagari(hyp_raw)  # normalize: handles Whisper Roman↔Devanagari inconsistency
         tags = row["language_tags"].split()
 
         # Compare using normalized (Devanagari) reference
@@ -264,14 +270,14 @@ def main():
 
     output = {
         "model": args.model,
-        "variant": "roman",
+        "variant": args.variant,
         "h_phoneme_accuracy": avg_hi_acc,
         "e_phoneme_accuracy": avg_en_acc,
         "per_sentence": results,
         "note": "Character-level similarity used as phoneme-level proxy"
     }
 
-    out_path = RESULTS_DIR / args.model / "phoneme_accuracy.json"
+    out_path = RESULTS_DIR / args.model / f"phoneme_accuracy_{args.variant}.json"
     with open(out_path, "w", encoding="utf-8") as f:
         json.dump(output, f, indent=2, ensure_ascii=False)
     print(f"\n  Full results → {out_path}")

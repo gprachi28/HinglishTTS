@@ -226,6 +226,43 @@ ROMAN_TO_DEVANAGARI: dict[str, str] = {
     "finish":   "फ़िनिश",
     "deadline": "डेडलाइन",
     "interview":"इंटरव्यू",
+
+    # ── EN-tagged words: Hinglish phonetic Devanagari equivalents ──
+    # Used to normalize ASR hypothesis and reference to a common script.
+    # These are pronunciation-based transliterations, not Hindi translations.
+    "i":        "आई",
+    "got":      "गॉट",
+    "the":      "द",
+    "is":       "इज़",
+    "call":     "कॉल",
+    "cancelled":"कैंसल्ड",
+    "client":   "क्लाइंट",
+    "code":     "कोड",
+    "college":  "कॉलेज",
+    "download": "डाउनलोड",
+    "file":     "फाइल",
+    "finished": "फिनिश्ड",
+    "fun":      "फन",
+    "google":   "गूगल",
+    "laptop":   "लैपटॉप",
+    "long":     "लॉन्ग",
+    "meet":     "मीट",
+    "meme":     "मीम",
+    "monday":   "मंडे",
+    "party":    "पार्टी",
+    "pm":       "पीएम",
+    "project":  "प्रोजेक्ट",
+    "really":   "रियली",
+    "report":   "रिपोर्ट",
+    "review":   "रिव्यू",
+    "screenshot":"स्क्रीनशॉट",
+    "send":     "सेंड",
+    "slow":     "स्लो",
+    "status":   "स्टेटस",
+    "unfriend": "अनफ्रेंड",
+    "urgent":   "अर्जेंट",
+    "viral":    "वायरल",
+    "wifi":     "वाईफाई",
 }
 # fmt: on
 

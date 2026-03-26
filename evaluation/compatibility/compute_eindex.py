@@ -164,6 +164,8 @@ def compute_sentence_eindex(
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--model", default="qwen3_tts")
+    parser.add_argument("--variant", default="roman", choices=["roman", "mixed"])
+    parser.add_argument("--limit", type=int, default=None, help="Process only first N sentences")
     args = parser.parse_args()
 
     transcripts_path = RESULTS_DIR / args.model / "transcripts.json"
@@ -176,21 +178,25 @@ def main():
         transcripts = json.load(f)
 
     with open(TEST_SET_PATH, encoding="utf-8") as f:
-        test_rows = {row["test_id"]: row for row in csv.DictReader(f)}
+        rows = list(csv.DictReader(f))
+        if args.limit:
+            rows = rows[:args.limit]
+        test_rows = {row["test_id"]: row for row in rows}
 
     results = []
     total_english = 0
     total_correct = 0
 
-    print(f"\nE-Index (English Phonetic Fidelity) — {args.model} (roman variant)")
+    print(f"\nE-Index (English Phonetic Fidelity) — {args.model} ({args.variant} variant)")
     print("-" * 75)
     print(f"  {'Test ID':<8} {'Category':<26} {'EN tokens':>10} {'Correct':>8} {'E-Index':>8}")
     print(f"  {'-'*8} {'-'*26} {'-'*10} {'-'*8} {'-'*8}")
 
     for test_id, row in test_rows.items():
-        ref = row["text"]
+        ref = row["text_roman"]
         ref_normalized = transliterate_roman_to_devanagari(ref)
-        hyp = transcripts.get(f"{test_id}_roman", "")
+        hyp_raw = transcripts.get(f"{test_id}_{args.variant}", "")
+        hyp = transliterate_roman_to_devanagari(hyp_raw)  # normalize: handles Whisper Roman↔Devanagari inconsistency
         tags = row["language_tags"].split()
 
         # Compare using normalized (Devanagari) reference
@@ -248,7 +254,7 @@ def main():
 
     output = {
         "model": args.model,
-        "variant": "roman",
+        "variant": args.variant,
         "weighted_eindex": weighted_eindex,
         "total_english_tokens": total_english,
         "total_correct": total_correct,
@@ -259,7 +265,7 @@ def main():
         "per_sentence": results,
     }
 
-    out_path = RESULTS_DIR / args.model / "eindex.json"
+    out_path = RESULTS_DIR / args.model / f"eindex_{args.variant}.json"
     with open(out_path, "w", encoding="utf-8") as f:
         json.dump(output, f, indent=2, ensure_ascii=False)
     print(f"\n  Full results → {out_path}")
