@@ -42,7 +42,8 @@ logger = logging.getLogger(__name__)
 
 SCRIPT_VARIANTS = ["roman"]  # Roman script only — how Hinglish is actually used in India
 TEXT_COLUMNS = {
-    "roman": "text",
+    "roman": "text_roman",
+    "mixed": "text_mixed",
 }
 
 HERE = Path(__file__).parent
@@ -55,10 +56,12 @@ CAPABILITY_REPORT_PATH = HERE.parent.parent / "CAPABILITY_REPORT.md"
 def get_all_adapters():
     from .adapters.fish_audio_s2 import FishAudioS2Adapter
     from .adapters.qwen3_tts import Qwen3TTSAdapter
+    from .adapters.sarvam_tts import SarvamTTSAdapter
 
     return {
         "qwen3_tts": Qwen3TTSAdapter,
         "fish_audio_s2": FishAudioS2Adapter,
+        "sarvam_tts": SarvamTTSAdapter,
     }
 
 
