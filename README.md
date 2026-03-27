@@ -40,6 +40,9 @@ Traditional metrics (WER, BLEU, MCD, F0) **do not capture code-switching quality
 
 ### 3. Supporting Metrics
 
+- **HNR** (Harmonics-to-Noise Ratio): Absolute voice quality in dB via Praat autocorrelation. Scale: >20 dB excellent, 15–20 dB good, 10–15 dB moderate.
+- **Boundary Penalty (BP)**: MFCC frame discontinuity at code-switch points relative to within-language frames. BP = 1.0 is ideal; BP > 1.5 indicates the model struggles at language boundaries. Word boundaries are derived from Whisper word-level timestamps (same ASR pass as CSPI). MFA forced alignment was evaluated but is not currently viable for Hinglish — MFA 3.x has no Hindi acoustic model.
+
 - **Reliability**: % of test cases producing usable output (accounts for silent failures)
 
 ## Project Status
@@ -51,7 +54,6 @@ Traditional metrics (WER, BLEU, MCD, F0) **do not capture code-switching quality
 | CSPI framework & metrics | ✅ Complete |
 | Language-aware weighting | ✅ Complete |
 | Golden set synthesis | 📌 Pending |
-| Human evaluation | 📌 Pending |
 
 ## Structure
 
@@ -70,8 +72,10 @@ HinglishTTS/
 │   │   ├── compute_phoneme_accuracy.py # Phoneme-level accuracy
 │   │   ├── compute_cspi.py           # CSPI (equal-weight)
 │   │   ├── compute_cspi_refined.py   # CSPI (language-aware)
+│   │   ├── compute_hnr.py            # HNR voice quality
+│   │   ├── compute_boundary_penalty.py # BP transition smoothness
+│   │   ├── compute_word_timestamps.py  # Whisper word-level timestamps
 │   │   └── results/                  # Metric outputs
-│   └── human_eval/                   # MOS collection setup
 └── README.md                         # This file
 ```
 
