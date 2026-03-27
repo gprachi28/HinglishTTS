@@ -119,8 +119,8 @@ HinglishTTS/
 ├── evaluation/
 │   └── compatibility/
 │       ├── test_set.csv              # 20 test sentences
-│       ├── compute_hindex.py         # Hindi token recognition
-│       ├── compute_eindex.py         # English token recognition
+│       ├── compute_l1index.py        # L1 (matrix language) token recognition
+│       ├── compute_l2index.py        # L2 (embedded language) token recognition
 │       ├── compute_phoneme_accuracy.py # Phoneme-level accuracy
 │       ├── compute_cspi.py           # CSPI (equal-weight)
 │       ├── compute_cspi_refined.py   # CSPI (language-aware)
