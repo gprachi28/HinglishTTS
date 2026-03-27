@@ -102,7 +102,9 @@ def print_summary(model: str, results_dir: Path) -> None:
 
 def main():
     parser = argparse.ArgumentParser(description="Run CSPI evaluation pipeline")
-    parser.add_argument("--model", required=True, help="Model name (qwen3_tts, fish_audio_s2)")
+    parser.add_argument(
+        "--model", required=True, help="Model name (qwen3_tts, fish_audio_s2)"
+    )
     args = parser.parse_args()
 
     audio_dir = RESULTS_DIR / args.model / "audio"
@@ -114,11 +116,36 @@ def main():
     model_results = RESULTS_DIR / args.model
 
     # Run CSPI pipeline steps
-    run_step("[1/5] H-Index", "evaluation.compatibility.compute_hindex", ["--model", args.model])
-    run_step("[2/5] E-Index", "evaluation.compatibility.compute_eindex", ["--model", args.model])
-    run_step("[3/5] Phoneme Accuracy", "evaluation.compatibility.compute_phoneme_accuracy", ["--model", args.model])
-    run_step("[4/5] CSPI (Equal-Weight)", "evaluation.compatibility.compute_cspi", ["--model", args.model])
-    run_step("[5/5] CSPI (Language-Aware)", "evaluation.compatibility.compute_cspi_refined", ["--model", args.model, "--weighting-mode", "per-sentence"])
+    run_step(
+        "[1/5] H-Index",
+        "evaluation.compatibility.compute_hindex",
+        ["--model", args.model],
+    )
+    run_step(
+        "[2/5] E-Index",
+        "evaluation.compatibility.compute_eindex",
+        ["--model", args.model],
+    )
+    run_step(
+        "[3/5] Phoneme Accuracy",
+        "evaluation.compatibility.compute_phoneme_accuracy",
+        ["--model", args.model],
+    )
+    run_step(
+        "[4/5] CSPI (Equal-Weight)",
+        "evaluation.compatibility.compute_cspi",
+        ["--model", args.model],
+    )
+    run_step(
+        "[5/5] CSPI (Language-Aware)",
+        "evaluation.compatibility.compute_cspi_refined",
+        ["--model", args.model, "--weighting-mode", "per-sentence"],
+    )
+    run_step(
+        "[+]   Word Timestamps (for BP)",
+        "evaluation.compatibility.compute_word_timestamps",
+        ["--model", args.model],
+    )
 
     # Print summary
     print_summary(args.model, model_results)
