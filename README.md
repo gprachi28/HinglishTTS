@@ -1,6 +1,6 @@
 # HinglishTTS-Bench: Code-Switching Evaluation Framework
 
-> **A benchmark for evaluating TTS quality on Hindi-English code-switched speech.**
+> **A code-switching TTS evaluation framework, demonstrated on Hinglish.**
 
 ---
 
@@ -28,6 +28,10 @@ Despite this, no dedicated evaluation framework exists for Hindi-English code-sw
 | MOS | Requires costly human annotation; not reproducible at scale |
 
 This framework proposes **language-aware, automatic metrics** that isolate the code-switching challenge.
+
+### Beyond Hinglish
+
+This framework was built and tested on Hinglish as a starting point, but the design is language-pair agnostic. The CSPI formula generalises to any two-language code-switching scenario by swapping out the language tags — the matrix language weighting means the dominant language in each sentence automatically gets more influence on the score. Spanglish (Spanish–English), Konglish (Korean–English), Taglish (Tagalog–English), or any other bilingual mixing pattern can be evaluated with the same pipeline by providing a tagged test set and the appropriate ASR/phoneme normalisation.
 
 ---
 
@@ -126,8 +130,6 @@ Each model was evaluated on two input variants — **Roman script** (how Hinglis
 | **CS-05** Technical/Slang | *"Ye content kaafi cringe hai"* | *"ये content काफ़ी cringe है"* |
 | **CS-06** Numerical/Entity | *"Meeting Thursday ko 3 PM par hai"* | *"Meeting Thursday को 3 PM पर है"* |
 | **CS-07** Intraword | *"Usne mujhe unfriend kar-diya"* | *"उसने मुझे unfriend कर-दिया"* |
-
-**Golden Set**: 300 sentences (6–12 tokens), stratified by pattern, Code-Mixing Index (CMI 0.1–0.7), and register.
 
 ---
 
