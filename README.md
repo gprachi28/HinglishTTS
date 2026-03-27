@@ -14,18 +14,18 @@
 
 ---
 
-## Generalises Beyond Hinglish
+## 🌍 Generalises Beyond Hinglish
 
 The framework is language-pair agnostic. CSPI's matrix-language weighting means the dominant language in each sentence automatically gets more influence on the score — no hardcoded assumptions about Hindi or English. To adapt it for another language pair, provide a tagged test set and the appropriate ASR/phoneme normalisation:
 
-- **Spanglish** (Spanish–English)
-- **Konglish** (Korean–English)
-- **Taglish** (Tagalog–English)
+- 🇪🇸 **Spanglish** (Spanish–English)
+- 🇰🇷 **Konglish** (Korean–English)
+- 🇵🇭 **Taglish** (Tagalog–English)
 - Any other bilingual mixing pattern
 
 ---
 
-## Why Standard Metrics Fail
+## ❌ Why Standard Metrics Fail
 
 Code-switching is not a dialect or a style choice — it is a distinct phonological and syntactic phenomenon. The matrix language provides the grammatical frame; the embedded language inserts lexical items with their own phoneme inventories and stress patterns. Standard metrics ignore this entirely:
 
@@ -40,21 +40,21 @@ This framework proposes **language-aware, automatic metrics** that isolate the c
 
 ---
 
-## Metrics
+## 📐 Metrics
 
 | Metric | What It Captures | Scale |
 |--------|-----------------|-------|
-| **CSPI** — Code-Switching Phonetic Index | Phonetic fidelity across both languages, weighted by how dominant each language is in each sentence | 0–1, higher is better |
-| **H-Index / E-Index** | Fraction of Hindi / English tokens correctly reproduced, measured via Whisper ASR | 0–1, higher is better |
-| **H-Phoneme / E-Phoneme** | Character-level phoneme similarity for Hindi / English tokens (Devanagari-normalised) | 0–1, higher is better |
-| **HNR** — Harmonics-to-Noise Ratio | Absolute voice quality in dB via Praat autocorrelation | >20 dB excellent, 15–20 good, 10–15 moderate |
-| **Boundary Penalty (BP)** | Acoustic roughness at code-switch points relative to within-language frames | 1.0 = ideal, >1.5 = model struggles at switches |
+| **CSPI** — Code-Switching Phonetic Index | Phonetic fidelity across both languages, weighted by how dominant each language is in each sentence | 0–1 ↑ |
+| **H-Index / E-Index** | Fraction of Hindi / English tokens correctly reproduced via Whisper ASR | 0–1 ↑ |
+| **H-Phoneme / E-Phoneme** | Character-level phoneme similarity for Hindi / English tokens (Devanagari-normalised) | 0–1 ↑ |
+| **HNR** — Harmonics-to-Noise Ratio | Absolute voice quality in dB via Praat autocorrelation | >20 dB excellent · 15–20 good · 10–15 moderate |
+| **Boundary Penalty (BP)** | Acoustic roughness at code-switch points relative to within-language frames | 1.0 = ideal · >1.5 = struggles |
 
 CSPI combines H-Index, E-Index, H-Phoneme, and E-Phoneme, weighted per sentence by each sentence's own Hindi/English token ratio. A Hindi-heavy sentence penalises Hindi mispronunciations more; an English-heavy sentence does the reverse. BP uses Whisper word-level timestamps to localise switch points in the audio.
 
 ---
 
-## Test Set
+## 🗂️ Test Set
 
 20 linguistically controlled sentences covering 7 code-switching patterns, evaluated in two orthographic variants:
 
@@ -72,7 +72,7 @@ Roman script reflects how Hinglish is actually written in India. Mixed script (D
 
 ---
 
-## Models & Results
+## 🤖 Models & Results
 
 Full benchmarks were run on two models:
 
@@ -85,7 +85,7 @@ Full benchmarks were run on two models:
 
 Three additional models were attempted but could not be fully benchmarked: **Fish Audio S2 Pro** (~30% silent failures on Apple M4), **XTTS-v2** (WER too high for meaningful CSPI scores), and **CosyVoice 3** (Devanagari tokenizer gap — silent failures on Hindi script input).
 
-### Results
+### 📊 Results
 
 | Metric | Sarvam Roman | Sarvam Mixed | Qwen3 Roman | Qwen3 Mixed |
 |--------|:------------:|:------------:|:-----------:|:-----------:|
@@ -97,7 +97,7 @@ Three additional models were attempted but could not be fully benchmarked: **Fis
 | HNR (dB) ↑ | **15.98** | 15.44 | 14.92 | 14.95 |
 | Boundary Penalty ↓ | 1.219 | 1.376 | **1.196** | 1.242 |
 
-**What the numbers show:**
+**💡 What the numbers show:**
 - Sarvam's Hindi phoneme accuracy is substantially higher (~92% vs ~76%), reflecting native Hindi training. In a Hindi-dominant test set, this drives the overall CSPI gap.
 - Qwen3 produces more native-sounding English phonemes (E-Phoneme 0.879 vs 0.727 for Sarvam Roman) — expected from a multilingual model.
 - Both models sit in the "good quality" HNR band (15–20 dB); Sarvam is ~1 dB cleaner.
@@ -106,7 +106,7 @@ Three additional models were attempted but could not be fully benchmarked: **Fis
 
 ---
 
-## Structure
+## 🗃️ Structure
 
 ```
 HinglishTTS/
@@ -133,7 +133,7 @@ HinglishTTS/
 
 ---
 
-## Citation
+## 📎 Citation
 
 ```bibtex
 @misc{hinglish_tts_bench_2026,
@@ -144,6 +144,10 @@ HinglishTTS/
 }
 ```
 
-## License
+## 📄 License
 
 MIT License — see [LICENSE](LICENSE) for details.
+
+---
+
+*Built with [Claude Code](https://claude.ai/code).*
