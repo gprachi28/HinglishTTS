@@ -25,6 +25,7 @@ venv/
 READMEpersonal.md
 PROJECT_PLAN.md
 research_notes.md
+CLAUDE.md
 
 # Models — cloned repos and downloaded weights (can be very large)
 models/
@@ -38,3 +39,4 @@ evaluation/compatibility/results/
 # IDE
 .vscode/
 .idea/
+
