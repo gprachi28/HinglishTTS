@@ -56,6 +56,42 @@ CSPI combines L1-Index, L2-Index, L1-Phoneme, and L2-Phoneme, weighted per sente
 
 ---
 
+## 🚀 Usage
+
+**1. Install dependencies**
+```bash
+pip install librosa faster-whisper praat-parselmouth numpy scipy
+```
+
+**2. Prepare your test set**
+
+Use the included `evaluation/compatibility/test_set.csv` or bring your own — the required format is:
+```
+test_id,category,text_roman,text_mixed,language_tags
+T01,cs01_noun_insertion,Main office ja raha hoon,मैं office जा रहा हूँ,HI EN HI HI HI
+```
+One row per sentence, one language tag per token (`HI`/`EN` or your own L1/L2 labels).
+
+**3. Synthesise audio with your TTS model**
+
+Save WAV outputs to `evaluation/compatibility/results/{model_name}/audio/`, named `{test_id}_{variant}.wav` (e.g. `T01_roman.wav`).
+
+**4. Run the evaluation pipeline**
+```bash
+python -m evaluation.compatibility.run_metrics --model your_model_name
+```
+
+Or run individual metrics:
+```bash
+python -m evaluation.compatibility.compute_cspi_refined --model your_model_name
+python -m evaluation.compatibility.compute_hnr --model your_model_name
+python -m evaluation.compatibility.compute_boundary_penalty --model your_model_name
+```
+
+**5. Results** are saved to `evaluation/compatibility/results/{model_name}/`.
+
+---
+
 ## 🗂️ Test Set
 
 20 linguistically controlled sentences covering 7 code-switching patterns, evaluated in two orthographic variants:
@@ -132,42 +168,6 @@ HinglishTTS/
 └── docs/
     └── index.html                    # Audio examples (GitHub Pages)
 ```
-
----
-
-## 🚀 Usage
-
-**1. Install dependencies**
-```bash
-pip install librosa faster-whisper praat-parselmouth numpy scipy
-```
-
-**2. Prepare your test set**
-
-Use the included `evaluation/compatibility/test_set.csv` or bring your own — the required format is:
-```
-test_id,category,text_roman,text_mixed,language_tags
-T01,cs01_noun_insertion,Main office ja raha hoon,मैं office जा रहा हूँ,HI EN HI HI HI
-```
-One row per sentence, one language tag per token (`HI`/`EN` or your own L1/L2 labels).
-
-**3. Synthesise audio with your TTS model**
-
-Save WAV outputs to `evaluation/compatibility/results/{model_name}/audio/`, named `{test_id}_{variant}.wav` (e.g. `T01_roman.wav`).
-
-**4. Run the evaluation pipeline**
-```bash
-python -m evaluation.compatibility.run_metrics --model your_model_name
-```
-
-Or run individual metrics:
-```bash
-python -m evaluation.compatibility.compute_cspi_refined --model your_model_name
-python -m evaluation.compatibility.compute_hnr --model your_model_name
-python -m evaluation.compatibility.compute_boundary_penalty --model your_model_name
-```
-
-**5. Results** are saved to `evaluation/compatibility/results/{model_name}/`.
 
 ---
 
