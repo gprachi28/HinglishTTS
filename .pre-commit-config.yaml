@@ -23,3 +23,4 @@ repos:
       - id: check-yaml
       - id: check-added-large-files
         args: [--maxkb=500]
+        exclude: ^docs/index\.html$

@@ -1,5 +1,7 @@
 # HinglishTTS-Bench: Code-Switching Evaluation Framework
 
+**[Audio Examples & Metric Illustrations →](https://gprachi28.github.io/HinglishTTS/)**
+
 A systematic evaluation framework for Hindi-English code-switched speech synthesis. Provides linguistically controlled test sets, custom metrics, and evaluation methodology for assessing TTS quality on code-mixing patterns.
 
 ## Why This Framework
