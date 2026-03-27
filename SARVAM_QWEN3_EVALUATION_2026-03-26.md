@@ -57,7 +57,7 @@ Each sentence is weighted by its own token distribution, so errors in the domina
 
 ## 2. HNR — Harmonics-to-Noise Ratio
 
-HNR measures the ratio of harmonic (periodic) energy to noise energy in the synthesised speech using Praat's autocorrelation method. It is an **absolute perceptual voice quality** measure, unlike MFCC-continuity which is self-normalising and relative.
+HNR measures the ratio of harmonic (periodic) energy to noise energy in the synthesised speech using Praat's autocorrelation method. It is an **absolute perceptual voice quality** measure that provides a dB scale directly comparable across models.
 
 > Praat standard: > 20 dB = excellent · 15–20 dB = good · 10–15 dB = moderate · < 10 dB = poor
 
@@ -87,7 +87,7 @@ BP measures how much rougher code-switch boundaries are compared to within-langu
 BP = mean_discontinuity(boundary frames) / mean_discontinuity(within frames)
 ```
 
-Word boundaries are estimated by uniform time partition (word i at fraction i/N of total duration). A ±2 frame window is applied around each estimated switch point.
+Word boundaries come from **Whisper word-level timestamps** (`word_timestamps=True`), giving exact per-word start/end times from the same ASR pass used for CSPI. A ±2 frame window is applied around each switch point.
 
 > BP ≈ 1.0 = ideal (boundaries as smooth as within-language) · BP > 1.5 = model struggles at switches
 
@@ -95,18 +95,18 @@ Word boundaries are estimated by uniform time partition (word i at fraction i/N 
 
 | Variant | Mean BP | Median BP | Std | N |
 |---------|:-------:|:---------:|:---:|:-:|
-| Sarvam Roman | 1.126 | 1.063 | 0.488 | 20 |
-| Sarvam Mixed | 1.099 | 1.124 | 0.409 | 20 |
-| Qwen3 Roman | 1.063 | 1.039 | 0.294 | 20 |
-| Qwen3 Mixed | **1.036** | **1.019** | **0.238** | 20 |
+| Sarvam Roman | 1.219 | 1.273 | 0.435 | 20 |
+| Sarvam Mixed | 1.376 | 1.307 | 0.341 | 20 |
+| Qwen3 Roman | 1.196 | 1.234 | 0.345 | 20 |
+| Qwen3 Mixed | **1.242** | **1.263** | **0.351** | 20 |
 
 ### Key Findings
 
-- **Qwen3 produces smoother code-switch boundaries** in both variants (BP 1.063/1.036) vs Sarvam (1.126/1.099). This is expected: Qwen3 is a multilingual model trained on code-switched data, so language transitions are familiar patterns.
-- **Mixed script reduces BP for both models.** Qwen3: 1.063→1.036; Sarvam: 1.126→1.099. An explicit script-level cue at code-switch points (Devanagari Hindi / Roman English) helps both architectures produce smoother transitions.
-- **Qwen3 mixed achieves best BP across all variants** (1.036, std 0.238) — most consistent and smoothest boundaries overall.
-- **Sarvam's std is 1.7–2.1× higher than Qwen3's.** Sarvam is highly sentence-dependent at switch points; Qwen3 handles all sentences with consistent transitions.
-- **BP and HNR reveal a clear quality trade-off:** Sarvam produces cleaner phonemes (higher HNR) but slightly rougher transitions (higher BP). Qwen3 produces smoother transitions but lower absolute voice quality. The ideal Hinglish TTS would combine Sarvam's phoneme quality with Qwen3's boundary handling.
+- **Qwen3 produces smoother code-switch boundaries** in both variants (BP 1.196/1.242) vs Sarvam (1.219/1.376). Qwen3 is a multilingual model trained on code-switched data, so language transitions are familiar patterns.
+- **Mixed script increases BP for Sarvam** (1.219→1.376) — the script alternation at boundaries appears to create additional prosodic disruption rather than helping. Qwen3 shows a smaller mixed-script effect (1.196→1.242).
+- **Qwen3 roman achieves best BP across all variants** (1.196, std 0.345) — most consistent and smoothest boundaries overall.
+- **Models are much closer than uniform estimation suggested.** The gap between Qwen3 roman and Sarvam roman is only 0.023 BP points; earlier uniform-based figures overstated Qwen3's advantage.
+- **BP and HNR reveal a clear quality trade-off:** Sarvam produces cleaner phonemes (higher HNR) but rougher transitions (higher BP). Qwen3 produces smoother transitions but lower absolute voice quality. The ideal Hinglish TTS would combine Sarvam's phoneme quality with Qwen3's boundary handling.
 
 ---
 
@@ -121,7 +121,7 @@ Word boundaries are estimated by uniform time partition (word i at fraction i/N 
 | H-Phoneme ↑ | **0.918** | 0.882 | 0.756 | 0.751 | Sarvam Roman |
 | E-Phoneme ↑ | 0.727 | 0.851 | 0.833 | **0.879** | Qwen3 Mixed |
 | HNR (dB) ↑ | **15.98** | 15.44 | 14.92 | 14.95 | Sarvam Roman |
-| Boundary Penalty ↓ | 1.126 | 1.099 | 1.063 | **1.036** | Qwen3 Mixed |
+| Boundary Penalty ↓ | 1.219 | 1.376 | **1.196** | 1.242 | Qwen3 Roman |
 
 > Language-weighted CSPI averages per-sentence scores weighted by each sentence's own HI/EN token ratio; it does not decompose cleanly by input script variant.
 
@@ -130,7 +130,7 @@ Word boundaries are estimated by uniform time partition (word i at fraction i/N 
 **Use Sarvam with mixed-script input** for production Hinglish TTS:
 - Best language-weighted CSPI (0.847 vs 0.772)
 - Superior Hindi phonetics — critical for native-speaker acceptance in a Hindi-dominant test set
-- Mixed script closes the gap on English token handling and reduces boundary roughness
+- Mixed script closes the gap on English token handling (E-Index +10.2 pts)
 - Higher absolute voice quality (HNR) than Qwen3 in both variants
 
 **Qwen3's advantages** (E-Phoneme on mixed, boundary smoothness) are real but secondary — in Hinglish, correct Hindi pronunciation is perceptually more salient to listeners than code-switch transition smoothness or English phonetic accuracy. Language-weighted scoring reflects this by giving more weight to Hindi performance in the predominantly Hindi-heavy sentences.
@@ -145,8 +145,14 @@ All metric comparisons (H-Index, E-Index, H-Phoneme, E-Phoneme) normalise both r
 2. English words in Hinglish context adopt Hindi phonetics ("meeting" → "मीटिंग")
 3. The evaluation question is intelligibility in Hinglish context, not native-English phonetics
 
-### Boundary Penalty Limitations
-Word-timestamp estimation assumes uniform speaking rate, which introduces noise for sentences with long English phrases (faster) vs long Hindi phrases (natural pace). Future work could use forced alignment (e.g. Montreal Forced Aligner) for precise timestamps.
+### Boundary Penalty — Timestamp Method
+Three approaches were evaluated for locating word boundaries:
+
+1. **Uniform partition** (initial): word i estimated at fraction i/N of total duration. Simple but underestimates boundary roughness — switch points land at average positions regardless of actual speech rate variation.
+2. **Montreal Forced Aligner (MFA)**: would give precise phoneme-level alignment but hit a Hinglish-specific roadblock — MFA 3.x has no Hindi acoustic model in its repository, and the multilingual model was removed in 3.x. Building a custom Hindi acoustic model was out of scope.
+3. **Whisper word timestamps** (current): `word_timestamps=True` from the same faster-whisper pass already used for CSPI. Gives real per-word start/end times, handles both Roman and Devanagari Hinglish without any extra tooling, and is reliable for clean TTS output.
+
+The figures in this report use Whisper timestamps. For future work, MFA with a custom Hinglish acoustic model would provide phoneme-level precision at boundaries.
 
 ### Synthesis Paradigm
 Sarvam uses a dedicated Hindi TTS production API (`bulbul:v3`, `suhani` speaker). Qwen3 uses the Base model with ICL voice cloning from `hindi_ref.wav` — the recommended OOTB approach for Hinglish. Both configurations reflect realistic deployment, not a controlled ablation.
