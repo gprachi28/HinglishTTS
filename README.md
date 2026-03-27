@@ -10,13 +10,13 @@
 
 ---
 
-**Hinglish** — the fluid mixing of Hindi and English — is the everyday language of over 500 million urban Indians. Sentences like *"Aaj meeting kaafi productive thi"* or *"Mujhe seriously help chahiye yaar"* are not exceptions; they are the norm. Yet no dedicated evaluation framework exists for code-switched TTS. This project builds one.
+**Hinglish**, the fluid mixing of Hindi and English, is the everyday language of over 500 million urban Indians. Sentences like *"Aaj meeting kaafi productive thi"* or *"Mujhe seriously help chahiye yaar"* are not exceptions; they are the norm. Yet no dedicated evaluation framework exists for code-switched TTS. This project builds one.
 
 ---
 
 ## 🌍 Generalises Beyond Hinglish
 
-The framework is language-pair agnostic. CSPI's matrix-language weighting means the dominant language in each sentence automatically gets more influence on the score — no hardcoded assumptions about Hindi or English. To adapt it for another language pair, provide a tagged test set and the appropriate ASR/phoneme normalisation:
+The framework is language-pair agnostic. CSPI's matrix-language weighting means the dominant language in each sentence automatically gets more influence on the score, with no hardcoded assumptions about Hindi or English. To adapt it for another language pair, provide a tagged test set and the appropriate ASR/phoneme normalisation:
 
 - 🇪🇸 **Spanglish** (Spanish–English)
 - 🇰🇷 **Konglish** (Korean–English)
@@ -27,11 +27,11 @@ The framework is language-pair agnostic. CSPI's matrix-language weighting means 
 
 ## ❌ Why Standard Metrics Fail
 
-Code-switching is not a dialect or a style choice — it is a distinct phonological and syntactic phenomenon. The matrix language provides the grammatical frame; the embedded language inserts lexical items with their own phoneme inventories and stress patterns. Standard metrics ignore this entirely:
+Code-switching is not a dialect or a style choice: it is a distinct phonological and syntactic phenomenon. The matrix language provides the grammatical frame; the embedded language inserts lexical items with their own phoneme inventories and stress patterns. Standard metrics ignore this entirely:
 
 | Metric | What It Misses |
 |--------|---------------|
-| WER | Treats Hindi and English errors equally — a model that mangles every Hindi token but nails English scores the same as the reverse |
+| WER | Treats Hindi and English errors equally: a model that mangles every Hindi token but nails English scores the same as the reverse |
 | BLEU | Text similarity, not phonetic fidelity |
 | MCD / F0 | Overall acoustic distance; cannot distinguish boundary roughness from general style |
 | MOS | Requires costly human annotation; not reproducible at scale |
@@ -65,7 +65,7 @@ pip install librosa faster-whisper praat-parselmouth numpy scipy
 
 **2. Prepare your test set**
 
-Use the included `evaluation/compatibility/test_set.csv` or bring your own — the required format is:
+Use the included `evaluation/compatibility/test_set.csv` or bring your own. Required format:
 ```
 test_id,category,text_roman,text_mixed,language_tags
 T01,cs01_noun_insertion,Main office ja raha hoon,मैं office जा रहा हूँ,HI EN HI HI HI
@@ -106,7 +106,7 @@ python -m evaluation.compatibility.compute_boundary_penalty --model your_model_n
 | **CS-06** Numerical/Entity | *"Meeting Thursday ko 3 PM par hai"* | *"Meeting Thursday को 3 PM पर है"* |
 | **CS-07** Intraword | *"Usne mujhe unfriend kar-diya"* | *"उसने मुझे unfriend कर-दिया"* |
 
-Roman script reflects how Hinglish is actually written in India. Mixed script (Devanagari for Hindi tokens, Roman for English) was included to test whether input orthography is a confounder — it is, for some models.
+Roman script reflects how Hinglish is actually written in India. Mixed script (Devanagari for Hindi tokens, Roman for English) was included to test whether input orthography is a confounder. It is, for some models.
 
 ---
 
@@ -116,12 +116,12 @@ Full benchmarks were run on two models:
 
 | Model | Type |
 |-------|------|
-| **Sarvam TTS** (`bulbul:v3`) | Production API — native Hindi speaker voice |
-| **Qwen3-TTS** (1.7B Base) | Open-weight LLM-TTS — run locally with ICL voice cloning |
+| **Sarvam TTS** (`bulbul:v3`) | Production API, native Hindi speaker voice |
+| **Qwen3-TTS** (1.7B Base) | Open-weight LLM-TTS, run locally with ICL voice cloning |
 
-> **Synthesis paradigm:** Sarvam uses a production API with a native Hindi speaker. Qwen3 uses the Base model with voice cloning from a reference audio clip — the recommended zero-shot approach for Hinglish without fine-tuning. The comparison reflects real-world deployment scenarios, not a controlled parity setting.
+> **Synthesis paradigm:** Sarvam uses a production API with a native Hindi speaker. Qwen3 uses the Base model with voice cloning from a reference audio clip, the recommended zero-shot approach for Hinglish without fine-tuning. The comparison reflects real-world deployment scenarios, not a controlled parity setting.
 
-Three additional models were attempted but could not be fully benchmarked: **Fish Audio S2 Pro** (~30% silent failures on Apple M4), **XTTS-v2** (WER too high for meaningful CSPI scores), and **CosyVoice 3** (Devanagari tokenizer gap — silent failures on Hindi script input).
+Three additional models were attempted but could not be fully benchmarked: **Fish Audio S2 Pro** (~30% silent failures on Apple M4), **XTTS-v2** (WER too high for meaningful CSPI scores), and **CosyVoice 3** (Devanagari tokenizer gap; silent failures on Hindi script input).
 
 ### 📊 Results
 
@@ -137,9 +137,9 @@ Three additional models were attempted but could not be fully benchmarked: **Fis
 
 **💡 What the numbers show:**
 - Sarvam's L1-Phoneme (Hindi) accuracy is substantially higher (~92% vs ~76%), reflecting native Hindi training. In a L1-dominant test set, this drives the overall CSPI gap.
-- Qwen3 produces more native-sounding L2 (English) phonemes (L2-Phoneme 0.879 vs 0.727 for Sarvam Roman) — expected from a multilingual model.
+- Qwen3 produces more native-sounding L2 (English) phonemes (L2-Phoneme 0.879 vs 0.727 for Sarvam Roman), expected from a multilingual model.
 - Both models sit in the "good quality" HNR band (15–20 dB); Sarvam is ~1 dB cleaner.
-- Boundary Penalty is close across variants (1.19–1.38) — neither model struggles severely at switch points.
+- Boundary Penalty is close across variants (1.19–1.38); neither model struggles severely at switch points.
 - Mixed-script input helps Sarvam on L2 handling (+10 pts L2-Index) but increases boundary roughness. Qwen3 is largely script-invariant.
 
 ---
@@ -184,7 +184,7 @@ HinglishTTS/
 
 ## 📄 License
 
-MIT License — see [LICENSE](LICENSE) for details.
+MIT License. See [LICENSE](LICENSE) for details.
 
 ---
 
