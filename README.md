@@ -135,6 +135,112 @@ HinglishTTS/
 
 ---
 
+## 🚀 Usage
+
+### Step 1 — Install dependencies
+
+```bash
+pip install librosa faster-whisper praat-parselmouth numpy scipy
+```
+
+The evaluation pipeline additionally uses `faster-whisper` (for ASR transcripts and word-level timestamps) and `praat-parselmouth` (for HNR). The core dependencies are:
+
+| Package | Used by |
+|---------|---------|
+| `faster-whisper` | All index and phoneme metrics (ASR pass) |
+| `librosa` | Boundary Penalty (MFCC computation) |
+| `praat-parselmouth` | HNR (Harmonics-to-Noise Ratio) |
+| `numpy`, `scipy` | All scripts |
+
+---
+
+### Step 2 — Prepare your test set
+
+**Option A — Use the included Hinglish test set**
+
+`evaluation/compatibility/test_set.csv` contains 20 ready-to-use sentences. No setup needed; skip to Step 3.
+
+**Option B — Bring your own sentences**
+
+Create a CSV with the following columns:
+
+```
+test_id,category,text_roman,text_mixed,language_tags
+T01,cs01_noun_insertion,Main office ja raha hoon,मैं office जा रहा हूँ,HI EN HI HI HI
+T02,cs02_verb_grafting,File download kar lo,File download कर लो,EN EN HI HI
+```
+
+| Column | Description |
+|--------|-------------|
+| `test_id` | Unique ID, e.g. `T01` |
+| `category` | Code-switching pattern label |
+| `text_roman` | Sentence in Roman script |
+| `text_mixed` | Sentence in mixed script (L1 in native script, L2 in Roman) |
+| `language_tags` | Space-separated tags — one per token, `HI`/`EN` or your own L1/L2 labels |
+
+Save the file as `evaluation/compatibility/test_set.csv`.
+
+---
+
+### Step 3 — Synthesise audio
+
+Run your TTS model on the test sentences and save the output as WAV files in:
+
+```
+evaluation/compatibility/results/{your_model_name}/audio/
+```
+
+Name each file `{test_id}_{variant}.wav` — e.g. `T01_roman.wav`, `T01_mixed.wav`. The pipeline expects both `roman` and `mixed` variants; if you only have one, run the evaluation scripts with `--variant roman`.
+
+> This step is model-specific and left to you. Any TTS system that accepts text input and produces a WAV file works.
+
+---
+
+### Step 4 — Run the evaluation pipeline
+
+The master runner executes all metrics in sequence:
+
+```bash
+python -m evaluation.compatibility.run_metrics --model your_model_name
+```
+
+This runs:
+1. **L1-Index** — L1 token recognition via Whisper ASR
+2. **L2-Index** — L2 token recognition via Whisper ASR
+3. **Phoneme Accuracy** — character-level phoneme similarity for L1 and L2 tokens
+4. **CSPI (equal-weight)** — composite metric, equal weights
+5. **CSPI (language-aware)** — composite metric, weighted by per-sentence L1/L2 ratio
+6. **Word Timestamps** — Whisper word-level timestamps (required for Boundary Penalty)
+
+Or run individual metrics:
+
+```bash
+python -m evaluation.compatibility.compute_l1index --model your_model_name --variant roman
+python -m evaluation.compatibility.compute_l2index --model your_model_name --variant roman
+python -m evaluation.compatibility.compute_phoneme_accuracy --model your_model_name --variant roman
+python -m evaluation.compatibility.compute_cspi_refined --model your_model_name
+python -m evaluation.compatibility.compute_hnr --model your_model_name
+python -m evaluation.compatibility.compute_word_timestamps --model your_model_name
+python -m evaluation.compatibility.compute_boundary_penalty --model your_model_name
+```
+
+---
+
+### Step 5 — Read results
+
+All outputs are saved to `evaluation/compatibility/results/{your_model_name}/`:
+
+| File | Contents |
+|------|----------|
+| `l1index_{variant}.json` | Per-sentence L1-Index scores |
+| `l2index_{variant}.json` | Per-sentence L2-Index scores |
+| `phoneme_accuracy_{variant}.json` | L1/L2 phoneme accuracy |
+| `cspi_refined_per-sentence.json` | Language-weighted CSPI per sentence |
+| `hnr_{variant}.json` | HNR scores |
+| `boundary_penalty.json` | Boundary Penalty per file |
+
+---
+
 ## 📎 Citation
 
 ```bibtex
