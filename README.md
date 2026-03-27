@@ -2,6 +2,10 @@
 
 > **A code-switching TTS evaluation framework, demonstrated on Hinglish.**
 
+![Python](https://img.shields.io/badge/python-3.11+-blue.svg)
+![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
+![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)
+
 ---
 
 ## 🎧 [Live Audio Examples & Metric Illustrations →](https://gprachi28.github.io/HinglishTTS/)
