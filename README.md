@@ -117,31 +117,20 @@ Each model was evaluated on two input variants — **Roman script** (how Hinglis
 
 **20 linguistically controlled sentences** in Roman script — how Hinglish is actually written in India, not a transliteration exercise. Covering 7 code-switching patterns:
 
-| Pattern | Example |
-|---------|---------|
-| **CS-01** Noun Insertion | *"Main office ja raha hoon"* |
-| **CS-02** Verb Grafting | *"File download kar lo"* |
-| **CS-03** Tag Switching | *"Baarish ho rahi hai, isn't it?"* |
-| **CS-04** Clause Boundary | *"I was worried ki train miss ho jayegi"* |
-| **CS-05** Technical/Slang | *"Ye content kaafi cringe hai"* |
-| **CS-06** Numerical/Entity | *"Meeting Thursday ko 3 PM par hai"* |
-| **CS-07** Intraword | *"Usne mujhe unfriend kar-diya"* |
+| Pattern | Roman | Mixed |
+|---------|-------|-------|
+| **CS-01** Noun Insertion | *"Main office ja raha hoon"* | *"मैं office जा रहा हूँ"* |
+| **CS-02** Verb Grafting | *"File download kar lo"* | *"File download कर लो"* |
+| **CS-03** Tag Switching | *"Baarish ho rahi hai, isn't it?"* | *"बारिश हो रही है, isn't it?"* |
+| **CS-04** Clause Boundary | *"I was worried ki train miss ho jayegi"* | *"I was worried कि train miss हो जाएगी"* |
+| **CS-05** Technical/Slang | *"Ye content kaafi cringe hai"* | *"ये content काफ़ी cringe है"* |
+| **CS-06** Numerical/Entity | *"Meeting Thursday ko 3 PM par hai"* | *"Meeting Thursday को 3 PM पर है"* |
+| **CS-07** Intraword | *"Usne mujhe unfriend kar-diya"* | *"उसने मुझे unfriend कर-दिया"* |
 
 **Golden Set**: 300 sentences (6–12 tokens), stratified by pattern, Code-Mixing Index (CMI 0.1–0.7), and register.
 
 ---
 
-## Project Status
-
-| Phase | Status |
-|-------|--------|
-| Test set generation (7 patterns, 5000 sentences) | ✅ Complete |
-| Golden set (300 sentences) | ✅ Complete |
-| CSPI framework & metrics | ✅ Complete |
-| Language-aware weighting | ✅ Complete |
-| Golden set synthesis | 📌 Pending |
-
----
 
 ## Structure
 
