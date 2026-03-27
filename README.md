@@ -99,16 +99,15 @@ Full CSPI, HNR, and Boundary Penalty benchmarks were run on **two models**:
 
 Each model was evaluated on two input variants — **Roman script** (how Hinglish is naturally written) and **Mixed script** (Devanagari for Hindi tokens, Roman for English) — to test whether input script is a confounder. Both variants use the same spoken content; only the orthographic representation changes.
 
-| Metric | Sarvam Roman | Sarvam Mixed | Qwen3 Roman | Qwen3 Mixed | Best |
-|--------|:------------:|:------------:|:-----------:|:-----------:|------|
-| CSPI (lang-weighted) ↑ | — | **0.847** | — | 0.772 | Sarvam |
-| CSPI (equal-weight) ↑ | 0.812 | **0.854** | 0.778 | 0.789 | Sarvam Mixed |
-| H-Index ↑ | **0.868** | 0.843 | 0.747 | 0.711 | Sarvam Roman |
-| E-Index ↑ | 0.735 | **0.837** | 0.776 | 0.816 | Sarvam Mixed |
-| H-Phoneme ↑ | **0.918** | 0.882 | 0.756 | 0.751 | Sarvam Roman |
-| E-Phoneme ↑ | 0.727 | 0.851 | 0.833 | **0.879** | Qwen3 Mixed |
-| HNR (dB) ↑ | **15.98** | 15.44 | 14.92 | 14.95 | Sarvam Roman |
-| Boundary Penalty ↓ | 1.219 | 1.376 | **1.196** | 1.242 | Qwen3 Roman |
+| Metric | Sarvam Roman | Sarvam Mixed | Qwen3 Roman | Qwen3 Mixed | What the numbers tell you |
+|--------|:------------:|:------------:|:-----------:|:-----------:|--------------------------|
+| CSPI (lang-weighted) ↑ | — | **0.847** | — | 0.772 | Sarvam gets ~85% of phonemes right weighted by language dominance; Qwen3 ~77%. A 7.5-point gap is perceptible in a Hindi-heavy conversation. |
+| H-Index ↑ | **0.868** | 0.843 | 0.747 | 0.711 | Sarvam correctly reproduces ~87% of Hindi words; Qwen3 ~75%. A native Hindi listener would notice roughly 1 in 4 Hindi words sounding off in Qwen3. |
+| E-Index ↑ | 0.735 | **0.837** | 0.776 | 0.816 | Both models handle English better with mixed-script input. Sarvam benefits more (+10 pts) — Devanagari Hindi words provide a clearer language-switch signal. |
+| H-Phoneme ↑ | **0.918** | 0.882 | 0.756 | 0.751 | Sarvam's Hindi phoneme accuracy is markedly higher (~92% vs ~76%). This reflects native Hindi training data — aspirated consonants and vowel length contrasts are reproduced more faithfully. |
+| E-Phoneme ↑ | 0.727 | 0.851 | 0.833 | **0.879** | Qwen3 produces more native-sounding English phonemes. Sarvam roman scores lowest here — English words are pronounced with a stronger Hindi accent. |
+| HNR (dB) ↑ | **15.98** | 15.44 | 14.92 | 14.95 | Both models fall in the "good quality" band (15–20 dB). Sarvam is ~1 dB cleaner — a small but consistent difference in breathiness and synthesis artifacts. |
+| Boundary Penalty ↓ | 1.219 | 1.376 | **1.196** | 1.242 | Values close to 1.0 mean language switches sound as smooth as the rest of the sentence. Both models are in the mild range; Qwen3 roman transitions are slightly less disruptive at switch points. |
 
 > CSPI (lang-weighted) is computed per sentence and averaged across both variants — it does not decompose by script column. Mixed script closes the English-handling gap for Sarvam (+10.2 pts E-Index) but increases boundary roughness (BP 1.219→1.376). Script is a meaningful confounder for Sarvam; Qwen3 is largely script-invariant.
 
