@@ -1,23 +1,21 @@
-# evaluation/compatibility/compute_hindex.py
+# evaluation/compatibility/compute_l2index.py
 """
-H-Index (Phonetic Fidelity) — Phase 3.4 metric.
+L2-Index (Embedded Language Phonetic Fidelity) — Phase 3.4 metric (NEW).
 
-Measures what fraction of Hindi-tagged tokens are correctly transcribed
-by ASR (Whisper). A Hindi token is "correctly recognised" when the
+Mirrors L1-Index but measures what fraction of L2-tagged tokens are correctly
+transcribed by ASR (Whisper). An English token is "correctly recognised" when the
 ASR hypothesis matches the reference at that aligned position.
 
-Definition (from project plan):
-  H-Index = (correctly recognised Hindi tokens) / (total Hindi tokens)
+Definition:
+  L2-Index = (correctly recognised L2 tokens) / (total L2 tokens)
 
-Weighting: weighted by Hindi token count per sentence, so a CS-07
-intraword sentence with a single Hindi token doesn't bias the aggregate
-the same as a long Hindi-matrix sentence.
+Weighting: weighted by L2 token count per sentence, consistent with L1-Index methodology.
 
-Evaluated on the `mixed` script variant where Hindi tokens are in
-Devanagari (making them easy to identify and verify against ASR output).
+Evaluated on the `mixed` script variant where English tokens are in Roman script
+(making them easy to identify and verify against ASR output).
 
 Usage:
-    python -m evaluation.compatibility.compute_hindex --model qwen3_tts
+    python -m evaluation.compatibility.compute_l2index --model qwen3_tts
 """
 
 import argparse
@@ -70,7 +68,7 @@ def tokenise(text: str) -> list[str]:
     return normalise(text).split()
 
 
-# ── Levenshtein alignment (same as PIER) ─────────────────────
+# ── Levenshtein alignment (same as L1-Index) ─────────────────────
 def align_tokens(ref: list[str], hyp: list[str]) -> list[tuple[str | None, str | None]]:
     n, m = len(ref), len(hyp)
     dp = [[0] * (m + 1) for _ in range(n + 1)]
@@ -103,28 +101,28 @@ def align_tokens(ref: list[str], hyp: list[str]) -> list[tuple[str | None, str |
     return alignment
 
 
-# ── H-Index for one sentence ──────────────────────────────────
-def compute_sentence_hindex(
+# ── L2-Index for one sentence ──────────────────────────────────
+def compute_sentence_l2index(
     ref_text: str, hyp_text: str, tags: list[str]
 ) -> dict:
     """
     Returns:
-        hindi_token_count: number of HI-tagged tokens in reference
+        l2_token_count: number of EN-tagged tokens in reference
         correct: number correctly transcribed by ASR
-        per_token: list of {ref, hyp, correct} for each HI token
+        per_token: list of {ref, hyp, correct} for each EN token
     """
     ref_tokens = tokenise(ref_text)
     hyp_tokens = tokenise(hyp_text)
 
     if not hyp_text.strip():
-        return {"hindi_token_count": 0, "correct": 0, "per_token": [], "skipped": True}
+        return {"l2_token_count": 0, "correct": 0, "per_token": [], "skipped": True}
 
     if len(ref_tokens) != len(tags):
-        return {"hindi_token_count": 0, "correct": 0, "per_token": [], "skipped": True}
+        return {"l2_token_count": 0, "correct": 0, "per_token": [], "skipped": True}
 
-    hindi_positions = [i for i, tag in enumerate(tags) if tag == "HI"]
-    if not hindi_positions:
-        return {"hindi_token_count": 0, "correct": 0, "per_token": [], "skipped": False}
+    l2_positions = [i for i, tag in enumerate(tags) if tag == "EN"]
+    if not l2_positions:
+        return {"l2_token_count": 0, "correct": 0, "per_token": [], "skipped": False}
 
     alignment = align_tokens(ref_tokens, hyp_tokens)
 
@@ -139,7 +137,7 @@ def compute_sentence_hindex(
     per_token = []
     correct_count = 0
     char_sim_threshold = 0.7  # Require 70% character overlap
-    for pos in hindi_positions:
+    for pos in l2_positions:
         ref_tok = ref_tokens[pos]
         hyp_tok = ref_to_hyp.get(pos)
         # Use character-level similarity instead of exact match
@@ -155,7 +153,7 @@ def compute_sentence_hindex(
         })
 
     return {
-        "hindi_token_count": len(hindi_positions),
+        "l2_token_count": len(l2_positions),
         "correct": correct_count,
         "per_token": per_token,
         "skipped": False,
@@ -186,12 +184,12 @@ def main():
         test_rows = {row["test_id"]: row for row in rows}
 
     results = []
-    total_hindi = 0
+    total_l2 = 0
     total_correct = 0
 
-    print(f"\nH-Index (Phonetic Fidelity) — {args.model} ({args.variant} variant)")
+    print(f"\nL2-Index (Embedded Language Phonetic Fidelity) — {args.model} ({args.variant} variant)")
     print("-" * 75)
-    print(f"  {'Test ID':<8} {'Category':<26} {'HI tokens':>10} {'Correct':>8} {'H-Index':>8}")
+    print(f"  {'Test ID':<8} {'Category':<26} {'L2 tokens':>10} {'Correct':>8} {'E-Index':>8}")
     print(f"  {'-'*8} {'-'*26} {'-'*10} {'-'*8} {'-'*8}")
 
     for test_id, row in test_rows.items():
@@ -202,19 +200,19 @@ def main():
         tags = row["language_tags"].split()
 
         # Compare using normalized (Devanagari) reference
-        data = compute_sentence_hindex(ref_normalized, hyp, tags)
+        data = compute_sentence_l2index(ref_normalized, hyp, tags)
 
-        hi_count = data["hindi_token_count"]
+        en_count = data["l2_token_count"]
         correct = data["correct"]
-        h_idx = round(correct / hi_count, 4) if hi_count > 0 else None
+        e_idx = round(correct / en_count, 4) if en_count > 0 else None
         skipped = data["skipped"]
 
-        # Weight by hindi token count when aggregating
-        total_hindi += hi_count
+        # Weight by english token count when aggregating
+        total_l2 += en_count
         total_correct += correct
 
-        h_str = f"{h_idx:.4f}" if h_idx is not None else ("skip" if skipped else "n/a")
-        print(f"  {test_id:<8} {row['category']:<26} {hi_count:>10} {correct:>8} {h_str:>8}")
+        e_str = f"{e_idx:.4f}" if e_idx is not None else ("skip" if skipped else "n/a")
+        print(f"  {test_id:<8} {row['category']:<26} {en_count:>10} {correct:>8} {e_str:>8}")
 
         results.append({
             "test_id": test_id,
@@ -222,52 +220,52 @@ def main():
             "ref": ref,
             "ref_normalized": ref_normalized,
             "hyp": hyp,
-            "hindi_token_count": hi_count,
+            "l2_token_count": en_count,
             "correct": correct,
-            "h_index": h_idx,
+            "l2_index": e_idx,
             "per_token": data["per_token"],
             "skipped": skipped,
         })
 
-    weighted_hindex = round(total_correct / total_hindi, 4) if total_hindi > 0 else None
+    weighted_l2index = round(total_correct / total_l2, 4) if total_l2 > 0 else None
 
-    print(f"\n  Total Hindi tokens:    {total_hindi}")
-    print(f"  Correctly recognised:  {total_correct}")
-    print(f"\n  H-Index (weighted):    {weighted_hindex}")
-    print(f"  (1.0 = all Hindi tokens correctly transcribed)")
+    print(f"\n  Total L2 tokens:   {total_l2}")
+    print(f"  Correctly recognised:   {total_correct}")
+    print(f"\n  L2-Index (weighted):     {weighted_l2index}")
+    print(f"  (1.0 = all L2 tokens correctly transcribed)")
 
     # Per-category breakdown
     categories: dict[str, dict] = {}
     for r in results:
         cat = r["category"]
         if cat not in categories:
-            categories[cat] = {"hi": 0, "correct": 0}
-        categories[cat]["hi"] += r["hindi_token_count"]
+            categories[cat] = {"en": 0, "correct": 0}
+        categories[cat]["en"] += r["l2_token_count"]
         categories[cat]["correct"] += r["correct"]
 
-    print("\n  Per-category H-Index:")
+    print("\n  Per-category L2-Index:")
     for cat, data in sorted(categories.items()):
-        cat_h = round(data["correct"] / data["hi"], 4) if data["hi"] > 0 else None
+        cat_e = round(data["correct"] / data["en"], 4) if data["en"] > 0 else None
         bar = ""
-        if cat_h is not None:
-            filled = int(cat_h * 20)
+        if cat_e is not None:
+            filled = int(cat_e * 20)
             bar = f"  [{'█' * filled}{'░' * (20 - filled)}]"
-        print(f"    {cat:<28} {str(cat_h):>6}{bar}")
+        print(f"    {cat:<28} {str(cat_e):>6}{bar}")
 
     output = {
         "model": args.model,
         "variant": args.variant,
-        "weighted_hindex": weighted_hindex,
-        "total_hindi_tokens": total_hindi,
+        "weighted_l2index": weighted_l2index,
+        "total_l2_tokens": total_l2,
         "total_correct": total_correct,
         "per_category": {
-            cat: round(d["correct"] / d["hi"], 4) if d["hi"] > 0 else None
+            cat: round(d["correct"] / d["en"], 4) if d["en"] > 0 else None
             for cat, d in categories.items()
         },
         "per_sentence": results,
     }
 
-    out_path = RESULTS_DIR / args.model / f"hindex_{args.variant}.json"
+    out_path = RESULTS_DIR / args.model / f"l2index_{args.variant}.json"
     with open(out_path, "w", encoding="utf-8") as f:
         json.dump(output, f, indent=2, ensure_ascii=False)
     print(f"\n  Full results → {out_path}")

@@ -4,14 +4,14 @@ Code-Switching Phonetic Index (CSPI) Pipeline — Master metrics runner.
 
 Executes custom evaluation metrics for code-switched speech synthesis:
 
-  1. H-Index    — Hindi token recognition (via ASR)
-  2. E-Index    — English token recognition (via ASR)
+  1. L1-Index   — Matrix language token recognition (via ASR)
+  2. L2-Index   — Embedded language token recognition (via ASR)
   3. Phoneme-Accuracy — Language-specific phoneme fidelity
   4. CSPI       — Code-Switching Phonetic Index (composite metric)
 
 Results saved to: evaluation/compatibility/results/{model}/
-  - hindex.json
-  - eindex.json
+  - l1index.json
+  - l2index.json
   - phoneme_accuracy.json
   - cspi_comparison.json (equal-weight)
   - cspi_refined_per-sentence.json (language-aware)
@@ -54,8 +54,8 @@ def load_json(path: Path) -> dict | None:
 
 def print_summary(model: str, results_dir: Path) -> None:
     """Print metrics summary."""
-    hindex = load_json(results_dir / "hindex.json")
-    eindex = load_json(results_dir / "eindex.json")
+    l1index = load_json(results_dir / "l1index.json")
+    l2index = load_json(results_dir / "l2index.json")
     phoneme = load_json(results_dir / "phoneme_accuracy.json")
     cspi = load_json(results_dir / "cspi_comparison.json")
     cspi_refined = load_json(results_dir / "cspi_refined_per-sentence.json")
@@ -65,21 +65,21 @@ def print_summary(model: str, results_dir: Path) -> None:
     print("=" * 70)
 
     # H-Index
-    if hindex:
-        h_idx = hindex.get("weighted_hindex", "—")
-        print(f"\n  H-Index (Hindi tokens):     {h_idx}")
+    if l1index:
+        h_idx = l1index.get("weighted_l1index", "—")
+        print(f"\n  L1-Index (matrix language tokens):     {h_idx}")
 
     # E-Index
-    if eindex:
-        e_idx = eindex.get("weighted_eindex", "—")
-        print(f"  E-Index (English tokens):   {e_idx}")
+    if l2index:
+        e_idx = l2index.get("weighted_l2index", "—")
+        print(f"  L2-Index (embedded language tokens):   {e_idx}")
 
     # Phoneme Accuracy
     if phoneme:
-        h_phon = phoneme.get("h_phoneme_accuracy", "—")
-        e_phon = phoneme.get("e_phoneme_accuracy", "—")
-        print(f"  H-Phoneme Accuracy:         {h_phon}")
-        print(f"  E-Phoneme Accuracy:         {e_phon}")
+        h_phon = phoneme.get("l1_phoneme_accuracy", "—")
+        e_phon = phoneme.get("l2_phoneme_accuracy", "—")
+        print(f"  L1-Phoneme Accuracy:         {h_phon}")
+        print(f"  L2-Phoneme Accuracy:         {e_phon}")
 
     # CSPI
     if cspi and "ranking" in cspi:
@@ -117,13 +117,13 @@ def main():
 
     # Run CSPI pipeline steps
     run_step(
-        "[1/5] H-Index",
-        "evaluation.compatibility.compute_hindex",
+        "[1/5] L1-Index",
+        "evaluation.compatibility.compute_l1index",
         ["--model", args.model],
     )
     run_step(
-        "[2/5] E-Index",
-        "evaluation.compatibility.compute_eindex",
+        "[2/5] L2-Index",
+        "evaluation.compatibility.compute_l2index",
         ["--model", args.model],
     )
     run_step(
@@ -153,8 +153,8 @@ def main():
     # Save combined summary
     combined = {
         "model": args.model,
-        "hindex": load_json(model_results / "hindex.json"),
-        "eindex": load_json(model_results / "eindex.json"),
+        "l1index": load_json(model_results / "l1index.json"),
+        "l2index": load_json(model_results / "l2index.json"),
         "phoneme_accuracy": load_json(model_results / "phoneme_accuracy.json"),
         "cspi": load_json(model_results / "cspi_comparison.json"),
         "cspi_refined": load_json(model_results / "cspi_refined_per-sentence.json"),

@@ -3,17 +3,17 @@
 CSPI Refined (Language-Aware Weighting) — Refined Step 3.
 
 Improves upon equal-weight CSPI by considering language distribution:
-  - Sentences with more Hindi tokens weight H-Index/H-Phoneme more heavily
-  - Sentences with more English tokens weight E-Index/E-Phoneme more heavily
+  - Sentences with more L1 tokens weight L1-Index/L1-Phoneme more heavily
+  - Sentences with more L2 tokens weight L2-Index/L2-Phoneme more heavily
 
 Weighting scheme:
-  CSPI_per_sentence = α·H-Index + β·E-Index + γ·H-Phoneme + δ·E-Phoneme
+  CSPI_per_sentence = α·L1-Index + β·L2-Index + γ·L1-Phoneme + δ·L2-Phoneme
 
-  where α and γ = language_ratio_hindi
-        β and δ = language_ratio_english
+  where α = γ = 0.5 × language_ratio_l1
+        β = δ = 0.5 × language_ratio_l2
 
 Example: Sentence with 70% Hindi, 30% English
-  CSPI = 0.35×H-Index + 0.15×E-Index + 0.35×H-Phoneme + 0.15×E-Phoneme
+  CSPI = 0.35×L1-Index + 0.15×L2-Index + 0.35×L1-Phoneme + 0.15×L2-Phoneme
 
 This reflects the principle: errors matter most in the languages that appear most.
 
@@ -85,10 +85,10 @@ def load_metrics(model: str) -> dict:
                     metrics[tid].setdefault(dst_key, []).append(val)
 
     for variant in ["roman", "mixed"]:
-        _accumulate(f"hindex_{variant}.json",           {"h_index":          "h_index"})
-        _accumulate(f"eindex_{variant}.json",           {"e_index":          "e_index"})
-        _accumulate(f"phoneme_accuracy_{variant}.json", {"hindi_phoneme_acc": "h_phoneme",
-                                                         "english_phoneme_acc": "e_phoneme"})
+        _accumulate(f"l1index_{variant}.json",           {"l1_index": "l1_index"})
+        _accumulate(f"l2index_{variant}.json",           {"l2_index": "l2_index"})
+        _accumulate(f"phoneme_accuracy_{variant}.json", {"l1_phoneme_acc": "l1_phoneme",
+                                                         "l2_phoneme_acc": "l2_phoneme"})
 
     # Average across variants
     return {
@@ -102,14 +102,14 @@ def compute_cspi_per_sentence(h_idx, e_idx, h_phon, e_phon, hindi_ratio, english
     Compute language-aware CSPI for a single sentence.
 
     Weights each metric by language presence:
-      - H-Index and H-Phoneme weighted by hindi_ratio
-      - E-Index and E-Phoneme weighted by english_ratio
+      - L1-Index and L1-Phoneme weighted by l1_ratio
+      - L2-Index and L2-Phoneme weighted by l2_ratio
     """
     if any(x is None for x in [h_idx, e_idx, h_phon, e_phon]):
         return None
 
     # Split weight allocation: 50% for token recognition, 50% for phoneme accuracy
-    h_token_weight = 0.5 * hindi_ratio  # 50% of Hindi's share
+    h_token_weight = 0.5 * hindi_ratio  # L1 weight  # 50% of Hindi's share
     h_phon_weight = 0.5 * hindi_ratio   # 50% of Hindi's share
     e_token_weight = 0.5 * english_ratio  # 50% of English's share
     e_phon_weight = 0.5 * english_ratio   # 50% of English's share
@@ -152,10 +152,10 @@ def compute_cspi_refined(model: str, weighting_mode: str = "per-sentence") -> di
             continue
 
         m = metrics[test_id]
-        h_idx = m.get("h_index")
-        e_idx = m.get("e_index")
-        h_phon = m.get("h_phoneme")
-        e_phon = m.get("e_phoneme")
+        h_idx = m.get("l1_index")
+        e_idx = m.get("l2_index")
+        h_phon = m.get("l1_phoneme")
+        e_phon = m.get("l2_phoneme")
 
         cspi = compute_cspi_per_sentence(
             h_idx, e_idx, h_phon, e_phon,
@@ -170,10 +170,10 @@ def compute_cspi_refined(model: str, weighting_mode: str = "per-sentence") -> di
             "english_tokens": ratio_info["english_count"],
             "hindi_ratio": round(ratio_info["hindi_ratio"], 4),
             "english_ratio": round(ratio_info["english_ratio"], 4),
-            "h_index": h_idx,
-            "e_index": e_idx,
-            "h_phoneme": h_phon,
-            "e_phoneme": e_phon,
+            "l1_index": h_idx,
+            "l2_index": e_idx,
+            "l1_phoneme": h_phon,
+            "l2_phoneme": e_phon,
             "cspi": round(cspi, 4) if cspi is not None else None,
         })
 
@@ -237,7 +237,7 @@ def main():
     print("=" * 110)
     print(f"\nWeighting Mode: {args.weighting_mode}")
     print("  Sentences weighted by their Hindi/English token ratio")
-    print("  Errors in dominant language weighted more heavily\n")
+    print("  Errors in dominant (matrix) language weighted more heavily\n")
 
     all_results = []
 
@@ -323,13 +323,13 @@ def main():
     print("=" * 110)
     print("""
 Language-Aware Weighting adjusts CSPI based on:
-  • Sentences with 80% Hindi, 20% English: H-Index/H-Phoneme weighted 80%, E-Index/E-Phoneme weighted 20%
-  • Sentences with 40% Hindi, 60% English: H-Index/H-Phoneme weighted 40%, E-Index/E-Phoneme weighted 60%
+  • Sentences with 80% L1, 20% L2: L1-Index/L1-Phoneme weighted 80%, L2-Index/L2-Phoneme weighted 20%
+  • Sentences with 40% L1, 60% L2: L1-Index/L1-Phoneme weighted 40%, L2-Index/L2-Phoneme weighted 60%
 
 This reflects linguistic reality:
   ✓ Errors in dominant language are more noticeable
-  ✓ A model weak on English in English-rich sentences is worse than weak Hindi in Hindi-dominant ones
-  ✓ Balanced scoring for balanced code-switching
+  ✓ A model weak on L2 in L2-dominant sentences is worse than weak Hindi in Hindi-dominant ones
+  ✓ Balanced scoring for balanced code-switching (equal L1/L2 split)
 
 Comparison of Results:
   • If ranking changes: Some models perform differently on language-dominant vs balanced sentences

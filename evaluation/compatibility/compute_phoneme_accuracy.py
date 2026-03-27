@@ -1,18 +1,18 @@
 # evaluation/compatibility/compute_phoneme_accuracy.py
 """
-H-Phoneme-Accuracy & E-Phoneme-Accuracy — Phase 3.4 metric (Step 2).
+L1-Phoneme-Accuracy & L2-Phoneme-Accuracy — Phase 3.4 metric (Step 2).
 
-Measures phoneme-level accuracy for Hindi and English tokens separately.
+Measures phoneme-level accuracy for L1 (matrix) and L2 (embedded) tokens separately.
 Uses character-level string matching as a proxy for phoneme accuracy:
-- Hindi: Devanagari characters are phonetic; direct character comparison
-- English: Normalization + character-level matching of transcribed words
+- L1: Devanagari characters (for Hinglish) are phonetic; direct character comparison
+- L2: Normalization + character-level matching of transcribed words
 
 Definition:
-  H-Phoneme-Accuracy = (% of Hindi token phonemes correctly transcribed)
-  E-Phoneme-Accuracy = (% of English token phonemes correctly transcribed)
+  L1-Phoneme-Accuracy = (% of L1 token phonemes correctly transcribed)
+  L2-Phoneme-Accuracy = (% of L2 token phonemes correctly transcribed)
 
 This captures errors like "meeting" → "making" at the phoneme level,
-which token-level metrics (H-Index, E-Index) miss.
+which token-level metrics (L1-Index, L2-Index) miss.
 
 Usage:
     python -m evaluation.compatibility.compute_phoneme_accuracy --model qwen3_tts
@@ -120,15 +120,15 @@ def compute_sentence_phoneme_accuracy(
 
     if not hyp_text.strip():
         return {
-            "hindi_tokens": [],
-            "english_tokens": [],
+            "l1_tokens": [],
+            "l2_tokens": [],
             "skipped": True
         }
 
     if len(ref_tokens) != len(tags):
         return {
-            "hindi_tokens": [],
-            "english_tokens": [],
+            "l1_tokens": [],
+            "l2_tokens": [],
             "skipped": True
         }
 
@@ -169,8 +169,8 @@ def compute_sentence_phoneme_accuracy(
             english_tokens.append(token_data)
 
     return {
-        "hindi_tokens": hindi_tokens,
-        "english_tokens": english_tokens,
+        "l1_tokens": hindi_tokens,
+        "l2_tokens": english_tokens,
         "skipped": False
     }
 
@@ -199,8 +199,8 @@ def main():
         test_rows = {row["test_id"]: row for row in rows}
 
     results = []
-    hindi_similarities = []
-    english_similarities = []
+    l1_similarities = []
+    l2_similarities = []
 
     print(f"\nPhoneme-Level Accuracy — {args.model} ({args.variant} variant)")
     print("-" * 85)
@@ -217,17 +217,17 @@ def main():
         # Compare using normalized (Devanagari) reference
         data = compute_sentence_phoneme_accuracy(ref_normalized, hyp, tags)
 
-        hi_tokens = data["hindi_tokens"]
-        en_tokens = data["english_tokens"]
+        hi_tokens = data["l1_tokens"]
+        en_tokens = data["l2_tokens"]
 
         # Calculate averages
         hi_acc = round(sum(t["similarity"] for t in hi_tokens) / len(hi_tokens), 4) if hi_tokens else None
         en_acc = round(sum(t["similarity"] for t in en_tokens) / len(en_tokens), 4) if en_tokens else None
 
         if hi_tokens:
-            hindi_similarities.extend([t["similarity"] for t in hi_tokens])
+            l1_similarities.extend([t["similarity"] for t in hi_tokens])
         if en_tokens:
-            english_similarities.extend([t["similarity"] for t in en_tokens])
+            l2_similarities.extend([t["similarity"] for t in en_tokens])
 
         # Highlight errors (< 0.5 similarity)
         notes = ""
@@ -252,27 +252,27 @@ def main():
             "ref": ref,
             "ref_normalized": ref_normalized,
             "hyp": hyp,
-            "hindi_phoneme_acc": hi_acc,
-            "english_phoneme_acc": en_acc,
-            "hindi_tokens": hi_tokens,
-            "english_tokens": en_tokens,
+            "l1_phoneme_acc": hi_acc,
+            "l2_phoneme_acc": en_acc,
+            "l1_tokens": hi_tokens,
+            "l2_tokens": en_tokens,
             "skipped": data["skipped"],
         })
 
     # Aggregate statistics
-    avg_hi_acc = round(sum(hindi_similarities) / len(hindi_similarities), 4) if hindi_similarities else None
-    avg_en_acc = round(sum(english_similarities) / len(english_similarities), 4) if english_similarities else None
+    avg_l1_acc = round(sum(l1_similarities) / len(l1_similarities), 4) if l1_similarities else None
+    avg_l2_acc = round(sum(l2_similarities) / len(l2_similarities), 4) if l2_similarities else None
 
-    print(f"\n  H-Phoneme-Accuracy (average):    {avg_hi_acc}")
-    print(f"  E-Phoneme-Accuracy (average):    {avg_en_acc}")
+    print(f"\n  L1-Phoneme-Accuracy (average):    {avg_l1_acc}")
+    print(f"  L2-Phoneme-Accuracy (average):    {avg_l2_acc}")
     print(f"  (1.0 = perfect phoneme match, 0.0 = completely wrong)")
     print(f"  Note: Using character-level similarity as phoneme proxy")
 
     output = {
         "model": args.model,
         "variant": args.variant,
-        "h_phoneme_accuracy": avg_hi_acc,
-        "e_phoneme_accuracy": avg_en_acc,
+        "l1_phoneme_accuracy": avg_l1_acc,
+        "l2_phoneme_accuracy": avg_l2_acc,
         "per_sentence": results,
         "note": "Character-level similarity used as phoneme-level proxy"
     }

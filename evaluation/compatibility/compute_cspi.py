@@ -3,12 +3,12 @@
 CSPI (Code-Switching Phonetic Index) — Step 3 Final Metric.
 
 Combines four complementary dimensions into a single balanced metric:
-  - H-Index: % Hindi tokens correctly recognized
-  - E-Index: % English tokens correctly recognized
-  - H-Phoneme-Accuracy: % Hindi phonemes correctly pronounced
-  - E-Phoneme-Accuracy: % English phonemes correctly pronounced
+  - L1-Index: % L1 (matrix language) tokens correctly recognized
+  - L2-Index: % L2 (embedded language) tokens correctly recognized
+  - L1-Phoneme-Accuracy: % L1 phonemes correctly pronounced
+  - L2-Phoneme-Accuracy: % L2 phonemes correctly pronounced
 
-CSPI = α·H-Index + β·E-Index + γ·H-Phoneme + δ·E-Phoneme
+CSPI = α·L1-Index + β·L2-Index + γ·L1-Phoneme + δ·L2-Phoneme
 
 Default weighting (equal): α=β=γ=δ=0.25
 
@@ -34,15 +34,15 @@ def compute_cspi(model: str, weights: dict = None) -> dict:
 
     Args:
         model: Model name (qwen3_tts, fish_audio_s2, xtts_v2, cosyvoice3)
-        weights: Dict with keys 'h_index', 'e_index', 'h_phoneme', 'e_phoneme'
+        weights: Dict with keys 'l1_index', 'l2_index', 'l1_phoneme', 'l2_phoneme'
                  Default: equal weights (0.25 each)
     """
     if weights is None:
         weights = {
-            'h_index': 0.25,
-            'e_index': 0.25,
-            'h_phoneme': 0.25,
-            'e_phoneme': 0.25,
+            'l1_index': 0.25,
+            'l2_index': 0.25,
+            'l1_phoneme': 0.25,
+            'l2_phoneme': 0.25,
         }
 
     model_dir = RESULTS_DIR / model
@@ -65,28 +65,28 @@ def compute_cspi(model: str, weights: dict = None) -> dict:
         return round(sum(vals) / len(vals), 4)
 
     # Load individual metrics (averaged across variants)
-    h_index = _load_variant("hindex", "weighted_hindex")
-    e_index = _load_variant("eindex", "weighted_eindex")
-    h_phoneme = _load_variant("phoneme_accuracy", "h_phoneme_accuracy")
-    e_phoneme = _load_variant("phoneme_accuracy", "e_phoneme_accuracy")
+    l1_index = _load_variant("l1index", "weighted_l1index")
+    l2_index = _load_variant("l2index", "weighted_l2index")
+    l1_phoneme = _load_variant("phoneme_accuracy", "l1_phoneme_accuracy")
+    l2_phoneme = _load_variant("phoneme_accuracy", "l2_phoneme_accuracy")
 
     # Compute CSPI
-    if all(x is not None for x in [h_index, e_index, h_phoneme, e_phoneme]):
+    if all(x is not None for x in [l1_index, l2_index, l1_phoneme, l2_phoneme]):
         cspi = (
-            weights['h_index'] * h_index +
-            weights['e_index'] * e_index +
-            weights['h_phoneme'] * h_phoneme +
-            weights['e_phoneme'] * e_phoneme
+            weights["l1_index"] * l1_index +
+            weights["l2_index"] * l2_index +
+            weights["l1_phoneme"] * l1_phoneme +
+            weights["l2_phoneme"] * l2_phoneme
         )
     else:
         cspi = None
 
     return {
         "model": model,
-        "h_index": h_index,
-        "e_index": e_index,
-        "h_phoneme_accuracy": h_phoneme,
-        "e_phoneme_accuracy": e_phoneme,
+        "l1_index": l1_index,
+        "l2_index": l2_index,
+        "l1_phoneme_accuracy": l1_phoneme,
+        "l2_phoneme_accuracy": l2_phoneme,
         "cspi": cspi,
         "weights": weights,
     }
@@ -95,17 +95,17 @@ def compute_cspi(model: str, weights: dict = None) -> dict:
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--model", default=None)
-    parser.add_argument("--h-weight", type=float, default=0.25)
-    parser.add_argument("--e-weight", type=float, default=0.25)
-    parser.add_argument("--h-phoneme-weight", type=float, default=0.25)
-    parser.add_argument("--e-phoneme-weight", type=float, default=0.25)
+    parser.add_argument("--l1-weight", type=float, default=0.25)
+    parser.add_argument("--l2-weight", type=float, default=0.25)
+    parser.add_argument("--l1-phoneme-weight", type=float, default=0.25)
+    parser.add_argument("--l2-phoneme-weight", type=float, default=0.25)
     args = parser.parse_args()
 
     weights = {
-        'h_index': args.h_weight,
-        'e_index': args.e_weight,
-        'h_phoneme': args.h_phoneme_weight,
-        'e_phoneme': args.e_phoneme_weight,
+        'l1_index': args.l1_weight,
+        'l2_index': args.l2_weight,
+        'l1_phoneme': args.l1_phoneme_weight,
+        'l2_phoneme': args.l2_phoneme_weight,
     }
 
     # Normalize weights
@@ -120,8 +120,8 @@ def main():
     print("\n" + "=" * 100)
     print("CSPI (Code-Switching Phonetic Index) — Complete Metric Comparison")
     print("=" * 100)
-    print(f"\nWeighting: H-Index={weights['h_index']:.2f}, E-Index={weights['e_index']:.2f}, "
-          f"H-Phoneme={weights['h_phoneme']:.2f}, E-Phoneme={weights['e_phoneme']:.2f}")
+    print(f"\nWeighting: L1-Index={weights['l1_index']:.2f}, L2-Index={weights['l2_index']:.2f}, "
+          f"H-Phoneme={weights['l1_phoneme']:.2f}, E-Phoneme={weights['l2_phoneme']:.2f}")
     print()
 
     all_results = []
@@ -130,14 +130,14 @@ def main():
         all_results.append(result)
 
     # Display results
-    print(f"{'Model':<18} {'H-Index':>10} {'E-Index':>10} {'H-Phoneme':>12} {'E-Phoneme':>12} {'CSPI':>10}")
+    print(f"{'Model':<18} {'L1-Index':>10} {'L2-Index':>10} {'L1-Phoneme':>12} {'L2-Phoneme':>12} {'CSPI':>10}")
     print("-" * 100)
 
     for result in all_results:
-        h_idx = f"{result['h_index']:.4f}" if result['h_index'] is not None else "—"
-        e_idx = f"{result['e_index']:.4f}" if result['e_index'] is not None else "—"
-        h_phon = f"{result['h_phoneme_accuracy']:.4f}" if result['h_phoneme_accuracy'] is not None else "—"
-        e_phon = f"{result['e_phoneme_accuracy']:.4f}" if result['e_phoneme_accuracy'] is not None else "—"
+        h_idx = f"{result['l1_index']:.4f}" if result['l1_index'] is not None else "—"
+        e_idx = f"{result['l2_index']:.4f}" if result['l2_index'] is not None else "—"
+        h_phon = f"{result['l1_phoneme_accuracy']:.4f}" if result['l1_phoneme_accuracy'] is not None else "—"
+        e_phon = f"{result['l2_phoneme_accuracy']:.4f}" if result['l2_phoneme_accuracy'] is not None else "—"
         cspi = f"{result['cspi']:.4f}" if result['cspi'] is not None else "—"
 
         print(f"{result['model']:<18} {h_idx:>10} {e_idx:>10} {h_phon:>12} {e_phon:>12} {cspi:>10}")
@@ -164,15 +164,15 @@ def main():
     print("=" * 100)
     print("""
 CSPI combines four dimensions:
-  1. H-Index (0.25): Do Hindi tokens get recognized correctly?
-  2. E-Index (0.25): Do English tokens get recognized correctly?
-  3. H-Phoneme (0.25): Are Hindi phonemes pronounced correctly?
-  4. E-Phoneme (0.25): Are English phonemes pronounced correctly?
+  1. L1-Index (0.25): Do L1 (matrix language) tokens get recognized correctly?
+  2. L2-Index (0.25): Do L2 (embedded language) tokens get recognized correctly?
+  3. L1-Phoneme (0.25): Are L1 phonemes pronounced correctly?
+  4. L2-Phoneme (0.25): Are L2 phonemes pronounced correctly?
 
-Higher CSPI = better for balanced Hindi-English code-switching.
+Higher CSPI = better for balanced code-switching.
 
 Key findings:
-  - A model with high H-Index but low E-Index (or vice versa) will have lower CSPI
+  - A model with high L1-Index but low L2-Index (or vice versa) will have lower CSPI
   - A model with high token recognition but low phoneme accuracy will score lower
   - Example: Fish Audio's "meeting"→"making" error shows as high E-Index but lower E-Phoneme
     """)
