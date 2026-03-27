@@ -31,32 +31,6 @@ This framework proposes **language-aware, automatic metrics** that isolate the c
 
 ---
 
-## Models Evaluated
-
-Five production and research TTS systems were benchmarked on the same 20-sentence Hinglish test set:
-
-| Model | Type | Notes |
-|-------|------|-------|
-| **Sarvam TTS** (`bulbul:v3`) | Production API | Native Hindi speaker voice; Sarvam AI |
-| **Qwen3-TTS** (1.7B Base) | Open-weight LLM-TTS | Multilingual; run locally with ICL voice cloning |
-| **Fish Audio S2 Pro** | Neural codec TTS | Strong phoneme fidelity when working; ~30% silent failures on M4 |
-| **XTTS-v2** | Vocoder-based | Reliable baseline; high WER |
-| **CosyVoice 3** | Flow-matching | Devanagari tokenizer gap → silent failures on Hindi script |
-
-> **Synthesis paradigm note:** Sarvam uses a production API with a native Hindi speaker. Qwen3 uses the Base model with voice cloning from a reference audio clip — the recommended zero-shot approach for Hinglish without fine-tuning. The comparison reflects real-world deployment scenarios for each model, not a controlled parity setting.
-
-### Key Results (Sarvam vs Qwen3, 20-sentence test set)
-
-| Metric | Sarvam TTS | Qwen3-TTS | Winner |
-|--------|:----------:|:---------:|--------|
-| CSPI (language-weighted) ↑ | **0.847** | 0.772 | Sarvam (+7.5 pts) |
-| H-Phoneme ↑ | **0.918** | 0.756 | Sarvam (native Hindi training) |
-| E-Phoneme ↑ | 0.727 | **0.879** | Qwen3 (multilingual) |
-| HNR — Roman (dB) ↑ | **15.98** | 14.92 | Sarvam (cleaner voice) |
-| Boundary Penalty — Roman ↓ | 1.219 | **1.196** | Qwen3 (smoother switches) |
-
----
-
 ## Proposed Metrics
 
 ### CSPI — Code-Switching Phonetic Index
@@ -102,6 +76,41 @@ BP = mean_discontinuity(boundary frames) / mean_discontinuity(within-language fr
 Word boundaries are derived from **Whisper word-level timestamps** (same ASR pass as CSPI). A ±2 MFCC frame window is applied around each switch point. BP = 1.0 is ideal; BP > 1.5 indicates the model struggles at language boundaries.
 
 > MFA forced alignment was evaluated but is not currently viable for Hinglish — MFA 3.x has no Hindi acoustic model.
+
+---
+
+## Models Evaluated
+
+Full CSPI, HNR, and Boundary Penalty benchmarks were run on **two models**:
+
+| Model | Type | Notes |
+|-------|------|-------|
+| **Sarvam TTS** (`bulbul:v3`) | Production API | Native Hindi speaker voice; Sarvam AI |
+| **Qwen3-TTS** (1.7B Base) | Open-weight LLM-TTS | Multilingual; run locally with ICL voice cloning |
+
+> **Synthesis paradigm note:** Sarvam uses a production API with a native Hindi speaker. Qwen3 uses the Base model with voice cloning from a reference audio clip — the recommended zero-shot approach for Hinglish without fine-tuning. The comparison reflects real-world deployment scenarios for each model, not a controlled parity setting.
+
+> **Three additional models were attempted but excluded from full benchmarking due to reliability issues:**
+> - **Fish Audio S2 Pro** — strong phoneme fidelity when it worked, but ~30% of test files produced silence on Apple M4 (MPS memory constraints suspected). Root cause unresolved.
+> - **XTTS-v2** — stable inference, but WER on Hinglish was too high (1.890) to yield meaningful CSPI scores; treated as a lower-bound baseline only.
+> - **CosyVoice 3** — Devanagari tokenizer gap: the underlying Qwen LLM was fine-tuned on Mandarin and English only, so Hindi script characters map to unknown tokens, producing silence on 70% of Devanagari inputs.
+
+### Key Results (Sarvam vs Qwen3, 20-sentence test set)
+
+Each model was evaluated on two input variants — **Roman script** (how Hinglish is naturally written) and **Mixed script** (Devanagari for Hindi tokens, Roman for English) — to test whether input script is a confounder. Both variants use the same spoken content; only the orthographic representation changes.
+
+| Metric | Sarvam Roman | Sarvam Mixed | Qwen3 Roman | Qwen3 Mixed | Best |
+|--------|:------------:|:------------:|:-----------:|:-----------:|------|
+| CSPI (lang-weighted) ↑ | — | **0.847** | — | 0.772 | Sarvam |
+| CSPI (equal-weight) ↑ | 0.812 | **0.854** | 0.778 | 0.789 | Sarvam Mixed |
+| H-Index ↑ | **0.868** | 0.843 | 0.747 | 0.711 | Sarvam Roman |
+| E-Index ↑ | 0.735 | **0.837** | 0.776 | 0.816 | Sarvam Mixed |
+| H-Phoneme ↑ | **0.918** | 0.882 | 0.756 | 0.751 | Sarvam Roman |
+| E-Phoneme ↑ | 0.727 | 0.851 | 0.833 | **0.879** | Qwen3 Mixed |
+| HNR (dB) ↑ | **15.98** | 15.44 | 14.92 | 14.95 | Sarvam Roman |
+| Boundary Penalty ↓ | 1.219 | 1.376 | **1.196** | 1.242 | Qwen3 Roman |
+
+> CSPI (lang-weighted) is computed per sentence and averaged across both variants — it does not decompose by script column. Mixed script closes the English-handling gap for Sarvam (+10.2 pts E-Index) but increases boundary roughness (BP 1.219→1.376). Script is a meaningful confounder for Sarvam; Qwen3 is largely script-invariant.
 
 ---
 
@@ -168,7 +177,7 @@ If you use this framework, please cite:
 ```bibtex
 @misc{hinglish_tts_bench_2026,
   title={HinglishTTS-Bench: A Code-Switching Evaluation Framework for Speech Synthesis},
-  author={[Prachi Govalkar]},
+  author={Prachi Govalkar},
   year={2026},
   url={https://github.com/gprachi28/HinglishTTS}
 }
@@ -176,4 +185,4 @@ If you use this framework, please cite:
 
 ## License
 
-MIT License — see [LICENSE](LICENSE) for details.    
+MIT License — see [LICENSE](LICENSE) for details.
