@@ -10,7 +10,7 @@
 
 ---
 
-**Hinglish**, the fluid mixing of Hindi and English, is the everyday language of over 500 million urban Indians. Sentences like *"Aaj meeting kaafi productive thi"* or *"Mujhe seriously help chahiye yaar"* are not exceptions; they are the norm. Yet no dedicated evaluation framework exists for code-switched TTS. This project builds one.
+**Hinglish**, the fluid mixing of Hindi and English, is the everyday language of over 350 million urban Indians. Sentences like *"Aaj meeting kaafi productive thi"* or *"Mujhe seriously help chahiye yaar"* are not exceptions; they are the norm. Yet no dedicated evaluation framework exists for code-switched TTS. This project builds one.
 
 ---
 
@@ -168,6 +168,18 @@ HinglishTTS/
 └── docs/
     └── index.html                    # Audio examples (GitHub Pages)
 ```
+
+---
+
+## 🏗️ Roadmap
+[ ] LLM Naturalness Score: Integrating gemini-3-flash-preview as a judge to evaluate conversational "flow."
+
+[ ] Real-time Visualization: A Streamlit dashboard to hear switch-point failures.
+
+---
+
+## 🤝 Contributing
+Contributions are welcome! If you have ideas for new metrics (especially regarding prosody or emotion in code-switching), please open an issue or a PR.
 
 ---
 
