@@ -134,6 +134,7 @@ Three additional models were attempted but could not be fully benchmarked: **Fis
 | L2-Phoneme ↑ | 0.727 | 0.851 | 0.833 | **0.879** |
 | HNR (dB) ↑ | **15.98** | 15.44 | 14.92 | 14.95 |
 | Boundary Penalty ↓ | 1.219 | 1.376 | **1.196** | 1.242 |
+| LLM Naturalness (1–5) ↑ | **4.25 ± 0.89** | 4.10 ± 0.83 | 3.90 ± 1.00 | 4.05 ± 0.97 |
 
 **💡 What the numbers show:**
 - Sarvam's L1-Phoneme (Hindi) accuracy is substantially higher (~92% vs ~76%), reflecting native Hindi training. In a L1-dominant test set, this drives the overall CSPI gap.
@@ -141,6 +142,48 @@ Three additional models were attempted but could not be fully benchmarked: **Fis
 - Both models sit in the "good quality" HNR band (15–20 dB); Sarvam is ~1 dB cleaner.
 - Boundary Penalty is close across variants (1.19–1.38); neither model struggles severely at switch points.
 - Mixed-script input helps Sarvam on L2 handling (+10 pts L2-Index) but increases boundary roughness. Qwen3 is largely script-invariant.
+- LLM Naturalness (Gemini judge, 1–5, supplementary): Sarvam scores higher overall (4.18 vs 3.98 average), but high per-sentence variance (σ ≈ 0.9–1.0) means individual scores should not be over-interpreted. The gap is most pronounced on CS-03 tag switching (+1.0) and CS-05 technical/slang (+0.75); Qwen3 edges ahead on CS-01 noun insertion in mixed script. CSPI and HNR remain the reproducible primary metrics.
+
+### 🧑‍⚖️ LLM-as-a-Judge Method
+
+LLM Naturalness is evaluated by sending each synthesized WAV file directly to **Gemini** (`gemini-3-flash-preview`) alongside the reference sentence text. The model listens to the audio and rates naturalness on a 1–5 scale. No ASR transcription step is involved — the judge evaluates prosody, rhythm, and code-switch transitions from the raw audio signal.
+
+**Judge prompt:**
+
+```
+You are an expert linguist specialising in Indian colloquialisms and Hinglish code-switching.
+
+Listen to the attached audio clip. It is a synthesized Text-to-Speech rendering of the
+following Hinglish sentence:
+
+Reference sentence: {reference_text}
+
+Rate the NATURALNESS of the spoken audio on a scale of 1 to 5.
+
+Scoring guide:
+  1 (Unnatural):  Sounds like a bad machine translation read aloud.
+                  Pronunciation or rhythm feels clearly wrong.
+  2 (Poor):       Mostly understandable but with obvious synthesis artifacts
+                  or awkward stress patterns.
+  3 (Acceptable): Understandable but slightly "off" — forced rhythm,
+                  unnatural stress, or awkward transitions at code-switch points.
+  4 (Good):       Sounds natural most of the time; only minor roughness.
+  5 (Native):     Sounds like everyday speech from a fluent Hinglish speaker.
+
+Focus specifically on:
+- Pronunciation accuracy for both Hindi and English tokens
+- Prosody and rhythm at code-switch boundaries
+- Whether stress and intonation feel natural for Hinglish
+
+Respond in this exact format:
+Score: [integer 1–5]
+Reasoning: [one or two sentences explaining the score, mentioning specific tokens or
+            transitions if relevant]
+```
+
+The reference sentence anchors the judge's expectations: it knows what was *meant* to be said, so deviations in pronunciation or rhythm at specific tokens are flagged rather than attributed to content. Scores are collected per file (per model × per script variant) and averaged across sentences and variants.
+
+> **Scope:** LLM Naturalness is a supplementary perceptual proxy. Per-sentence standard deviation is ~0.9–1.0 on a 5-point scale, reflecting the inherent subjectivity of single-judge evaluation. Treat it as a qualitative signal alongside CSPI and HNR, not as a standalone ranking criterion.
 
 ---
 
@@ -172,7 +215,7 @@ HinglishTTS/
 ---
 
 ## 🏗️ Roadmap
-[ ] LLM Naturalness Score: Integrating gemini-3-flash-preview as a judge to evaluate conversational "flow."
+[x] LLM Naturalness Score: Gemini judge (gemini-3-flash-preview) scoring pronunciation, prosody, and code-switch naturalness on a 1–5 scale.
 
 [ ] Real-time Visualization: A Streamlit dashboard to hear switch-point failures.
 
