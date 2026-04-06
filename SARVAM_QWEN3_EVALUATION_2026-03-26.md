@@ -156,3 +156,70 @@ The figures in this report use Whisper timestamps. For future work, MFA with a c
 
 ### Synthesis Paradigm
 Sarvam uses a dedicated Hindi TTS production API (`bulbul:v3`, `suhani` speaker). Qwen3 uses the Base model with ICL voice cloning from `hindi_ref.wav` — the recommended OOTB approach for Hinglish. Both configurations reflect realistic deployment, not a controlled ablation.
+
+---
+
+## 6. LLM Naturalness Score (Gemini Judge)
+
+**Date added:** 2026-04-06
+**Judge model:** `gemini-3-flash-preview`
+**Method:** Each WAV file sent directly to Gemini alongside the reference sentence text. No ASR intermediary — the judge evaluates pronunciation, prosody, and code-switch naturalness from the raw audio signal and scores on a 1–5 scale.
+
+### Results
+
+| Metric | Sarvam Roman | Sarvam Mixed | Qwen3 Roman | Qwen3 Mixed |
+|--------|:------------:|:------------:|:-----------:|:-----------:|
+| LLM Naturalness (1–5) ↑ | **4.25 ± 0.89** | 4.10 ± 0.83 | 3.90 ± 1.00 | 4.05 ± 0.97 |
+
+**Per-category breakdown (mean per variant averaged):**
+
+| Category | Sarvam | Qwen3 | Δ (Sarvam − Qwen3) |
+|---|:---:|:---:|:---:|
+| CS-01 Noun Insertion | 3.94 | 4.19 | −0.25 |
+| CS-02 Verb Grafting | 4.75 | 4.50 | +0.25 |
+| CS-03 Tag Switching | 3.75 | 2.75 | **+1.00** |
+| CS-04 Clause Boundary | 3.75 | 3.50 | +0.25 |
+| CS-05 Technical/Slang | 4.25 | 3.50 | **+0.75** |
+| CS-06 Numerical/Entity | 4.75 | 4.50 | +0.25 |
+| CS-07 Intraword | 4.75 | 4.25 | +0.50 |
+
+Sarvam overall: **4.18** · Qwen3 overall: **3.98**
+
+**Largest per-sentence disagreements (|Sarvam − Qwen3| ≥ 2):**
+
+| File | Category | Sarvam | Qwen3 | Δ |
+|---|---|:---:|:---:|:---:|
+| T05_mixed | CS-03 tag switching | 4 | 1 | +3 |
+| T05_roman | CS-03 tag switching | 5 | 3 | +2 |
+| T08_mixed | CS-04 clause boundary | 3 | 5 | −2 |
+| T08_roman | CS-04 clause boundary | 4 | 2 | +2 |
+| T16_mixed | CS-01 noun insertion | 3 | 5 | −2 |
+| T16_roman | CS-01 noun insertion | 5 | 3 | +2 |
+| T17_roman | CS-01 noun insertion | 3 | 5 | −2 |
+| T20_roman | CS-01 noun insertion | 2 | 4 | −2 |
+
+### Caveats of Using LLM-as-a-Judge
+
+**1. Judge model bias toward fluent English**
+Gemini is predominantly English-trained. It may unconsciously penalise correct Hindi phonology (e.g. retroflex consonants, schwa deletion) as "unnatural" because it sounds less English. Scores for Hindi-dominant sentences (CS-01, CS-02) may be systematically deflated.
+
+**2. Reference text anchoring can cut both ways**
+Giving the judge the reference sentence helps it spot token-level failures — but it also means the judge may penalise a TTS model that makes a natural prosodic substitution (e.g. dropping a schwa) that differs from the written form.
+
+**3. Single-judge variance**
+One model, one pass, no temperature=0 guarantee. The T05/T16/T17 disagreements (±2–3 points on the same sentence) show meaningful instability. A single score per file is noisy — std ~1.0 on a 5-point scale is high.
+
+**4. No inter-rater reliability**
+No human baseline to validate against. Gemini calling T05_mixed a "1 — malfunctioning machine" might be correct, or it might be over-penalising a legitimate synthesis artifact. Without a human-scored subset, reliability cannot be reported.
+
+**5. Prompt wording shapes scores**
+The phrase "sounds like everyday speech from a fluent Hinglish speaker" for a 5 sets a very high bar. A different rubric (e.g. anchoring 3 as the midpoint of acceptable native speech) would shift all scores. Cross-paper comparisons are only meaningful if the prompt is published — it is included in the README.
+
+**6. Script variant confounder**
+The judge sees `text_roman` for roman files and `text_mixed` for mixed files. Mixed script (Devanagari) looks more authentic Hinglish on the page. The judge may rate mixed-variant audio higher partly because the reference text looks more native, not because the audio is better.
+
+### Interpretation
+
+LLM Naturalness is a **supplementary perceptual proxy**, not a primary ranking metric. The high per-sentence variance (σ ≈ 0.9–1.0) means individual scores should not be over-interpreted. CSPI and HNR remain the reproducible primary metrics. The judge score is most useful for:
+- Flagging severe failures (score 1–2) that acoustic metrics miss (e.g. T05_mixed stuttering)
+- Providing a qualitative cross-check on category-level trends
