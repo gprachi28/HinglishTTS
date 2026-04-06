@@ -40,7 +40,9 @@ import numpy as np
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 logger = logging.getLogger(__name__)
 
-SCRIPT_VARIANTS = ["roman"]  # Roman script only — how Hinglish is actually used in India
+SCRIPT_VARIANTS = [
+    "roman"
+]  # Roman script only — how Hinglish is actually used in India
 TEXT_COLUMNS = {
     "roman": "text_roman",
     "mixed": "text_mixed",
@@ -86,6 +88,7 @@ def load_test_set() -> list[dict]:
 def save_audio(audio: np.ndarray, sample_rate: int, path: Path) -> None:
     try:
         import soundfile as sf
+
         path.parent.mkdir(parents=True, exist_ok=True)
         sf.write(str(path), audio, sample_rate)
     except Exception as e:
@@ -100,30 +103,34 @@ def run_model(adapter_cls, test_rows: list[dict], dry_run: bool) -> list[TestRes
         logger.warning(f"[{adapter.name}] Not available — skipping")
         for row in test_rows:
             for variant in SCRIPT_VARIANTS:
-                results.append(TestResult(
-                    test_id=row["test_id"],
-                    category=row["category"],
-                    script_variant=variant,
-                    success=False,
-                    latency_s=0.0,
-                    error="not_installed",
-                    audio_path=None,
-                ))
+                results.append(
+                    TestResult(
+                        test_id=row["test_id"],
+                        category=row["category"],
+                        script_variant=variant,
+                        success=False,
+                        latency_s=0.0,
+                        error="not_installed",
+                        audio_path=None,
+                    )
+                )
         return results
 
     if dry_run:
         logger.info(f"[{adapter.name}] Available ✓ (dry-run, skipping synthesis)")
         for row in test_rows:
             for variant in SCRIPT_VARIANTS:
-                results.append(TestResult(
-                    test_id=row["test_id"],
-                    category=row["category"],
-                    script_variant=variant,
-                    success=True,
-                    latency_s=0.0,
-                    error=None,
-                    audio_path=None,
-                ))
+                results.append(
+                    TestResult(
+                        test_id=row["test_id"],
+                        category=row["category"],
+                        script_variant=variant,
+                        success=True,
+                        latency_s=0.0,
+                        error=None,
+                        audio_path=None,
+                    )
+                )
         return results
 
     logger.info(f"[{adapter.name}] Loading model...")
@@ -133,15 +140,17 @@ def run_model(adapter_cls, test_rows: list[dict], dry_run: bool) -> list[TestRes
         logger.error(f"[{adapter.name}] Load failed: {e}")
         for row in test_rows:
             for variant in SCRIPT_VARIANTS:
-                results.append(TestResult(
-                    test_id=row["test_id"],
-                    category=row["category"],
-                    script_variant=variant,
-                    success=False,
-                    latency_s=0.0,
-                    error=f"load_failed: {e}",
-                    audio_path=None,
-                ))
+                results.append(
+                    TestResult(
+                        test_id=row["test_id"],
+                        category=row["category"],
+                        script_variant=variant,
+                        success=False,
+                        latency_s=0.0,
+                        error=f"load_failed: {e}",
+                        audio_path=None,
+                    )
+                )
         return results
 
     audio_dir = RESULTS_DIR / adapter.name / "audio"
@@ -160,15 +169,17 @@ def run_model(adapter_cls, test_rows: list[dict], dry_run: bool) -> list[TestRes
                 save_audio(result.audio, result.sample_rate, audio_path)
                 audio_path = str(audio_path)
 
-            results.append(TestResult(
-                test_id=row["test_id"],
-                category=row["category"],
-                script_variant=variant,
-                success=result.success,
-                latency_s=round(result.latency_s, 3),
-                error=result.error,
-                audio_path=audio_path,
-            ))
+            results.append(
+                TestResult(
+                    test_id=row["test_id"],
+                    category=row["category"],
+                    script_variant=variant,
+                    success=result.success,
+                    latency_s=round(result.latency_s, 3),
+                    error=result.error,
+                    audio_path=audio_path,
+                )
+            )
 
     adapter.unload()
     return results
@@ -190,7 +201,9 @@ def save_model_report(model_name: str, results: list[TestResult]) -> None:
             "pass": passed,
             "total": total,
             "pass_rate": round(passed / total, 2) if total else 0,
-            "avg_latency_s": round(sum(latencies) / len(latencies), 3) if latencies else None,
+            "avg_latency_s": round(sum(latencies) / len(latencies), 3)
+            if latencies
+            else None,
         }
 
     # Per-category summary (roman only — canonical)
@@ -239,12 +252,14 @@ def generate_capability_report(model_names: list[str]) -> None:
             lat_str = f"{lat:.2f}s" if lat else "n/a"
             return f"{mark} ({passed}/{total}, {lat_str})"
 
-        rows.append({
-            "model": model_name,
-            "roman": fmt("roman"),
-            "devanagari": fmt("devanagari"),
-            "mixed": fmt("mixed"),
-        })
+        rows.append(
+            {
+                "model": model_name,
+                "roman": fmt("roman"),
+                "devanagari": fmt("devanagari"),
+                "mixed": fmt("mixed"),
+            }
+        )
 
     lines = [
         "# CAPABILITY_REPORT.md",

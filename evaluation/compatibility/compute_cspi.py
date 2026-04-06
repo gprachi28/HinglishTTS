@@ -39,10 +39,10 @@ def compute_cspi(model: str, weights: dict = None) -> dict:
     """
     if weights is None:
         weights = {
-            'l1_index': 0.25,
-            'l2_index': 0.25,
-            'l1_phoneme': 0.25,
-            'l2_phoneme': 0.25,
+            "l1_index": 0.25,
+            "l2_index": 0.25,
+            "l1_phoneme": 0.25,
+            "l2_phoneme": 0.25,
         }
 
     model_dir = RESULTS_DIR / model
@@ -73,10 +73,10 @@ def compute_cspi(model: str, weights: dict = None) -> dict:
     # Compute CSPI
     if all(x is not None for x in [l1_index, l2_index, l1_phoneme, l2_phoneme]):
         cspi = (
-            weights["l1_index"] * l1_index +
-            weights["l2_index"] * l2_index +
-            weights["l1_phoneme"] * l1_phoneme +
-            weights["l2_phoneme"] * l2_phoneme
+            weights["l1_index"] * l1_index
+            + weights["l2_index"] * l2_index
+            + weights["l1_phoneme"] * l1_phoneme
+            + weights["l2_phoneme"] * l2_phoneme
         )
     else:
         cspi = None
@@ -102,10 +102,10 @@ def main():
     args = parser.parse_args()
 
     weights = {
-        'l1_index': args.l1_weight,
-        'l2_index': args.l2_weight,
-        'l1_phoneme': args.l1_phoneme_weight,
-        'l2_phoneme': args.l2_phoneme_weight,
+        "l1_index": args.l1_weight,
+        "l2_index": args.l2_weight,
+        "l1_phoneme": args.l1_phoneme_weight,
+        "l2_phoneme": args.l2_phoneme_weight,
     }
 
     # Normalize weights
@@ -120,8 +120,10 @@ def main():
     print("\n" + "=" * 100)
     print("CSPI (Code-Switching Phonetic Index) — Complete Metric Comparison")
     print("=" * 100)
-    print(f"\nWeighting: L1-Index={weights['l1_index']:.2f}, L2-Index={weights['l2_index']:.2f}, "
-          f"H-Phoneme={weights['l1_phoneme']:.2f}, E-Phoneme={weights['l2_phoneme']:.2f}")
+    print(
+        f"\nWeighting: L1-Index={weights['l1_index']:.2f}, L2-Index={weights['l2_index']:.2f}, "
+        f"H-Phoneme={weights['l1_phoneme']:.2f}, E-Phoneme={weights['l2_phoneme']:.2f}"
+    )
     print()
 
     all_results = []
@@ -130,31 +132,43 @@ def main():
         all_results.append(result)
 
     # Display results
-    print(f"{'Model':<18} {'L1-Index':>10} {'L2-Index':>10} {'L1-Phoneme':>12} {'L2-Phoneme':>12} {'CSPI':>10}")
+    print(
+        f"{'Model':<18} {'L1-Index':>10} {'L2-Index':>10} {'L1-Phoneme':>12} {'L2-Phoneme':>12} {'CSPI':>10}"
+    )
     print("-" * 100)
 
     for result in all_results:
-        h_idx = f"{result['l1_index']:.4f}" if result['l1_index'] is not None else "—"
-        e_idx = f"{result['l2_index']:.4f}" if result['l2_index'] is not None else "—"
-        h_phon = f"{result['l1_phoneme_accuracy']:.4f}" if result['l1_phoneme_accuracy'] is not None else "—"
-        e_phon = f"{result['l2_phoneme_accuracy']:.4f}" if result['l2_phoneme_accuracy'] is not None else "—"
-        cspi = f"{result['cspi']:.4f}" if result['cspi'] is not None else "—"
+        h_idx = f"{result['l1_index']:.4f}" if result["l1_index"] is not None else "—"
+        e_idx = f"{result['l2_index']:.4f}" if result["l2_index"] is not None else "—"
+        h_phon = (
+            f"{result['l1_phoneme_accuracy']:.4f}"
+            if result["l1_phoneme_accuracy"] is not None
+            else "—"
+        )
+        e_phon = (
+            f"{result['l2_phoneme_accuracy']:.4f}"
+            if result["l2_phoneme_accuracy"] is not None
+            else "—"
+        )
+        cspi = f"{result['cspi']:.4f}" if result["cspi"] is not None else "—"
 
-        print(f"{result['model']:<18} {h_idx:>10} {e_idx:>10} {h_phon:>12} {e_phon:>12} {cspi:>10}")
+        print(
+            f"{result['model']:<18} {h_idx:>10} {e_idx:>10} {h_phon:>12} {e_phon:>12} {cspi:>10}"
+        )
 
     print()
     print("=" * 100)
 
     # Ranking by CSPI
     ranked = sorted(
-        [r for r in all_results if r['cspi'] is not None],
-        key=lambda x: x['cspi'],
-        reverse=True
+        [r for r in all_results if r["cspi"] is not None],
+        key=lambda x: x["cspi"],
+        reverse=True,
     )
 
     print("\nCSPI Ranking (Higher is Better):\n")
     for i, result in enumerate(ranked, 1):
-        cspi_score = result['cspi']
+        cspi_score = result["cspi"]
         bar_len = int(cspi_score * 40)
         bar = "█" * bar_len + "░" * (40 - bar_len)
         print(f"  {i}. {result['model']:<20} {cspi_score:.4f}  [{bar}]")
@@ -162,7 +176,8 @@ def main():
     print("\n" + "=" * 100)
     print("Interpretation:")
     print("=" * 100)
-    print("""
+    print(
+        """
 CSPI combines four dimensions:
   1. L1-Index (0.25): Do L1 (matrix language) tokens get recognized correctly?
   2. L2-Index (0.25): Do L2 (embedded language) tokens get recognized correctly?
@@ -175,7 +190,8 @@ Key findings:
   - A model with high L1-Index but low L2-Index (or vice versa) will have lower CSPI
   - A model with high token recognition but low phoneme accuracy will score lower
   - Example: Fish Audio's "meeting"→"making" error shows as high E-Index but lower E-Phoneme
-    """)
+    """
+    )
 
     # Save results
     output = {
@@ -184,13 +200,9 @@ Key findings:
         "weights": weights,
         "results": all_results,
         "ranking": [
-            {
-                "rank": i,
-                "model": result['model'],
-                "cspi": result['cspi']
-            }
+            {"rank": i, "model": result["model"], "cspi": result["cspi"]}
             for i, result in enumerate(ranked, 1)
-        ]
+        ],
     }
 
     out_path = RESULTS_DIR / "cspi_comparison.json"

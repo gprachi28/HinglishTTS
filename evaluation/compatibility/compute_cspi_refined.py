@@ -85,10 +85,12 @@ def load_metrics(model: str) -> dict:
                     metrics[tid].setdefault(dst_key, []).append(val)
 
     for variant in ["roman", "mixed"]:
-        _accumulate(f"l1index_{variant}.json",           {"l1_index": "l1_index"})
-        _accumulate(f"l2index_{variant}.json",           {"l2_index": "l2_index"})
-        _accumulate(f"phoneme_accuracy_{variant}.json", {"l1_phoneme_acc": "l1_phoneme",
-                                                         "l2_phoneme_acc": "l2_phoneme"})
+        _accumulate(f"l1index_{variant}.json", {"l1_index": "l1_index"})
+        _accumulate(f"l2index_{variant}.json", {"l2_index": "l2_index"})
+        _accumulate(
+            f"phoneme_accuracy_{variant}.json",
+            {"l1_phoneme_acc": "l1_phoneme", "l2_phoneme_acc": "l2_phoneme"},
+        )
 
     # Average across variants
     return {
@@ -110,15 +112,15 @@ def compute_cspi_per_sentence(h_idx, e_idx, h_phon, e_phon, hindi_ratio, english
 
     # Split weight allocation: 50% for token recognition, 50% for phoneme accuracy
     h_token_weight = 0.5 * hindi_ratio  # L1 weight  # 50% of Hindi's share
-    h_phon_weight = 0.5 * hindi_ratio   # 50% of Hindi's share
+    h_phon_weight = 0.5 * hindi_ratio  # 50% of Hindi's share
     e_token_weight = 0.5 * english_ratio  # 50% of English's share
-    e_phon_weight = 0.5 * english_ratio   # 50% of English's share
+    e_phon_weight = 0.5 * english_ratio  # 50% of English's share
 
     cspi = (
-        h_token_weight * h_idx +
-        e_token_weight * e_idx +
-        h_phon_weight * h_phon +
-        e_phon_weight * e_phon
+        h_token_weight * h_idx
+        + e_token_weight * e_idx
+        + h_phon_weight * h_phon
+        + e_phon_weight * e_phon
     )
 
     return cspi
@@ -158,24 +160,29 @@ def compute_cspi_refined(model: str, weighting_mode: str = "per-sentence") -> di
         e_phon = m.get("l2_phoneme")
 
         cspi = compute_cspi_per_sentence(
-            h_idx, e_idx, h_phon, e_phon,
+            h_idx,
+            e_idx,
+            h_phon,
+            e_phon,
             ratio_info["hindi_ratio"],
-            ratio_info["english_ratio"]
+            ratio_info["english_ratio"],
         )
 
-        results["per_sentence"].append({
-            "test_id": test_id,
-            "category": ratio_info["category"],
-            "hindi_tokens": ratio_info["hindi_count"],
-            "english_tokens": ratio_info["english_count"],
-            "hindi_ratio": round(ratio_info["hindi_ratio"], 4),
-            "english_ratio": round(ratio_info["english_ratio"], 4),
-            "l1_index": h_idx,
-            "l2_index": e_idx,
-            "l1_phoneme": h_phon,
-            "l2_phoneme": e_phon,
-            "cspi": round(cspi, 4) if cspi is not None else None,
-        })
+        results["per_sentence"].append(
+            {
+                "test_id": test_id,
+                "category": ratio_info["category"],
+                "hindi_tokens": ratio_info["hindi_count"],
+                "english_tokens": ratio_info["english_count"],
+                "hindi_ratio": round(ratio_info["hindi_ratio"], 4),
+                "english_ratio": round(ratio_info["english_ratio"], 4),
+                "l1_index": h_idx,
+                "l2_index": e_idx,
+                "l1_phoneme": h_phon,
+                "l2_phoneme": e_phon,
+                "cspi": round(cspi, 4) if cspi is not None else None,
+            }
+        )
 
         if cspi is not None:
             all_cspi_scores.append(cspi)
@@ -211,11 +218,17 @@ def compute_cspi_refined(model: str, weighting_mode: str = "per-sentence") -> di
                 "cspi": round(avg_cspi, 4),
                 "hindi_tokens": data["hindi_count"],
                 "english_tokens": data["english_count"],
-                "hindi_ratio": round(data["hindi_count"] / total, 4) if total > 0 else 0,
-                "english_ratio": round(data["english_count"] / total, 4) if total > 0 else 0,
+                "hindi_ratio": round(data["hindi_count"] / total, 4)
+                if total > 0
+                else 0,
+                "english_ratio": round(data["english_count"] / total, 4)
+                if total > 0
+                else 0,
             }
 
-    results["weighted_cspi"] = round(weighted_cspi, 4) if weighted_cspi is not None else None
+    results["weighted_cspi"] = (
+        round(weighted_cspi, 4) if weighted_cspi is not None else None
+    )
 
     return results
 
@@ -223,8 +236,11 @@ def compute_cspi_refined(model: str, weighting_mode: str = "per-sentence") -> di
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--model", default=None)
-    parser.add_argument("--weighting-mode", choices=["per-sentence", "per-category", "global"],
-                        default="per-sentence")
+    parser.add_argument(
+        "--weighting-mode",
+        choices=["per-sentence", "per-category", "global"],
+        default="per-sentence",
+    )
     args = parser.parse_args()
 
     if args.model:
@@ -246,17 +262,25 @@ def main():
         all_results.append(result)
 
     # Display results
-    print(f"{'Model':<18} {'Weighted CSPI':>15} {'Category-Level':>15} {'Weighting':>20}")
+    print(
+        f"{'Model':<18} {'Weighted CSPI':>15} {'Category-Level':>15} {'Weighting':>20}"
+    )
     print("-" * 110)
 
     for result in all_results:
-        weighted = f"{result['weighted_cspi']:.4f}" if result['weighted_cspi'] is not None else "—"
+        weighted = (
+            f"{result['weighted_cspi']:.4f}"
+            if result["weighted_cspi"] is not None
+            else "—"
+        )
         print(f"{result['model']:<18} {weighted:>15}")
 
     print()
     print("=" * 110)
     print("Per-Category Breakdown (Language-Aware CSPI):\n")
-    print(f"{'Category':<28} {'CSPI':>8} {'Hindi %':>10} {'English %':>10} {'Notes':<40}")
+    print(
+        f"{'Category':<28} {'CSPI':>8} {'Hindi %':>10} {'English %':>10} {'Notes':<40}"
+    )
     print("-" * 110)
 
     for result in all_results:
@@ -268,9 +292,9 @@ def main():
             cspi = f"{data['cspi']:.4f}"
 
             # Determine dominance
-            if data['hindi_ratio'] > 0.7:
+            if data["hindi_ratio"] > 0.7:
                 note = "Hindi-dominant"
-            elif data['english_ratio'] > 0.7:
+            elif data["english_ratio"] > 0.7:
                 note = "English-dominant"
             else:
                 note = "Balanced"
@@ -288,7 +312,9 @@ def main():
             "weighted_cspi": result["weighted_cspi"],  # Placeholder
         }
 
-    print(f"{'Model':<18} {'Equal-Weight CSPI':>20} {'Language-Aware CSPI':>22} {'Difference':>15}")
+    print(
+        f"{'Model':<18} {'Equal-Weight CSPI':>20} {'Language-Aware CSPI':>22} {'Difference':>15}"
+    )
     print("-" * 110)
 
     # Load equal-weight results
@@ -321,7 +347,8 @@ def main():
     print("=" * 110)
     print("Interpretation:")
     print("=" * 110)
-    print("""
+    print(
+        """
 Language-Aware Weighting adjusts CSPI based on:
   • Sentences with 80% L1, 20% L2: L1-Index/L1-Phoneme weighted 80%, L2-Index/L2-Phoneme weighted 20%
   • Sentences with 40% L1, 60% L2: L1-Index/L1-Phoneme weighted 40%, L2-Index/L2-Phoneme weighted 60%
@@ -334,7 +361,8 @@ This reflects linguistic reality:
 Comparison of Results:
   • If ranking changes: Some models perform differently on language-dominant vs balanced sentences
   • If ranking stays same: Current models have consistent language balance performance
-    """)
+    """
+    )
 
     # Save results
     output = {

@@ -105,13 +105,9 @@ def select_golden(
 
         # Allocate targets proportionally, oversample mid/high
         bucket_targets = {}
-        total_weight = sum(
-            CMI_TARGETS[b] for b in buckets_available
-        )
+        total_weight = sum(CMI_TARGETS[b] for b in buckets_available)
         for bucket in buckets_available:
-            bucket_targets[bucket] = round(
-                target * CMI_TARGETS[bucket] / total_weight
-            )
+            bucket_targets[bucket] = round(target * CMI_TARGETS[bucket] / total_weight)
 
         # Fix rounding to hit exact target
         diff = target - sum(bucket_targets.values())
@@ -149,8 +145,14 @@ def select_golden(
     # Write output
     output_path.parent.mkdir(parents=True, exist_ok=True)
     fieldnames = [
-        "golden_id", "sentence_id", "pattern_id", "cmi_bucket",
-        "text_roman", "text_devanagari", "text_mixed", "language_tags",
+        "golden_id",
+        "sentence_id",
+        "pattern_id",
+        "cmi_bucket",
+        "text_roman",
+        "text_devanagari",
+        "text_mixed",
+        "language_tags",
     ]
     with open(output_path, "w", encoding="utf-8", newline="") as f:
         writer = csv.DictWriter(f, fieldnames=fieldnames)
@@ -164,9 +166,7 @@ def select_golden(
     # Print distribution summary
     pat_dist = Counter(r["pattern_id"] for r in selected)
     cmi_dist = Counter(r["cmi_bucket"] for r in selected)
-    cross = Counter(
-        (r["pattern_id"], r["cmi_bucket"]) for r in selected
-    )
+    cross = Counter((r["pattern_id"], r["cmi_bucket"]) for r in selected)
 
     logger.info("Pattern distribution:")
     for p in PATTERNS:
@@ -202,15 +202,11 @@ def select_golden(
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(
-        description="Select golden set from benchmark CSV"
-    )
+    parser = argparse.ArgumentParser(description="Select golden set from benchmark CSV")
     parser.add_argument(
         "--input", type=str, default="data/codeswitched/benchmark_v1.csv"
     )
-    parser.add_argument(
-        "--output", type=str, default="data/golden/golden_set.csv"
-    )
+    parser.add_argument("--output", type=str, default="data/golden/golden_set.csv")
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--total", type=int, default=300)
     args = parser.parse_args()

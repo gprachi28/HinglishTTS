@@ -24,8 +24,8 @@ import json
 import re
 import sys
 import unicodedata
-from pathlib import Path
 from difflib import SequenceMatcher
+from pathlib import Path
 
 HERE = Path(__file__).parent
 TEST_SET_PATH = HERE / "test_set.csv"
@@ -76,10 +76,12 @@ def align_tokens(ref: list[str], hyp: list[str]) -> list[tuple[str | None, str |
     while i > 0 or j > 0:
         if i > 0 and j > 0 and ref[i - 1] == hyp[j - 1]:
             alignment.append((ref[i - 1], hyp[j - 1]))
-            i -= 1; j -= 1
+            i -= 1
+            j -= 1
         elif i > 0 and j > 0 and dp[i][j] == dp[i - 1][j - 1] + 1:
             alignment.append((ref[i - 1], hyp[j - 1]))
-            i -= 1; j -= 1
+            i -= 1
+            j -= 1
         elif i > 0 and dp[i][j] == dp[i - 1][j] + 1:
             alignment.append((ref[i - 1], None))
             i -= 1
@@ -119,18 +121,10 @@ def compute_sentence_phoneme_accuracy(
     hyp_tokens = tokenise(hyp_text)
 
     if not hyp_text.strip():
-        return {
-            "l1_tokens": [],
-            "l2_tokens": [],
-            "skipped": True
-        }
+        return {"l1_tokens": [], "l2_tokens": [], "skipped": True}
 
     if len(ref_tokens) != len(tags):
-        return {
-            "l1_tokens": [],
-            "l2_tokens": [],
-            "skipped": True
-        }
+        return {"l1_tokens": [], "l2_tokens": [], "skipped": True}
 
     alignment = align_tokens(ref_tokens, hyp_tokens)
 
@@ -160,7 +154,7 @@ def compute_sentence_phoneme_accuracy(
         token_data = {
             "ref": ref_tok,
             "hyp": hyp_tok,
-            "similarity": round(similarity, 4)
+            "similarity": round(similarity, 4),
         }
 
         if tag == "HI":
@@ -168,11 +162,7 @@ def compute_sentence_phoneme_accuracy(
         elif tag == "EN":
             english_tokens.append(token_data)
 
-    return {
-        "l1_tokens": hindi_tokens,
-        "l2_tokens": english_tokens,
-        "skipped": False
-    }
+    return {"l1_tokens": hindi_tokens, "l2_tokens": english_tokens, "skipped": False}
 
 
 # ── Main ─────────────────────────────────────────────────────
@@ -180,7 +170,9 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--model", default="qwen3_tts")
     parser.add_argument("--variant", default="roman", choices=["roman", "mixed"])
-    parser.add_argument("--limit", type=int, default=None, help="Process only first N sentences")
+    parser.add_argument(
+        "--limit", type=int, default=None, help="Process only first N sentences"
+    )
     args = parser.parse_args()
 
     transcripts_path = RESULTS_DIR / args.model / "transcripts.json"
@@ -195,7 +187,7 @@ def main():
     with open(TEST_SET_PATH, encoding="utf-8") as f:
         rows = list(csv.DictReader(f))
         if args.limit:
-            rows = rows[:args.limit]
+            rows = rows[: args.limit]
         test_rows = {row["test_id"]: row for row in rows}
 
     results = []
@@ -204,14 +196,18 @@ def main():
 
     print(f"\nPhoneme-Level Accuracy — {args.model} ({args.variant} variant)")
     print("-" * 85)
-    print(f"  {'Test ID':<8} {'Category':<20} {'HI Acc':>8} {'EN Acc':>8} {'Notes':>45}")
+    print(
+        f"  {'Test ID':<8} {'Category':<20} {'HI Acc':>8} {'EN Acc':>8} {'Notes':>45}"
+    )
     print(f"  {'-'*8} {'-'*20} {'-'*8} {'-'*8} {'-'*45}")
 
     for test_id, row in test_rows.items():
         ref = row["text_roman"]
         ref_normalized = transliterate_roman_to_devanagari(ref)
         hyp_raw = transcripts.get(f"{test_id}_{args.variant}", "")
-        hyp = transliterate_roman_to_devanagari(hyp_raw)  # normalize: handles Whisper Roman↔Devanagari inconsistency
+        hyp = transliterate_roman_to_devanagari(
+            hyp_raw
+        )  # normalize: handles Whisper Roman↔Devanagari inconsistency
         tags = row["language_tags"].split()
 
         # Compare using normalized (Devanagari) reference
@@ -221,8 +217,16 @@ def main():
         en_tokens = data["l2_tokens"]
 
         # Calculate averages
-        hi_acc = round(sum(t["similarity"] for t in hi_tokens) / len(hi_tokens), 4) if hi_tokens else None
-        en_acc = round(sum(t["similarity"] for t in en_tokens) / len(en_tokens), 4) if en_tokens else None
+        hi_acc = (
+            round(sum(t["similarity"] for t in hi_tokens) / len(hi_tokens), 4)
+            if hi_tokens
+            else None
+        )
+        en_acc = (
+            round(sum(t["similarity"] for t in en_tokens) / len(en_tokens), 4)
+            if en_tokens
+            else None
+        )
 
         if hi_tokens:
             l1_similarities.extend([t["similarity"] for t in hi_tokens])
@@ -244,24 +248,36 @@ def main():
         hi_str = f"{hi_acc:.3f}" if hi_acc is not None else "—"
         en_str = f"{en_acc:.3f}" if en_acc is not None else "—"
 
-        print(f"  {test_id:<8} {row['category']:<20} {hi_str:>8} {en_str:>8} {notes:>45}")
+        print(
+            f"  {test_id:<8} {row['category']:<20} {hi_str:>8} {en_str:>8} {notes:>45}"
+        )
 
-        results.append({
-            "test_id": test_id,
-            "category": row["category"],
-            "ref": ref,
-            "ref_normalized": ref_normalized,
-            "hyp": hyp,
-            "l1_phoneme_acc": hi_acc,
-            "l2_phoneme_acc": en_acc,
-            "l1_tokens": hi_tokens,
-            "l2_tokens": en_tokens,
-            "skipped": data["skipped"],
-        })
+        results.append(
+            {
+                "test_id": test_id,
+                "category": row["category"],
+                "ref": ref,
+                "ref_normalized": ref_normalized,
+                "hyp": hyp,
+                "l1_phoneme_acc": hi_acc,
+                "l2_phoneme_acc": en_acc,
+                "l1_tokens": hi_tokens,
+                "l2_tokens": en_tokens,
+                "skipped": data["skipped"],
+            }
+        )
 
     # Aggregate statistics
-    avg_l1_acc = round(sum(l1_similarities) / len(l1_similarities), 4) if l1_similarities else None
-    avg_l2_acc = round(sum(l2_similarities) / len(l2_similarities), 4) if l2_similarities else None
+    avg_l1_acc = (
+        round(sum(l1_similarities) / len(l1_similarities), 4)
+        if l1_similarities
+        else None
+    )
+    avg_l2_acc = (
+        round(sum(l2_similarities) / len(l2_similarities), 4)
+        if l2_similarities
+        else None
+    )
 
     print(f"\n  L1-Phoneme-Accuracy (average):    {avg_l1_acc}")
     print(f"  L2-Phoneme-Accuracy (average):    {avg_l2_acc}")
@@ -274,7 +290,7 @@ def main():
         "l1_phoneme_accuracy": avg_l1_acc,
         "l2_phoneme_accuracy": avg_l2_acc,
         "per_sentence": results,
-        "note": "Character-level similarity used as phoneme-level proxy"
+        "note": "Character-level similarity used as phoneme-level proxy",
     }
 
     out_path = RESULTS_DIR / args.model / f"phoneme_accuracy_{args.variant}.json"

@@ -26,8 +26,8 @@ import json
 import re
 import sys
 import unicodedata
-from pathlib import Path
 from difflib import SequenceMatcher
+from pathlib import Path
 
 HERE = Path(__file__).parent
 TEST_SET_PATH = HERE / "test_set.csv"
@@ -89,10 +89,12 @@ def align_tokens(ref: list[str], hyp: list[str]) -> list[tuple[str | None, str |
     while i > 0 or j > 0:
         if i > 0 and j > 0 and ref[i - 1] == hyp[j - 1]:
             alignment.append((ref[i - 1], hyp[j - 1]))
-            i -= 1; j -= 1
+            i -= 1
+            j -= 1
         elif i > 0 and j > 0 and dp[i][j] == dp[i - 1][j - 1] + 1:
             alignment.append((ref[i - 1], hyp[j - 1]))  # substitution
-            i -= 1; j -= 1
+            i -= 1
+            j -= 1
         elif i > 0 and dp[i][j] == dp[i - 1][j] + 1:
             alignment.append((ref[i - 1], None))  # deletion
             i -= 1
@@ -104,9 +106,7 @@ def align_tokens(ref: list[str], hyp: list[str]) -> list[tuple[str | None, str |
 
 
 # ── L1-Index for one sentence ──────────────────────────────────
-def compute_sentence_l1index(
-    ref_text: str, hyp_text: str, tags: list[str]
-) -> dict:
+def compute_sentence_l1index(ref_text: str, hyp_text: str, tags: list[str]) -> dict:
     """
     Returns:
         l1_token_count: number of HI-tagged tokens in reference
@@ -147,12 +147,14 @@ def compute_sentence_l1index(
         is_correct = similarity >= char_sim_threshold
         if is_correct:
             correct_count += 1
-        per_token.append({
-            "ref": ref_tok,
-            "hyp": hyp_tok,
-            "char_similarity": round(similarity, 4),
-            "correct": is_correct
-        })
+        per_token.append(
+            {
+                "ref": ref_tok,
+                "hyp": hyp_tok,
+                "char_similarity": round(similarity, 4),
+                "correct": is_correct,
+            }
+        )
 
     return {
         "l1_token_count": len(l1_positions),
@@ -167,7 +169,9 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--model", default="qwen3_tts")
     parser.add_argument("--variant", default="roman", choices=["roman", "mixed"])
-    parser.add_argument("--limit", type=int, default=None, help="Process only first N sentences")
+    parser.add_argument(
+        "--limit", type=int, default=None, help="Process only first N sentences"
+    )
     args = parser.parse_args()
 
     transcripts_path = RESULTS_DIR / args.model / "transcripts.json"
@@ -182,23 +186,29 @@ def main():
     with open(TEST_SET_PATH, encoding="utf-8") as f:
         rows = list(csv.DictReader(f))
         if args.limit:
-            rows = rows[:args.limit]
+            rows = rows[: args.limit]
         test_rows = {row["test_id"]: row for row in rows}
 
     results = []
     total_l1 = 0
     total_correct = 0
 
-    print(f"\nL1-Index (Matrix Language Phonetic Fidelity) — {args.model} ({args.variant} variant)")
+    print(
+        f"\nL1-Index (Matrix Language Phonetic Fidelity) — {args.model} ({args.variant} variant)"
+    )
     print("-" * 75)
-    print(f"  {'Test ID':<8} {'Category':<26} {'L1 tokens':>10} {'Correct':>8} {'L1-Index':>8}")
+    print(
+        f"  {'Test ID':<8} {'Category':<26} {'L1 tokens':>10} {'Correct':>8} {'L1-Index':>8}"
+    )
     print(f"  {'-'*8} {'-'*26} {'-'*10} {'-'*8} {'-'*8}")
 
     for test_id, row in test_rows.items():
         ref = row["text_roman"]
         ref_normalized = transliterate_roman_to_devanagari(ref)
         hyp_raw = transcripts.get(f"{test_id}_{args.variant}", "")
-        hyp = transliterate_roman_to_devanagari(hyp_raw)  # normalize: handles Whisper Roman↔Devanagari inconsistency
+        hyp = transliterate_roman_to_devanagari(
+            hyp_raw
+        )  # normalize: handles Whisper Roman↔Devanagari inconsistency
         tags = row["language_tags"].split()
 
         # Compare using normalized (Devanagari) reference
@@ -214,20 +224,24 @@ def main():
         total_correct += correct
 
         h_str = f"{h_idx:.4f}" if h_idx is not None else ("skip" if skipped else "n/a")
-        print(f"  {test_id:<8} {row['category']:<26} {hi_count:>10} {correct:>8} {h_str:>8}")
+        print(
+            f"  {test_id:<8} {row['category']:<26} {hi_count:>10} {correct:>8} {h_str:>8}"
+        )
 
-        results.append({
-            "test_id": test_id,
-            "category": row["category"],
-            "ref": ref,
-            "ref_normalized": ref_normalized,
-            "hyp": hyp,
-            "l1_token_count": hi_count,
-            "correct": correct,
-            "l1_index": h_idx,
-            "per_token": data["per_token"],
-            "skipped": skipped,
-        })
+        results.append(
+            {
+                "test_id": test_id,
+                "category": row["category"],
+                "ref": ref,
+                "ref_normalized": ref_normalized,
+                "hyp": hyp,
+                "l1_token_count": hi_count,
+                "correct": correct,
+                "l1_index": h_idx,
+                "per_token": data["per_token"],
+                "skipped": skipped,
+            }
+        )
 
     weighted_l1index = round(total_correct / total_l1, 4) if total_l1 > 0 else None
 

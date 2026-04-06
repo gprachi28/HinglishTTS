@@ -70,7 +70,9 @@ def compute_hnr(wav_path: Path) -> dict | None:
         v = call(harmonicity, "Get value in frame", i)
         if not (v != v):  # exclude Python nan
             all_values.append(v)
-            if v > -150:  # Praat uses -200 dB as noise floor marker for silence/unvoiced
+            if (
+                v > -150
+            ):  # Praat uses -200 dB as noise floor marker for silence/unvoiced
                 voiced_values.append(v)
 
     if len(voiced_values) < 3:
@@ -80,19 +82,21 @@ def compute_hnr(wav_path: Path) -> dict | None:
     voiced_fraction = round(len(voiced_values) / n_frames, 4)
 
     return {
-        "mean_hnr_db":    round(float(np.mean(hnr_arr)), 3),
-        "median_hnr_db":  round(float(np.median(hnr_arr)), 3),
-        "min_hnr_db":     round(float(np.min(hnr_arr)), 3),
+        "mean_hnr_db": round(float(np.mean(hnr_arr)), 3),
+        "median_hnr_db": round(float(np.median(hnr_arr)), 3),
+        "min_hnr_db": round(float(np.min(hnr_arr)), 3),
         "voiced_fraction": voiced_fraction,
         "n_voiced_frames": len(voiced_values),
-        "n_total_frames":  n_frames,
+        "n_total_frames": n_frames,
     }
 
 
 def main():
     parser = argparse.ArgumentParser(description="Compute HNR voice quality metric")
     parser.add_argument("--model", default="sarvam_tts")
-    parser.add_argument("--limit", type=int, default=None, help="Process only first N sentences")
+    parser.add_argument(
+        "--limit", type=int, default=None, help="Process only first N sentences"
+    )
     args = parser.parse_args()
 
     audio_dir = RESULTS_DIR / args.model / "audio"
@@ -102,13 +106,18 @@ def main():
 
     wav_files = sorted(audio_dir.glob("*.wav"))
     if args.limit:
-        wav_files = [w for w in wav_files
-                     if any(w.stem.startswith(f"T{i:02d}_") for i in range(1, args.limit + 1))]
+        wav_files = [
+            w
+            for w in wav_files
+            if any(w.stem.startswith(f"T{i:02d}_") for i in range(1, args.limit + 1))
+        ]
 
     print(f"\nHNR (Harmonics-to-Noise Ratio) — {args.model}")
     print(f"{'':55} Higher = better voice quality (dB)")
     print("-" * 85)
-    print(f"  {'File':<28} {'Mean HNR':>10} {'Median HNR':>12} {'Min HNR':>10} {'Voiced%':>9}")
+    print(
+        f"  {'File':<28} {'Mean HNR':>10} {'Median HNR':>12} {'Min HNR':>10} {'Voiced%':>9}"
+    )
     print(f"  {'-'*28} {'-'*10} {'-'*12} {'-'*10} {'-'*9}")
 
     per_file: dict[str, dict] = {}
@@ -132,7 +141,9 @@ def main():
         else:
             print(f"  {stem:<28} {'too short / unvoiced':>10}")
 
-    print(f"\n  {'Variant':<15} {'Mean HNR (dB)':>15} {'Median HNR (dB)':>17} {'Std':>8} {'N':>5}")
+    print(
+        f"\n  {'Variant':<15} {'Mean HNR (dB)':>15} {'Median HNR (dB)':>17} {'Std':>8} {'N':>5}"
+    )
     print(f"  {'-'*15} {'-'*15} {'-'*17} {'-'*8} {'-'*5}")
 
     summary: dict[str, dict] = {}
@@ -140,27 +151,31 @@ def main():
         vals = variant_vals[v]
         if vals:
             arr = np.array(vals)
-            mean_hnr   = round(float(np.mean(arr)), 3)
+            mean_hnr = round(float(np.mean(arr)), 3)
             median_hnr = round(float(np.median(arr)), 3)
-            std_hnr    = round(float(np.std(arr)), 3)
-            print(f"  {v:<15} {mean_hnr:>15.2f} {median_hnr:>17.2f} {std_hnr:>8.2f} {len(vals):>5}")
+            std_hnr = round(float(np.std(arr)), 3)
+            print(
+                f"  {v:<15} {mean_hnr:>15.2f} {median_hnr:>17.2f} {std_hnr:>8.2f} {len(vals):>5}"
+            )
         else:
             mean_hnr = median_hnr = std_hnr = None
             print(f"  {v:<15} {'—':>15} {'—':>17} {'—':>8} {'0':>5}  (no audio)")
         summary[v] = {
-            "mean_hnr_db":   mean_hnr,
+            "mean_hnr_db": mean_hnr,
             "median_hnr_db": median_hnr,
-            "std_hnr_db":    std_hnr,
+            "std_hnr_db": std_hnr,
             "n": len(vals),
         }
 
-    print(f"""
+    print(
+        f"""
   Interpretation (Praat standard):
     > 20 dB  — excellent (clean, natural voice)
     15–20 dB — good quality
     10–15 dB — moderate (some breathiness / artifacts)
     <  10 dB — poor (heavy noise / synthesis breakdown)
-""")
+"""
+    )
 
     output = {
         "model": args.model,

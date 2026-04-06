@@ -369,12 +369,14 @@ def main():
             "n": len(vals),
         }
 
-    print("""
+    print(
+        """
   Interpretation:
     BP ≈ 1.0  — boundary transitions as smooth as within-language (ideal)
     BP 1.0–1.5 — mild roughness at code-switch points
     BP > 1.5  — model noticeably struggles at language boundaries
-""")
+"""
+    )
 
     output = {
         "model": args.model,
