@@ -166,6 +166,7 @@ HinglishTTS/
 │       ├── compute_hnr.py            # HNR voice quality
 │       ├── compute_boundary_penalty.py # BP transition smoothness
 │       ├── compute_word_timestamps.py  # Whisper word-level timestamps
+│       ├── compute_llm_naturalness.py # LLM naturalness judge (Gemini)
 │       ├── run_metrics.py            # Pipeline orchestrator
 │       └── results/                  # Metric outputs per model
 └── docs/
